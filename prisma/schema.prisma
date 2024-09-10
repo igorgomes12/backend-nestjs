@@ -8,7 +8,15 @@ generator client {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id               Int    @id @default(autoincrement())
+  name_user        String @unique
+  email_login_user String @unique
+  password_user    String
+  channel_user Int
+  profile_user Int
+  status_user  String
+  company_user String
+
+  
+  @@map("users")
 }
