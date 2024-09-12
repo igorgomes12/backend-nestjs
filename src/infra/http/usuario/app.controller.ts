@@ -13,23 +13,21 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { LiderUserRepository } from "./repositories/lider_user_repository";
-import { hash } from "bcryptjs";
-import {
-  CreateUserBodySchemaDto,
-  type TCreateUserBodyFormDto,
-} from "./dtos/create_user_body_dto";
-import { ZodValidationPipe } from "./pipes/zod_validation_pipes";
-import { AuthGuard } from "@nestjs/passport";
+
+
+import { CreateUserBodySchemaDto, type TCreateUserBodyFormDto } from "./dtos/create_user_body_dto";
+
+import { hash } from 'bcryptjs'
+import { ZodValidationPipe } from "../pipes/zod_validation_pipes";
+import { JwtAuthGuard } from "@/infra/auth/jwt_auth.guard";
+import type { LiderUserRepository } from "@/infra/repositories/lider_user_repository";
 
 @Controller("user")
 export class AppController {
-  constructor(private liderUserRepository: LiderUserRepository) {}
-
-  // GET
-  @Get("list")
+  liderUserRepository: any;
+  // constructor(private readonly liderUserRepository: LiderUserRepository) {}
+  @Get()
   @HttpCode(200)
-  @UseGuards(AuthGuard("jwt"))
   async getUsers(@Query() query: TCreateUserBodyFormDto) {
     const users = await this.liderUserRepository.findAll();
 
@@ -48,10 +46,9 @@ export class AppController {
     return filteredUsers;
   }
 
-  // DELETE
-  @Delete("delete")
+  @Delete()
   @HttpCode(200)
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(JwtAuthGuard)
   async deleteUser(@Query("id") id: string) {
     if (!id) {
       throw new Error("ID é necessário");
@@ -68,8 +65,8 @@ export class AppController {
     };
   }
 
-  // PUT
-  @Put("update")
+
+  @Put()
   @HttpCode(200)
   async updateUser(
     @Query("id") id: string,
@@ -83,63 +80,63 @@ export class AppController {
     return { statusCode: HttpStatus.OK, updatedUser };
   }
 
-  // POST
-  @Post("create")
+
+  @Post()
   @HttpCode(201)
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Body() body: TCreateUserBodyFormDto) {
     const {
-      channel_user,
-      company_user,
-      email_login_user,
-      name_user,
-      password_user,
-      profile_user,
-      status_user,
+      channel,
+      company,
+      email,
+      name,
+      password,
+      profile,
+      status,
     } = body;
 
     // Verifica se o email é nulo ou vazio
-    if (!email_login_user) {
+    if (!email) {
       throw new Error("Email não pode ser nulo ou vazio!");
     }
 
     // Verifica se o nome é nulo ou vazio
-    if (!name_user) {
+    if (!name) {
       throw new Error("Nome não pode ser nulo ou vazio!");
     }
 
     // Verifica se a senha é nula ou vazia
-    if (!password_user) {
+    if (!password) {
       throw new Error("Senha não pode ser nula ou vazia!");
     }
 
     // Verifica se o email já está cadastrado
     const existingUserByEmail =
-      await this.liderUserRepository.findByEmail(email_login_user);
+      await this.liderUserRepository.findByEmail(email);
     if (existingUserByEmail) {
       throw new ConflictException("Email já cadastrado!");
     }
 
     // Verifica se o nome já está cadastrado
     const existingUserByName =
-      await this.liderUserRepository.findByName(name_user);
+      await this.liderUserRepository.findByName(name);
     if (existingUserByName) {
       throw new ConflictException("Nome já cadastrado!");
     }
 
     // Gera o hash da senha
-    const hashedPassword = await hash(password_user, 8);
+    const hashedPassword = await hash(password, 8);
 
     // Cria o usuário
     await this.liderUserRepository.create(
-      name_user,
-      email_login_user,
+      name,
+      email,
       hashedPassword,
-      channel_user || 0,
-      profile_user || 0,
-      status_user || "",
-      company_user || "",
+      channel || 0,
+      profile || 0,
+      status || "",
+      company || "",
     );
 
     return {

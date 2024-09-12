@@ -1,7 +1,7 @@
 import { Controller, Post, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/jwt_auth.guard";
-import { CurrentUser } from "src/auth/current-user-decorator";
-import type { userPayloadForm } from "src/auth/jwt.strategy";
+import { JwtAuthGuard } from "@/infra/auth/jwt_auth.guard";
+import { CurrentUser } from "@/infra/auth/current-user-decorator";
+import type { userPayloadForm } from "@/infra/auth/jwt.strategy";
 
 @Controller("/page")
 @UseGuards(JwtAuthGuard)

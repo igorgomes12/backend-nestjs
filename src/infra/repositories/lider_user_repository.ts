@@ -1,15 +1,15 @@
-import type { User } from "@prisma/client";
+import { PrismaClient, type User } from "@prisma/client";
 
 export abstract class LiderUserRepository {
-  // POST
+  protected prisma = new PrismaClient();  // POST
   abstract create(
-    name_user: string,
-    email_login_user: string,
-    password_user: string,
-    channel_user: number,
-    profile_user: "administrador" | "usuario" | "vendedor" | "suporte",
-    status_user: "ativo" | "inativo",
-    company_user: "lider" | "Quality" | "",
+    name: string,
+    email: string,
+    password: string,
+    channel: number,
+    profile: "administrador" | "usuario" | "vendedor" | "suporte",
+    status: "ativo" | "inativo",
+    company: "lider" | "Quality" | "",
   ): Promise<void>;
 
   // GET

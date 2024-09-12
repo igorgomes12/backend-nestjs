@@ -7,13 +7,13 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcryptjs";
-import { PrismaService } from "src/database/prisma.service";
-import { ZodValidationPipe } from "src/pipes/zod_validation_pipes";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
+import { ZodValidationPipe } from "@/infra/http/pipes/zod_validation_pipes";
 import { z } from "zod";
 
 export const authenticateBodySchema = z.object({
-  email_login_user: z.string().email(),
-  password_user: z
+  email: z.string().email(),
+  password: z
     .string()
     .min(8, { message: "A senha deve ter pelo menos 8 caracteres" }),
 });
@@ -29,15 +29,15 @@ export class AuthenticateController {
   @Post()
   @UsePipes(new ZodValidationPipe(authenticateBodySchema))
   async handle(@Body() body: TAuthenticateBodyForm) {
-    const { email_login_user, password_user } = body;
+    const { email, password } = body;
 
     const user = await this.prisma.user.findUnique({
-      where: { email_login_user },
+      where: { email },
     });
     if (!user) {
       throw new UnauthorizedException("As credenciais não conferem");
     }
-    const isPasswordValid = await compare(password_user, user.password_user);
+    const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException("As credenciais não conferem");
     }

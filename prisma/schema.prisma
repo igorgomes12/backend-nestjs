@@ -7,23 +7,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Login {
-  id             Int    @id @default(autoincrement())
-  email_login    String @unique
-  password_login String
-
-  @@map("logins")
-}
-
 model User {
-  id               Int    @id @default(autoincrement())
-  name_user        String @unique
-  email_login_user String @unique
-  password_user    String
-  channel_user     Int
-  profile_user     String
-  status_user      String
-  company_user     String
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  email    String @unique
+  password String
+  channel  Int
+  profile  String
+  status   String
+  company  String
 
   @@map("users")
 }

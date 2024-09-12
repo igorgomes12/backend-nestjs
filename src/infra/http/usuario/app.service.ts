@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "./database/prisma.service";
+import { PrismaService } from "../../database/prisma/prisma.service";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import type { TCreateUserBodyFormDto } from "./dtos/create_user_body_dto";
@@ -12,13 +12,13 @@ export class AppService {
     try {
       return await this.prisma.user.create({
         data: {
-          name_user: data.name_user || "",
-          password_user: data.password_user || "",
-          email_login_user: data.email_login_user || "",
-          channel_user: data.channel_user || 0,
-          profile_user: data.profile_user || 0,
-          status_user: data.status_user || "",
-          company_user: data.company_user || "",
+          name: data.name || "",
+          password: data.password || "",
+          email: data.email || "",
+          channel: data.channel || 0,
+          profile: data.profile || 0,
+          status: data.status || "",
+          company: data.company || "",
         },
       });
     } catch (error) {
