@@ -8,14 +8,30 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
-  email    String @unique
-  password String
-  channel  Int
-  profile  String
-  status   String
-  company  String
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50)
+  email       String   @unique @db.VarChar(50)
+  password    String
+  channel     Int      @default(1)
+  status      String   @default("ativo")
+  company     String?
+  profile     Profile? @relation(fields: [profileId], references: [id])
+  profileId   Int?
+  permissions Json
 
   @@map("users")
+}
+
+model Profile {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique @db.VarChar(50) // Torna o nome único
+  permissions Permission[] @relation("ProfileHasPermission")
+  User        User[]
+}
+
+model Permission {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(50)
+  profile   Profile @relation("ProfileHasPermission", fields: [profileId], references: [id])
+  profileId Int
 }

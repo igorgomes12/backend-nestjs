@@ -1,24 +1,29 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../database/prisma/prisma.service";
-
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import type { TCreateUserBodyFormDto } from "./dtos/create_user_body_dto";
+import { CreateUserBodySchemaDto, TCreateUserBodyFormDto } from "./dtos/create_user_body_dto";
 
 @Injectable()
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: TCreateUserBodyFormDto) {
+  async createUser(data: unknown) {
+    // Validação dos dados de entrada usando Zod
+    const parsedData = CreateUserBodySchemaDto.parse(data);
+
     try {
       return await this.prisma.user.create({
         data: {
-          name: data.name || "",
-          password: data.password || "",
-          email: data.email || "",
-          channel: data.channel || 0,
-          profile: data.profile || 0,
-          status: data.status || "",
-          company: data.company || "",
+          name: parsedData.name,
+          password: parsedData.password,
+          email: parsedData.email,
+          channel: parsedData.channel || 0,
+          profile: {
+            connect: { name: parsedData.profile }, // Conecta usando o nome do perfil
+          },
+          status: parsedData.status,
+          company: parsedData.company || "",
+          permissions: {}, // Inicialize conforme necessário
         },
       });
     } catch (error) {

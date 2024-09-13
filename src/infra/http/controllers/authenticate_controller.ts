@@ -30,21 +30,28 @@ export class AuthenticateController {
   @UsePipes(new ZodValidationPipe(authenticateBodySchema))
   async handle(@Body() body: TAuthenticateBodyForm) {
     const { email, password } = body;
-
+  
     const user = await this.prisma.user.findUnique({
       where: { email },
+      select: { id: true, name: true, profile: true, password: true },
     });
     if (!user) {
       throw new UnauthorizedException("As credenciais não conferem");
     }
+  
     const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException("As credenciais não conferem");
     }
-
-    const acessToken = this.jwt.sign({ sub: user.id });
+  
+    const accessToken = this.jwt.sign({
+      sub: user.id,
+      name: user.name,
+      profile: user.profile,
+    });
+  
     return {
-      access_token: acessToken,
+      access_token: accessToken,
     };
   }
 }

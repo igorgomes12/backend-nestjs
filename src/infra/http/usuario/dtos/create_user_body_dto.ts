@@ -25,8 +25,7 @@ export const CreateUserBodySchemaDto = z.object({
   channel: z.number().optional(),
 
   profile: z.enum(["administrador", "suporte", "vendedor", "usuario"], {
-    message:
-      "O perfil do usuário é obrigatório e deve ser um dos valores permitidos",
+    message: "O perfil do usuário é obrigatório e deve ser um dos valores permitidos",
   }),
 
   status: z.enum(["ativo", "inativo"]).default("ativo"),

@@ -1,7 +1,7 @@
 import { PrismaClient, type User } from "@prisma/client";
 
 export abstract class LiderUserRepository {
-  protected prisma = new PrismaClient();  // POST
+  protected prisma = new PrismaClient();
   abstract create(
     name: string,
     email: string,

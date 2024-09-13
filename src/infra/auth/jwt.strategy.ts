@@ -2,13 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import type { TEnv } from "@/infra/env/env";
 import { z } from "zod";
+import type { TEnv } from "../env/env";
 
+// Expanda o schema para incluir todos os campos necessários
 export const userPayloadSchema = z.object({
   sub: z.number(),
+  name: z.string(), // Adicione o campo de username
+  profile: z.string(),  // Adicione o campo de profile
 });
-export type userPayloadForm = z.infer<typeof userPayloadSchema>;
+export type UserPayloadForm = z.infer<typeof userPayloadSchema>;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,7 +24,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: userPayloadForm) {
+  async validate(payload: UserPayloadForm) {
+    console.log('Payload recebido:', payload); 
     return userPayloadSchema.parse(payload);
   }
 }
+

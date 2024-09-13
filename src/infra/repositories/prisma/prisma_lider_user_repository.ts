@@ -13,18 +13,36 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     status: "ativo" | "inativo",
     company: "" | "lider" | "Quality",
   ): Promise<void> {
+    // Primeiro, verifique se o perfil existe
+    const profileRecord = await this.prisma.profile.findUnique({
+      where: { name: profile },
+    });
+  
+    // Se o perfil não existir, crie-o
+    if (!profileRecord) {
+      await this.prisma.profile.create({
+        data: { name: profile },
+      });
+    }
+  
+    // Agora, crie o usuário conectando ao perfil
     await this.prisma.user.create({
       data: {
         name,
         email,
         password,
         channel,
-        profile,
         status,
         company,
+        permissions: {}, // ou qualquer valor JSON válido que você precise
+        profile: {
+          connect: { name: profile },
+        },
       },
     });
   }
+    
+
   async findAll(): Promise<User[]> {
     return await this.prisma.user.findMany();
   }
@@ -34,10 +52,10 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     });
   }
 
-  async update(userId: number, updateData: Partial<User>): Promise<User> {
+  async update(userId: number, updateData: Partial<Omit<User, 'id'>>): Promise<User> {
     return await this.prisma.user.update({
       where: { id: userId },
-      data: updateData,
+      data: updateData as any, // ou ajuste conforme necessário para corresponder aos tipos esperados
     });
   }
 
