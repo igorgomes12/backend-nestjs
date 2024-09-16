@@ -5,11 +5,10 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
 import type { TEnv } from "../env/env";
 
-// Expanda o schema para incluir todos os campos necessários
 export const userPayloadSchema = z.object({
   sub: z.number(),
-  name: z.string(), // Adicione o campo de username
-  profile: z.string(),  // Adicione o campo de profile
+  name: z.string(), 
+  profile: z.string(),  
 });
 export type UserPayloadForm = z.infer<typeof userPayloadSchema>;
 

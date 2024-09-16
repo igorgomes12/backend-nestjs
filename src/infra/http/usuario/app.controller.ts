@@ -1,29 +1,25 @@
 // app.controller.ts
-import {
-  Controller,
-  Get,
-  Delete,
-  Put,
-  Post,
-  Query,
-  Body,
-  UseGuards,
-  HttpCode,
-  HttpStatus,
-  ConflictException,
-  HttpException,
-  UsePipes,
-} from "@nestjs/common";
-import {
-  TCreateUserBodyFormDto,
-  CreateUserBodySchemaDto,
-} from "./dtos/create_user_body_dto";
-import { hash } from "bcryptjs";
-import { JwtAuthGuard } from "@/infra/auth/jwt_auth.guard";
-import { RolesGuard } from "@/infra/middleware/roles_guard";
 import { LiderUserRepository } from "@/infra/repositories/lider_user_repository";
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+  Put,
+  Query,
+  UsePipes
+} from "@nestjs/common";
+import { hash } from "bcryptjs";
 import { ZodValidationPipe } from "../pipes/zod_validation_pipes";
-import { Roles } from "@/infra/middleware/decorator.rolues";
+import {
+  CreateUserBodySchemaDto,
+  TCreateUserBodyFormDto,
+} from "./dtos/create_user_body_dto";
 
 @Controller("user")
 export class AppController {
@@ -31,7 +27,7 @@ export class AppController {
 
   @Get()
   @HttpCode(200)  
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getUsers(@Query() query: TCreateUserBodyFormDto) {
     const users = await this.liderUserRepository.findAll();
     const filteredUsers = users.filter((user) => {
@@ -82,7 +78,7 @@ export class AppController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Body() body: TCreateUserBodyFormDto) {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Define o esquema de validação com Zod
 export const CreateUserBodySchemaDto = z.object({
   name: z
     .string()
@@ -20,12 +21,22 @@ export const CreateUserBodySchemaDto = z.object({
     .min(5, { message: "A senha do usuário deve ter pelo menos 5 caracteres" })
     .max(100, {
       message: "A senha do usuário deve ter no máximo 100 caracteres",
+    })
+    .refine((password) => /[A-Z]/.test(password), {
+      message: "A senha deve conter pelo menos uma letra maiúscula",
+    })
+    .refine((password) => /[a-z]/.test(password), {
+      message: "A senha deve conter pelo menos uma letra minúscula",
+    })
+    .refine((password) => /(\d|\W)/.test(password), {
+      message: "A senha deve conter pelo menos um número ou caractere especial",
     }),
 
   channel: z.number().optional(),
 
   profile: z.enum(["administrador", "suporte", "vendedor", "usuario"], {
-    message: "O perfil do usuário é obrigatório e deve ser um dos valores permitidos",
+    message:
+      "O perfil do usuário é obrigatório e deve ser um dos valores permitidos",
   }),
 
   status: z.enum(["ativo", "inativo"]).default("ativo"),

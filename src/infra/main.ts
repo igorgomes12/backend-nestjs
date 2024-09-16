@@ -7,7 +7,11 @@ import { AppModule } from "./http/usuario/app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,    
+  }));
 
   const configService = app.get<ConfigService<TEnv, true>>(ConfigService);
   const port = configService.get("PORT", { infer: true });
