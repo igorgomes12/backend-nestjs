@@ -12,7 +12,8 @@ import {
   Post,
   Put,
   Query,
-  UsePipes
+  UseGuards,
+  UsePipes,
 } from "@nestjs/common";
 import { hash } from "bcryptjs";
 import { ZodValidationPipe } from "../pipes/zod_validation_pipes";
@@ -20,14 +21,18 @@ import {
   CreateUserBodySchemaDto,
   TCreateUserBodyFormDto,
 } from "./dtos/create_user_body_dto";
+import { JwtAuthGuard } from "@/infra/auth/guards/jwt_auth.guard";
+import { RolesGuard } from "@/infra/middleware/roles_guard";
+import { Roles } from "@/infra/middleware/decorator.rolues";
 
-@Controller("user")
+@Controller("/user")
 export class AppController {
   constructor(private liderUserRepository: LiderUserRepository) {}
 
   @Get()
-  @HttpCode(200)  
-  // @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin" , "user" , "user_basic" , "suport" , "sellers" , "user_intermediate" , "user_premium") 
   async getUsers(@Query() query: TCreateUserBodyFormDto) {
     const users = await this.liderUserRepository.findAll();
     const filteredUsers = users.filter((user) => {
@@ -44,8 +49,9 @@ export class AppController {
   }
 
   @Delete()
-  @HttpCode(200)
-
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin') 
   async deleteUser(@Query("id") id: string) {
     if (!id) {
       throw new Error("ID é necessário");
@@ -63,8 +69,9 @@ export class AppController {
   }
 
   @Put()
-  @HttpCode(200)
-  
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin',) 
   async updateUser(
     @Query("id") id: string,
     @Body() updateData: Partial<TCreateUserBodyFormDto>
@@ -78,8 +85,9 @@ export class AppController {
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
-  @HttpCode(201)
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'user') 
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Body() body: TCreateUserBodyFormDto) {
     console.log("Dados recebidos no POST:", body);
@@ -115,7 +123,7 @@ export class AppController {
       email,
       hashedPassword,
       channel || 0,
-      profile || '',
+      profile || "",
       status || "",
       company || ""
     );

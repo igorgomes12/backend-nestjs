@@ -18,7 +18,7 @@ export const CreateUserBodySchemaDto = z.object({
   password: z
     .string()
     .min(1, { message: "A senha do usuário é obrigatória" })
-    .min(5, { message: "A senha do usuário deve ter pelo menos 5 caracteres" })
+    .min(8, { message: "A senha do usuário deve ter pelo menos 8 caracteres" })
     .max(100, {
       message: "A senha do usuário deve ter no máximo 100 caracteres",
     })
@@ -34,7 +34,7 @@ export const CreateUserBodySchemaDto = z.object({
 
   channel: z.number().optional(),
 
-  profile: z.enum(["administrador", "suporte", "vendedor", "usuario"], {
+  profile: z.enum(["admin", "suport", "sellers", "user", "user_basic", "user_intermediate", "user_premium"], {
     message:
       "O perfil do usuário é obrigatório e deve ser um dos valores permitidos",
   }),

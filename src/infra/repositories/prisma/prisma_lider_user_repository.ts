@@ -9,7 +9,7 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     email: string,
     password: string,
     channel: number,
-    profile: "administrador" | "suporte" | "vendedor" | "usuario",
+    profile: "admin"| "suport"| "sellers"| "user"| "user_basic"| "user_intermediate"| "user_premium",
     status: "ativo" | "inativo",
     company: "" | "lider" | "Quality",
   ): Promise<void> {

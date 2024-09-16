@@ -1,6 +1,6 @@
 // Decorator para extrair o usuário atual do request
 import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
-import type { UserPayloadForm } from "./jwt.strategy";
+import type { UserPayloadForm } from "./guards/strategies/jwt.strategy";
 
 export const CurrentUser = createParamDecorator(
   (_: never, context: ExecutionContext) => {

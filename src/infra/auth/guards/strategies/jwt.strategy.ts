@@ -3,12 +3,18 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
-import type { TEnv } from "../env/env";
+import type { TEnv } from "../../../env/env";
 
+// Atualize o esquema para refletir a estrutura correta
 export const userPayloadSchema = z.object({
   sub: z.number(),
-  name: z.string(), 
-  profile: z.string(),  
+  name: z.string(),
+  profile: z.object({
+    id: z.number(),
+    name: z.string(),
+  }),  
+  iat: z.number(),
+  exp: z.number(),
 });
 export type UserPayloadForm = z.infer<typeof userPayloadSchema>;
 
@@ -28,4 +34,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return userPayloadSchema.parse(payload);
   }
 }
-

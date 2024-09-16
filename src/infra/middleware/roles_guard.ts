@@ -1,8 +1,6 @@
-// roles_guard.ts
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './decorator.rolues';
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -13,9 +11,17 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
     if (!requiredRoles) {
-      return true; // Se não houver roles especificadas, permite o acesso
+      return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.profile === role);
+    const userRole = user.profile?.name;
+    console.log('User role:', userRole);
+
+    const hasRole = requiredRoles.some((role) => role === userRole);
+    if (!hasRole) {
+      throw new ForbiddenException('Você não tem permissão para acessar este recurso.');
+    }
+
+    return true;
   }
 }
