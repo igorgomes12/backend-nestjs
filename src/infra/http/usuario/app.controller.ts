@@ -32,7 +32,15 @@ export class AppController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin" , "user" , "user_basic" , "suport" , "sellers" , "user_intermediate" , "user_premium") 
+  @Roles(
+    "admin",
+    "user",
+    "suport",
+    "sellers",
+    "user_basic",
+    "user_intermediate",
+    "user_premium"
+  )
   async getUsers(@Query() query: TCreateUserBodyFormDto) {
     const users = await this.liderUserRepository.findAll();
     const filteredUsers = users.filter((user) => {
@@ -51,7 +59,7 @@ export class AppController {
   @Delete()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin') 
+  @Roles("admin")
   async deleteUser(@Query("id") id: string) {
     if (!id) {
       throw new Error("ID é necessário");
@@ -61,6 +69,12 @@ export class AppController {
     if (isNaN(ID)) {
       throw new Error("Id inválido");
     }
+
+    const user = await this.liderUserRepository.findById(ID);
+    if (!user) {
+      throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
+    }
+
     await this.liderUserRepository.delete(ID);
     return {
       statusCode: HttpStatus.OK,
@@ -69,25 +83,31 @@ export class AppController {
   }
 
   @Put()
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin',) 
-  async updateUser(
-    @Query("id") id: string,
-    @Body() updateData: Partial<TCreateUserBodyFormDto>
-  ) {
-    const ID = Number(id);
-    if (isNaN(ID)) {
-      throw new Error("Id inválido");
-    }
-    const updatedUser = await this.liderUserRepository.update(ID, updateData);
-    return { statusCode: HttpStatus.OK, updatedUser };
+@HttpCode(HttpStatus.OK)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles("admin", "user")
+async updateUser(
+  @Query("id") id: string,
+  @Body() updateData: Partial<TCreateUserBodyFormDto>
+) {
+  const ID = Number(id);
+  if (isNaN(ID)) {
+    throw new Error("Id inválido");
   }
+
+  const existingUser = await this.liderUserRepository.findById(ID);
+  if (!existingUser) {
+    throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
+  }
+
+  const updatedUser = await this.liderUserRepository.update(ID, updateData);
+  return { statusCode: HttpStatus.OK, updatedUser };
+}
 
   @Post()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'user') 
+  @Roles("admin", "user")
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Body() body: TCreateUserBodyFormDto) {
     console.log("Dados recebidos no POST:", body);

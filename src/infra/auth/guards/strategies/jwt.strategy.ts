@@ -10,7 +10,7 @@ export const userPayloadSchema = z.object({
   sub: z.number(),
   name: z.string(),
   profile: z.object({
-    id: z.number(),
+    id: z.string(), // Mantém como string
     name: z.string(),
   }),  
   iat: z.number(),
@@ -29,8 +29,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: UserPayloadForm) {
-    console.log('Payload recebido:', payload); 
+  async validate(payload: any) {
+    console.log('Payload recebido:', payload);  
     return userPayloadSchema.parse(payload);
   }
 }
