@@ -22,15 +22,9 @@ model User {
 }
 
 model Profile {
-  id          String       @id @default(uuid()) @db.VarChar(50)
-  name        String       @unique @db.VarChar(50)
-  permissions Permission[] @relation("ProfileHasPermission")
-  users       User[]
-}
+  id    String @id @default(uuid()) @db.VarChar(50)
+  name  String @unique @db.VarChar(50)
+  users User[]
 
-model Permission {
-  id        Int     @id @default(autoincrement())
-  name      String  @db.VarChar(50)
-  profile   Profile @relation("ProfileHasPermission", fields: [profileId], references: [id])
-  profileId String  @db.VarChar(50) // Alterado para String
+  @@map("profiles")
 }
