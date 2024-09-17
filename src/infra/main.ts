@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import type { TEnv } from "./env/env";
+import { TEnv } from "./env/env";
 import { AppModule } from "./http/usuario/app.module";
 
 async function bootstrap() {

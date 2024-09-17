@@ -37,7 +37,7 @@ export class AppService {
       include: {
         profile: {
           select: {
-            name: true, // Retorna apenas o nome do perfil
+            name: true, 
           },
         },
       },
@@ -49,7 +49,7 @@ export class AppService {
       include: {
         profile: {
           select: {
-            name: true, // Retorna apenas o nome do perfil
+            name: true, 
           },
         },
       },
