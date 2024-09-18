@@ -18,7 +18,7 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
       | "user_intermediate"
       | "user_premium",
     status: "ativo" | "inativo",
-    company: "" | "lider" | "Quality"
+    organization: "" | "lider" | "Quality"
   ): Promise<void> {
     let profileRecord = await this.prisma.profile.findUnique({
       where: { name: profile },
@@ -37,7 +37,7 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
         password,
         channel,
         status,
-        company,
+        organization,
         profile: {
           connect: { id: profileRecord.id },
         },

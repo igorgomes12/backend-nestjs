@@ -41,7 +41,7 @@ export const CreateUserBodySchemaDto = z.object({
 
   status: z.enum(["ativo", "inativo"]).default("ativo"),
 
-  company: z.enum(["lider", "Quality"]).optional(),
+  organization: z.enum(["lider", "Quality"]).optional(),
 });
 
 export type TCreateUserBodyFormDto = z.infer<typeof CreateUserBodySchemaDto>;

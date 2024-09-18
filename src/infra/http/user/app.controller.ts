@@ -131,7 +131,7 @@ export class AppController {
     // Extraindo dados do corpo da requisição
     const {
       channel = 0,
-      company = "lider",
+      organization = "lider",
       email,
       name,
       password,
@@ -148,7 +148,7 @@ export class AppController {
         channel,
         profile,
         status,
-        company,
+        organization,
       });
     
       return {      

@@ -19,7 +19,7 @@ export namespace UserAddUseCase {
       | "user_intermediate"
       | "user_premium";
     status: "ativo" | "inativo";
-    company: "lider" | "Quality";
+    organization: "lider" | "Quality";
   };
 
   export type TOutput = {
@@ -28,7 +28,7 @@ export namespace UserAddUseCase {
     email: string;
     channel: number;
     status: string;
-    company: string;
+    organization: string;
     profileId: string;
   };
 
@@ -36,7 +36,7 @@ export namespace UserAddUseCase {
     constructor(private userRepository: LiderUserRepository) {}
 
     async execute(user: TInput): Promise<TOutput> {
-      const { email, name, password, channel, profile, status, company } =
+      const { email, name, password, channel, profile, status, organization } =
         user;
 
       // Validações básicas
@@ -59,7 +59,7 @@ export namespace UserAddUseCase {
         channel,
         profile,
         status,
-        company
+        organization
       );
 
       // Supondo que a função create retorna o ID do usuário criado
@@ -75,7 +75,7 @@ export namespace UserAddUseCase {
         email,
         channel,
         status,
-        company,
+        organization,
         profileId: profile,
       };
     }

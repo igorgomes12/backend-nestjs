@@ -20,7 +20,7 @@ export class AppService {
             connect: { name: parsedData.profile },
           },
           status: parsedData.status,
-          company: parsedData.company || "",
+          organization: parsedData.organization || "",
         },
       });
     } catch (error) {
