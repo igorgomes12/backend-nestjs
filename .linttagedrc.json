@@ -1,0 +1,10 @@
+{
+    "*.ts,css,md": [
+      "prettier --write --fix",
+      "eslint --fix"
+    ],
+    "*.ts": [
+      "eslint --cache --fix",
+      "yarn test:staged"
+    ]
+  }

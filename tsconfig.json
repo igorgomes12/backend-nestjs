@@ -1,25 +1,47 @@
 {
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "types": [
+    "vitest/globals"
+  ],
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "node16",
+    "target": "ES2022",
+    "lib": [
+      "ES2023"
+    ],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,    
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2022",
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
+    "rootDir": "./",
+    "baseUrl": "./src",
+    "outDir": "dist",
     "incremental": true,
-    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "strict": true,
-    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "alwaysStrict": false,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],     
+      "@infra/*": [
+        "infra/*"
+      ],      
+      "@common/*": [
+        "common/*"
+      ]  
+     
     }
   }
 }

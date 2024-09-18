@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import type { TEnv } from "../env/env";
+import  { TEnv } from "../database/env/env";
 import { JwtStrategy } from "./guards/strategies/jwt.strategy";
 
 

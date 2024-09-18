@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
-import type { TEnv } from "../../../env/env";
+import { TEnv } from "../../../database/env/env";
 
 // Atualize o esquema para refletir a estrutura correta
 export const userPayloadSchema = z.object({
