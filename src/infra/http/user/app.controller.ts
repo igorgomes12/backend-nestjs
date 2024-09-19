@@ -1,4 +1,3 @@
-
 import { Roles } from "@infra/middleware/decorator.rolues";
 import { RolesGuard } from "@infra/middleware/roles_guard";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
@@ -26,21 +25,6 @@ import {
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
-
-enum UserProfile {
-  User = "user",
-  Admin = "admin",
-  Suport = "suport",
-  Sellers = "sellers",
-  UserBasic = "user_basic",
-  UserIntermediate = "user_intermediate",
-  UserPremium = "user_premium",
-}
-
-enum UserStatus {
-  Ativo = "ativo",
-  Inativo = "inativo",
-}
 
 @Controller("/user")
 export class AppController {
@@ -140,7 +124,6 @@ export class AppController {
     } = body;
 
     try {
-      
       const user = await this.signupUseCase.execute({
         name,
         email,
@@ -150,18 +133,18 @@ export class AppController {
         status,
         organization,
       });
-    
-      return {      
+
+      return {
         data: user,
       };
-
-    } catch (error) {    
+    } catch (error) {
+      console.error("Error:", error);
       if (error instanceof ConflictException) {
         throw new ConflictException(error.message);
       }
       if (error instanceof ServerError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }      
+      }
       throw new HttpException(
         "Erro ao criar usuário",
         HttpStatus.INTERNAL_SERVER_ERROR

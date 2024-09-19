@@ -45,8 +45,23 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.prisma.user.findMany();
+  async findAll(): Promise<any[]> {
+    return await this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        channel: true,
+        status: true,
+        organization: true,
+        password: false,
+        profile: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   async delete(userId: number): Promise<void> {

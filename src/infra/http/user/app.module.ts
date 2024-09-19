@@ -1,4 +1,9 @@
-import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
+import {
+  Module,
+  MiddlewareConsumer,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_FILTER } from "@nestjs/core";
 import { AuthenticateController } from "../sign-up/authenticate_controller";
@@ -41,15 +46,17 @@ import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
     {
       provide: LiderUserRepository,
       useClass: PrismaLiderUserRepository,
-    },  
+    },
     {
       provide: UserAddUseCase.UseCase,
-      useFactory: (userRepository: LiderUserRepository) => new UserAddUseCase.UseCase(userRepository),
+      useFactory: (userRepository: LiderUserRepository) =>
+        new UserAddUseCase.UseCase(userRepository),
       inject: [LiderUserRepository],
     },
     {
       provide: LoginUseCase,
-      useFactory: (prisma: PrismaService, jwt: JwtService) => new LoginUseCase(prisma, jwt),
+      useFactory: (prisma: PrismaService, jwt: JwtService) =>
+        new LoginUseCase(prisma, jwt),
       inject: [PrismaService, JwtService],
     },
     {
@@ -62,11 +69,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(MiddlewareAuth)
-      .exclude(
-        { path: "login", method: RequestMethod.ALL } 
-      )
-      .forRoutes(
-        { path: "*", method: RequestMethod.ALL }
-      );
+      .exclude({ path: "login", method: RequestMethod.ALL })
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }
