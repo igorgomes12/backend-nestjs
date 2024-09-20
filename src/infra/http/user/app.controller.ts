@@ -1,5 +1,5 @@
-
 import { Roles } from "@infra/middleware/decorator.rolues";
+import { hash } from "bcryptjs";
 import { RolesGuard } from "@infra/middleware/roles_guard";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import {
@@ -9,38 +9,24 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ZodValidationPipe } from "../pipes/zod_validation_pipes";
+import { Response } from "express";
+import { ZodValidationPipe } from "../../middleware/pipes/zod_validation_pipes";
 import {
   CreateUserBodySchemaDto,
   TCreateUserBodyFormDto,
 } from "./dtos/create_user_body_dto";
 
+import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
-
-enum UserProfile {
-  User = "user",
-  Admin = "admin",
-  Suport = "suport",
-  Sellers = "sellers",
-  UserBasic = "user_basic",
-  UserIntermediate = "user_intermediate",
-  UserPremium = "user_premium",
-}
-
-enum UserStatus {
-  Ativo = "ativo",
-  Inativo = "inativo",
-}
 
 @Controller("/user")
 export class AppController {
@@ -53,82 +39,126 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(
-    "admin",
-    "user",
-    "suport",
-    "sellers",
-    "user_basic",
-    "user_intermediate",
-    "user_premium"
-  )
-  async getUsers(@Query() query: TCreateUserBodyFormDto) {
-    const users = await this.liderUserRepository.findAll();
-    const filteredUsers = users.filter((user) => {
-      return Object.keys(query).every((key) => {
-        return user[key] && user[key].toString().includes(query[key]);
-      });
-    });
-    if (filteredUsers.length === 0) {
-      throw new HttpException("Usuário inexistente", HttpStatus.NOT_FOUND);
-    }
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
 
-    return filteredUsers;
+    "PROGRAMMING_SUPERVISOR",
+    "SUPPORT",
+    "SUPPORT_SUPERVISOR"
+  )
+  async getUsers(@Res() res: Response, @Query() query: TCreateUserBodyFormDto) {
+    try {
+      const users = await this.liderUserRepository.findAll();
+
+      const filteredUsers = users.filter((user) => {
+        return Object.keys(query).every((key) => {
+          return user[key] && user[key].toString().includes(query[key]);
+        });
+      });
+
+      if (filteredUsers.length === 0) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: "Usuário inexistente" });
+      }
+
+      return res.status(HttpStatus.OK).json(filteredUsers);
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: "Erro ao buscar usuários" });
+    }
   }
 
   @Delete()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin")
-  async deleteUser(@Query("id") id: string) {
-    if (!id) {
-      throw new Error("ID é necessário");
-    }
-    const ID = Number(id);
-    if (isNaN(ID)) {
-      throw new Error("Id inválido");
-    }
+  @Roles("ADMIN", "PROGRAMMING")
+  async deleteUser(@Res() res: Response, @Query("id") id: string) {
+    try {
+      if (!id) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ error: "ID é necessário" });
+      }
 
-    const user = await this.liderUserRepository.findById(ID);
-    if (!user) {
-      throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
-    }
+      const ID = Number(id);
+      if (isNaN(ID)) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ error: "Id inválido" });
+      }
 
-    await this.liderUserRepository.delete(ID);
-    return {
-      statusCode: HttpStatus.OK,
-      message: `O usuário ${ID} foi deletado com sucesso!`,
-    };
+      const user = await this.liderUserRepository.findById(ID);
+      if (!user) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ error: "Usuário não encontrado" });
+      }
+
+      await this.liderUserRepository.delete(ID);
+
+      return res.status(HttpStatus.OK).json({
+        message: `O usuário ${ID} foi deletado com sucesso!`,
+      });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: "Erro ao deletar usuário" });
+    }
   }
 
   @Put()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin", "user")
+  @Roles("ADMIN", "PROGRAMMING")
   async updateUser(
+    @Res() res: Response,
     @Query("id") id: string,
     @Body() updateData: Partial<TCreateUserBodyFormDto>
   ) {
-    const ID = Number(id);
-    if (isNaN(ID)) {
-      throw new Error("Id inválido");
-    }
-    const existingUser = await this.liderUserRepository.findById(ID);
-    if (!existingUser) {
-      throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
-    }
-    const updatedUser = await this.liderUserRepository.update(ID, updateData);
-    return { statusCode: HttpStatus.OK, updatedUser };
-  }
+    try {
+      const ID = Number(id);
+      if (isNaN(ID)) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ error: "Id inválido" });
+      }
 
+      const existingUser = await this.liderUserRepository.findById(ID);
+      if (!existingUser) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ error: "Usuário não encontrado" });
+      }
+
+      if (updateData.password) {
+        const saltRounds = 10;
+        updateData.password = await hash(updateData.password, saltRounds);
+      }
+
+      const updatedUser = await this.liderUserRepository.update(ID, updateData);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Usuário atualizado com sucesso",
+        updatedUser,
+      });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: "Erro ao atualizar usuário" });
+    }
+  }
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("admin", "user")
+  @Roles("ADMIN", "PROGRAMMING")
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
-  async postUser(@Body() body: TCreateUserBodyFormDto) {
+  async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     console.log("Dados recebidos no POST:", body);
 
-    // Extraindo dados do corpo da requisição
     const {
       channel = 0,
       organization = "lider",
@@ -140,7 +170,6 @@ export class AppController {
     } = body;
 
     try {
-      
       const user = await this.signupUseCase.execute({
         name,
         email,
@@ -150,22 +179,24 @@ export class AppController {
         status,
         organization,
       });
-    
-      return {      
-        data: user,
-      };
 
-    } catch (error) {    
+      return res.status(HttpStatus.CREATED).json({
+        data: user,
+      });
+    } catch (error) {
       if (error instanceof ConflictException) {
-        throw new ConflictException(error.message);
+        return res.status(HttpStatus.CONFLICT).json({ error: error.message });
       }
+
       if (error instanceof ServerError) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }      
-      throw new HttpException(
-        "Erro ao criar usuário",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ error: error.message });
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: "Erro ao criar usuário",
+      });
     }
   }
 }

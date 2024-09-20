@@ -5,12 +5,11 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
 import { TEnv } from "../../../database/env/env";
 
-// Atualize o esquema para refletir a estrutura correta
 export const userPayloadSchema = z.object({
   sub: z.number(),
   name: z.string(),
   profile: z.object({
-    id: z.string(), // Mantém como string
+    id: z.number(), 
     name: z.string(),
   }),  
   iat: z.number(),

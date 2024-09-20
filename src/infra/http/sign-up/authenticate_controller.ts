@@ -1,7 +1,7 @@
 import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
 import { authenticateBodySchema, type TAuthenticateBodyForm } from "@common/domain/validator/zod_validator_fields";
 import { PrismaService } from "@infra/database/prisma/prisma.service";
-import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
 import {
   Body,
   Controller,

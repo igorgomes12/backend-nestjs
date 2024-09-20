@@ -5,7 +5,7 @@ import { AppModule } from "./infra/http/user/app.module";
 import { TEnv } from "./infra/database/env/env";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {cors: true});
 
   app.useGlobalPipes(new ValidationPipe({
     transform: true,

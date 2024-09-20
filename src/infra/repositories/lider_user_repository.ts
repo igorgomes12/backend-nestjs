@@ -7,7 +7,14 @@ export abstract class LiderUserRepository {
     email: string,
     password: string,
     channel: number,
-    profile: "admin"| "suport"| "sellers"| "user"| "user_basic"| "user_intermediate"| "user_premium",
+    profile: "ADMIN"|
+      "FINANCE"|
+      "REPRESENTATIVE"|
+      "REPRESENTATIVE_SUPERVISOR"|
+      "PROGRAMMING"|
+      "PROGRAMMING_SUPERVISOR"|
+      "SUPPORT"|
+      "SUPPORT_SUPERVISOR",
     status: "ativo" | "inativo",
     company: "lider" | "Quality" | "",
   ): Promise<void>;

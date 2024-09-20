@@ -10,155 +10,120 @@ generator client {
 
 model User {
   id           Int     @id @default(autoincrement())
-  name         String  @unique @db.VarChar(50)
-  email        String  @unique @db.VarChar(50)
+  name         String
+  email        String  @unique
   password     String
   channel      Int     @default(1)
   status       String  @default("active")
   organization String?
 
-  profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String
+  profile   Profile? @relation("user-to-profiles", fields: [profileId], references: [id])
+  profileId Int
 
   @@map("users")
 }
 
 model Profile {
-  id   String @id @default(uuid()) @db.VarChar(50)
-  name String @unique @db.VarChar(50)
+  id   Int    @id @default(autoincrement())
+  name String @unique
 
-  users User[]
+  user User[] @relation("user-to-profiles")
 
   @@map("profiles")
 }
 
 model Client {
-  id                    Int      @id @default(autoincrement())
-  createdAt             DateTime @default(now()) @map("created_at")
-  corporate         String   @unique @db.VarChar(100)
-  fantasy             String   @unique @db.VarChar(100) 
-  phone                 String   @unique @db.VarChar(14)
-  representative        String   @unique @db.VarChar(50)
-  unit                  String
-  system                String
-  establishmentType     String
-  cpf_cnpj               String?  @db.VarChar(20)
-  stateRegistration     String   @db.VarChar(20)
-  municipalRegistration String?  @db.VarChar(20)
-  ruralRegistration     String?  @db.VarChar(20)
-  notes                 String?
-  status                String
-  companyId             Int      @default(1)
-  representativeId      Int?
-  ownerId               Int?
-
-  addressId     Int?
-  contactId     Int?
-  contabilityId Int?
-  address       Address?     @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  contact       Contact?     @relation(fields: [contactId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  contability   Contability? @relation(fields: [contabilityId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  organization      Organization    @relation(fields: [organizationId], references: [id])
-  representativeRel Representative? @relation(fields: [representativeId], references: [id])
-  owner             Owner?          @relation(fields: [ownerId], references: [id])
-  organizationId    Int
-
-  @@map("clients")
-}
-
-enum contactType {
-  Telefone
-  Celular
-  Email
-  WhatsApp
-
-  Facebook
-  Instagram
-  LinkedIn
-  Youtube
-  Twitter
-}
-
-model Contact {
-  id    Int         @id @default(autoincrement())
-  name  String      @unique @db.VarChar(50)
-  phone String      @unique @db.VarChar(14)
-  email String      @unique @db.VarChar(50)
-  type  contactType
-
-  clients Client[]
-
-  @@map("contacts")
-}
-
-model Contability {
-  id             Int    @id @default(autoincrement())
-  codContability Int
-  name           String @unique @db.VarChar(50)
-  phone          String @unique @db.VarChar(14)
-  email          String
-  contact        String
-  crc            String
-  cpf_cnpj       String @unique @db.VarChar(14)
-  organization   Int
-
-  clients Client[]
-
-  @@map("contabilities")
+  id                     Int          @id @default(autoincrement())
+  identifier             String       @default(uuid())
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  deletedAt              DateTime?
+  corporate_name         String
+  fantasy_name           String
+  contacts               Contact[]    @relation("ClientToContacts")
+  cpf_cnpj               String
+  state_registration     String
+  municipal_registration String?
+  rural_registration     String?
+  address                Address[]    @relation("ClientToAddress")
+  accounting             Accounting[] @relation("ClientToAccounting")
+  owner                  Owner[]      @relation("ClientToOwner")
 }
 
 model Address {
+  id                Int     @id @default(autoincrement())
+  identifier        String  @default(uuid())
+  street            String
+  complement        String?
+  postal_code       String
+  number            String
+  neighborhood      String
+  municipality_id   Int
+  municipality_name String
+  state_id          Int
+  state             String
+  country_id        Int
+  region_id         Int
+  description       String?
+  main              Boolean
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  client   Client @relation("ClientToAddress", fields: [clientId], references: [id])
+  clientId Int
+}
+
+model Accounting {
+  accounting_id         Int     @id @default(autoincrement())
+  observation           String?
+  establishment_type_id Int
+  taxation_type_id      Int?
+  status                String
+  company_id            Int     @default(1)
+  representative_id     Int?
+  owner_id              Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  Client    Client?   @relation("ClientToAccounting", fields: [clientId], references: [id])
+  clientId  Int
+}
+
+enum Type {
+  TELEFONE
+  CELULAR
+  EMAIL
+  WHATSAPP
+}
+
+model Contact {
   id           Int     @id @default(autoincrement())
-  street       String? @db.VarChar(60)
-  number       String? @db.VarChar(60)
-  complement   String? @db.VarChar(60)
-  neighborhood String? @db.VarChar(60)
-  city         String? @db.VarChar(60)
-  state        String? @db.VarChar(2)
-  postalCode   String? @db.VarChar(10)
-  isActive     String? @db.VarChar(1)
+  description  String
+  contact      String
+  type         Type    @default(CELULAR)
+  main_account Boolean
 
-  organizations Organization[]
-  clients       Client[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  @@map("addresses")
-}
-
-model Organization {
-  id            Int     @id @default(autoincrement())
-  codUnit       Int
-  name          String  @unique @db.VarChar(50)
-  corporate     String
-  cpf_cnpj      String  @unique @db.VarChar(14)
-  webServiceKey String? @db.VarChar(1)
-  phone         String? @db.VarChar(15)
-
-  addressId Int?
-  address   Address? @relation(fields: [addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Client    Client[]
-
-  @@map("organizations")
-}
-
-model Representative {
-  id    Int    @id @default(autoincrement())
-  name  String @db.VarChar(50)
-  email String @unique @db.VarChar(50)
-  phone String @unique @db.VarChar(14)
-
-  clients Client[]
-
-  @@map("representatives")
+  client   Client @relation("ClientToContacts", fields: [clientId], references: [id])
+  clientId Int
 }
 
 model Owner {
-  id       Int      @id @default(autoincrement())
-  name     String   @db.VarChar(60)
-  cpf_cnpj String   @db.VarChar(15)
-  birthday DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  cpf_cnpj   String
+  birth_date DateTime
 
-  clients Client[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  @@map("owners")
+  Client   Client? @relation("ClientToOwner", fields: [clientId], references: [id])
+  clientId Int
 }

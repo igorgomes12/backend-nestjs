@@ -1,5 +1,6 @@
-import { PrismaClient, User, Prisma } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { LiderUserRepository } from "../lider_user_repository";
+
 
 export class PrismaLiderUserRepository extends LiderUserRepository {
   protected prisma = new PrismaClient();
@@ -10,13 +11,14 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     password: string,
     channel: number,
     profile:
-      | "admin"
-      | "suport"
-      | "sellers"
-      | "user"
-      | "user_basic"
-      | "user_intermediate"
-      | "user_premium",
+      "ADMIN"|
+      "FINANCE"|
+      "REPRESENTATIVE"|
+      "REPRESENTATIVE_SUPERVISOR"|
+      "PROGRAMMING"|
+      "PROGRAMMING_SUPERVISOR"|
+      "SUPPORT"|
+      "SUPPORT_SUPERVISOR",
     status: "ativo" | "inativo",
     organization: "" | "lider" | "Quality"
   ): Promise<void> {
@@ -45,8 +47,24 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.prisma.user.findMany();
+  async findAll(): Promise<any[]> {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        channel: true,
+        status: true,
+        organization: true,
+        profile: {
+          select: {    
+            id: true,    
+            name: true,
+          },
+        },
+        password: false,  // Não retorna o campo password
+      },
+    });
   }
 
   async delete(userId: number): Promise<void> {
@@ -91,7 +109,7 @@ export class PrismaLiderUserRepository extends LiderUserRepository {
   }
 
   async findByName(name: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.user.findFirst({
       where: { name },
     });
   }
