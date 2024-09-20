@@ -1,0 +1,59 @@
+{
+	"corporate_name": "Empresa Exemplo Ltda",
+	"fantasy_name": "Exemplo",
+	"cpf_cnpj": "12345678000199",
+	"state_registration": "123456789",
+	"municipal_registration": "987654321",
+	"rural_registration": null,
+	"contacts": [
+		{
+			"description": "Contato principal",
+			"contact": "contato@exemplo.com",
+			"type": "EMAIL",
+			"main_account": true
+		},
+		{
+			"description": "Telefone principal",
+			"contact": "+5511999999999",
+			"type": "TELEFONE",
+			"main_account": false
+		}
+	],
+	"address": [
+		{
+			"street": "Rua Exemplo",
+			"complement": "Apto 101",
+			"postal_code": "12345678",
+			"number": "100",
+			"neighborhood": "Centro",
+			"municipality_id": 1,
+			"municipality_name": "São Paulo",
+			"state_id": 1,
+			"state": "SP",
+			"country_id": 1,
+			"region_id": 1,
+			"description": "Endereço principal",
+			"main": true
+		}
+	],
+	"accounting": [
+		{
+			"observation": "Cliente isento de impostos",
+			"establishment_type_id": 1,
+			"taxation_type_id": 2,
+			"status": "ACTIVE",
+			"company_id": 1,
+			"representative_id": null,
+			"owner_id": null
+		}
+	],
+	"owner": [
+		{
+			"name": "João da Silva",
+			"cpf_cnpj": "12345678901",
+			"birth_date": "1980-05-15"
+		}
+	]
+}
+
+
