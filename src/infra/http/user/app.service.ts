@@ -1,7 +1,14 @@
-import { Injectable, ConflictException, InternalServerErrorException } from "@nestjs/common";
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "../../database/prisma/prisma.service";
-import { CreateUserBodySchemaDto, type TCreateUserBodyFormDto } from "./dtos/create_user_body_dto";
+import {
+  CreateUserBodySchemaDto,
+  type TCreateUserBodyFormDto,
+} from "./dtos/create_user_body_dto";
 
 @Injectable()
 export class AppService {
@@ -24,7 +31,10 @@ export class AppService {
         },
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
         throw new ConflictException("O e-mail já está em uso.");
       }
       throw new InternalServerErrorException("Erro ao criar usuário.");
@@ -37,7 +47,7 @@ export class AppService {
       include: {
         profile: {
           select: {
-            name: true, 
+            name: true,
           },
         },
       },
@@ -49,7 +59,7 @@ export class AppService {
       include: {
         profile: {
           select: {
-            name: true, 
+            name: true,
           },
         },
       },

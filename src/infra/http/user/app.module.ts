@@ -42,15 +42,17 @@ import { ClientModule } from "../client/client.module";
     {
       provide: LiderUserRepository,
       useClass: PrismaLiderUserRepository,
-    },  
+    },
     {
       provide: UserAddUseCase.UseCase,
-      useFactory: (userRepository: LiderUserRepository) => new UserAddUseCase.UseCase(userRepository),
+      useFactory: (userRepository: LiderUserRepository) =>
+        new UserAddUseCase.UseCase(userRepository),
       inject: [LiderUserRepository],
     },
     {
       provide: LoginUseCase,
-      useFactory: (prisma: PrismaService, jwt: JwtService) => new LoginUseCase(prisma, jwt),
+      useFactory: (prisma: PrismaService, jwt: JwtService) =>
+        new LoginUseCase(prisma, jwt),
       inject: [PrismaService, JwtService],
     },
     {
