@@ -1,13 +1,11 @@
 import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
-import { authenticateBodySchema, type TAuthenticateBodyForm } from "@common/domain/validator/zod_validator_fields";
+import {
+  authenticateBodySchema,
+  type TAuthenticateBodyForm,
+} from "@common/domain/validator/zod_validator_fields";
 import { PrismaService } from "@infra/database/prisma/prisma.service";
 import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
-import {
-  Body,
-  Controller,
-  Post,
-  UsePipes,
-} from "@nestjs/common";
+import { Body, Controller, Post, UsePipes } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 
 @Controller()
@@ -21,7 +19,7 @@ export class AuthenticateController {
     this.loginUseCase = new LoginUseCase(prisma, jwt);
   }
 
-  @Post('login')
+  @Post("login")
   @UsePipes(new ZodValidationPipe(authenticateBodySchema))
   async handle(@Body() body: TAuthenticateBodyForm) {
     const { email, password } = body;

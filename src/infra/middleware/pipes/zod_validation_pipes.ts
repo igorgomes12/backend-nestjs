@@ -1,28 +1,31 @@
-import { PipeTransform, BadRequestException } from "@nestjs/common";
-import { ZodError, ZodSchema } from "zod";
+import {
+  Logger,
+  NotAcceptableException,
+  type PipeTransform,
+} from "@nestjs/common";
+
+import type { ZodSchema } from "zod";
 
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
+  private logger = new Logger(ZodValidationPipe.name);
   transform(value: unknown) {
-    try {
-      const parsedValue = this.schema.parse(value);
-      return parsedValue;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        // Personalize as mensagens de erro
-        const detailedErrors = error.errors.map((err) => ({
-          path: err.path.join('.'),
-          message: err.message,
-        }));
-
-        throw new BadRequestException({
-          message: "A validação falhou. Verifique os dados inseridos!",
-          statusCode: 400,
-          errors: detailedErrors,
-        });
-      }
-      throw new BadRequestException("A validação falhou. Verifique os dados inseridos!!");
+    const parsed = this.schema.safeParse(value);
+    if (parsed.success === true) {
+      return parsed.data;
     }
+
+    this.logger.debug({
+      value,
+      error: parsed.error,
+    });
+
+    throw new NotAcceptableException({
+      message:
+        "Invalid input data. Please check the errors field for more details.",
+      code: "validation_error",
+      errors: parsed.error.flatten().fieldErrors,
+    });
   }
 }

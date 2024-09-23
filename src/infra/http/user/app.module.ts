@@ -9,7 +9,12 @@ import { PrismaService } from "@infra/database/prisma/prisma.service";
 import { MiddlewareAuth } from "@infra/middleware/middleware_auth.middleware";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import { PrismaLiderUserRepository } from "@infra/repositories/prisma/prisma_lider_user_repository";
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_FILTER } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
@@ -28,13 +33,9 @@ import { ClientModule } from "../client/client.module";
       isGlobal: true,
     }),
     AuthModule,
-    ClientModule
+    ClientModule,
   ],
-  controllers: [
-    AppController,
-    AuthenticateController,
- 
-  ],
+  controllers: [AppController, AuthenticateController],
   providers: [
     JwtStrategy,
     MiddlewareAuth,
@@ -65,11 +66,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(MiddlewareAuth)
-      .exclude(
-        { path: "login", method: RequestMethod.ALL } 
-      )
-      .forRoutes(
-        { path: "*", method: RequestMethod.ALL }
-      );      
+      .exclude({ path: "login", method: RequestMethod.ALL })
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

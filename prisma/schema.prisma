@@ -71,7 +71,7 @@ model Address {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  client   Client @relation("ClientToAddress", fields: [clientId], references: [id])
+  client   Client @relation("ClientToAddress", fields: [clientId], references: [id], onDelete: NoAction)
   clientId Int
 }
 
@@ -88,8 +88,9 @@ model Accounting {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  Client    Client?   @relation("ClientToAccounting", fields: [clientId], references: [id])
-  clientId  Int
+
+  Client   Client? @relation("ClientToAccounting", fields: [clientId], references: [id], onDelete: NoAction)
+  clientId Int
 }
 
 enum Type {
@@ -110,7 +111,7 @@ model Contact {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  client   Client @relation("ClientToContacts", fields: [clientId], references: [id])
+  client   Client @relation("ClientToContacts", fields: [clientId], references: [id], onDelete: NoAction)
   clientId Int
 }
 
@@ -124,6 +125,6 @@ model Owner {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  Client   Client? @relation("ClientToOwner", fields: [clientId], references: [id])
+  Client   Client? @relation("ClientToOwner", fields: [clientId], references: [id], onDelete: NoAction)
   clientId Int
 }

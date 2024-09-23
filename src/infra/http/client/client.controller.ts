@@ -8,17 +8,22 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   NotFoundException,
+  Param,
   Patch,
   Post,
   Query,
   Res,
-  UseGuards
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from "@nestjs/common";
 import { Response } from "express";
+import z from "zod";
 import { ClientService } from "./client.service";
-import type { TClient } from "./dto/schemas/zod_client.schema";
+import { ClientSchema, type TClient } from "./dto/schemas/zod_client.schema";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -56,7 +61,6 @@ export class ClientController {
       });
     }
   }
-
   @Get()
   @HttpCode(HttpStatus.OK)
   async getClient(@Res() res: Response, @Query() query: TClient) {
@@ -65,10 +69,9 @@ export class ClientController {
     if (contacts && contacts.length > 0) {
       this.clientService.validateContacts(contacts);
     }
+    const clients = await this.clientService.findAll();
 
-    const client = await this.clientService.findAll();
-
-    return res.status(HttpStatus.OK).json(client);
+    return res.status(HttpStatus.OK).json(clients);
   }
 
   @Get()
@@ -79,13 +82,13 @@ export class ClientController {
 
   @Patch()
   @HttpCode(HttpStatus.OK)
-  update(@Query("id") id: string, @Body() updateClientDto: any) {
-    return this.clientService.update(+id, updateClientDto);
+  async update(@Query("id") id: number, @Body() updateClientDto: TClient) {
+    return this.clientService.update(id, updateClientDto);
   }
 
   @Delete()
-  @HttpCode(HttpStatus.OK)
-  remove(@Query("id") id: string) {
-    return this.clientService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param("id") id: number) {
+    return this.clientService.remove(id);
   }
 }

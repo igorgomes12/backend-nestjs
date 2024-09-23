@@ -5,13 +5,15 @@ import { AppModule } from "./infra/http/user/app.module";
 import { TEnv } from "./infra/database/env/env";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {cors: true});
+  const app = await NestFactory.create(AppModule, { cors: true });
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,    
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    })
+  );
 
   const configService = app.get<ConfigService<TEnv, true>>(ConfigService);
   const port = configService.get("PORT", { infer: true });

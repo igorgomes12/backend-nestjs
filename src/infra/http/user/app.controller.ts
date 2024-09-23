@@ -43,7 +43,6 @@ export class AppController {
     "FINANCE",
     "REPRESENTATIVE",
     "REPRESENTATIVE_SUPERVISOR",
-
     "PROGRAMMING_SUPERVISOR",
     "SUPPORT",
     "SUPPORT_SUPERVISOR"
@@ -157,8 +156,6 @@ export class AppController {
   @Roles("ADMIN", "PROGRAMMING")
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
-    console.log("Dados recebidos no POST:", body);
-
     const {
       channel = 0,
       organization = "lider",
