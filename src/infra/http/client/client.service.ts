@@ -14,7 +14,6 @@ import z from "zod";
 @Injectable()
 export class ClientService {
   constructor(private readonly prisma: PrismaService) {}
-
   async findByEmail(email: string) {
     return this.prisma.client.findFirst({
       where: {
@@ -269,15 +268,14 @@ export class ClientService {
 
   async update(id: number, updateClientDto: TClient) {
     try {
-      // Adicionar clientId aos contatos e endereços antes da validação, se necessário
       updateClientDto.contacts = updateClientDto.contacts.map((contact) => ({
         ...contact,
-        clientId: id, // Adicione clientId aqui, se necessário
+        clientId: id,
       }));
 
       updateClientDto.address = updateClientDto.address.map((addr) => ({
         ...addr,
-        clientId: id, // Adicione clientId aqui, se necessário
+        clientId: id,
       }));
 
       const parsedClientData = ClientSchema.parse(updateClientDto);
