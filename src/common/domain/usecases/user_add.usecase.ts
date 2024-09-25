@@ -1,4 +1,3 @@
-
 import { ServerError } from "@common/errors/server.error";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import { ConflictException } from "@nestjs/common";
@@ -11,14 +10,14 @@ export namespace UserAddUseCase {
     password: string;
     channel: number;
     profile:
-     "ADMIN"|
-      "FINANCE"|
-      "REPRESENTATIVE"|
-      "REPRESENTATIVE_SUPERVISOR"|
-      "PROGRAMMING"|
-      "PROGRAMMING_SUPERVISOR"|
-      "SUPPORT"|
-      "SUPPORT_SUPERVISOR",
+      | "ADMIN"
+      | "FINANCE"
+      | "REPRESENTATIVE"
+      | "REPRESENTATIVE_SUPERVISOR"
+      | "PROGRAMMING"
+      | "PROGRAMMING_SUPERVISOR"
+      | "SUPPORT"
+      | "SUPPORT_SUPERVISOR";
     status: "ativo" | "inativo";
     organization: "lider" | "Quality";
   };

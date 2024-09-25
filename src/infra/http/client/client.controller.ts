@@ -1,5 +1,6 @@
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { Roles } from "@infra/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
 import { RolesGuard } from "@infra/middleware/roles_guard";
 import {
   BadRequestException,
@@ -13,9 +14,10 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from "@nestjs/common";
 import { ClientService } from "./client.service";
-import { type TClient } from "./dto/schemas/zod_client.schema";
+import { ClientSchema, type TClient } from "./dto/schemas/zod_client.schema";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,6 +34,7 @@ export class ClientController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
+  @UsePipes(new ZodValidationPipe(ClientSchema))
   async create(@Body() body: TClient) {
     const client = await this.clientService.create(body);
     return {
@@ -67,6 +70,16 @@ export class ClientController {
   }
 
   @Patch()
+  @HttpCode(HttpStatus.OK)
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  @UsePipes(new ZodValidationPipe(ClientSchema))
   async update(@Query("id") id: string, @Body() updateClientDto: TClient) {
     const clientId = Number(id);
     if (isNaN(clientId)) {
@@ -85,6 +98,7 @@ export class ClientController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
+  @UsePipes(new ZodValidationPipe(ClientSchema))
   async remove(@Query("id") id: number) {
     await this.clientService.remove(id);
     return { message: "Removido com sucesso" };

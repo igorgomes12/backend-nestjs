@@ -14,9 +14,10 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  ValidationPipe,
 } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_FILTER } from "@nestjs/core";
+import { APP_FILTER, APP_PIPE } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { HttpModule } from "../http.module";
 import { AuthenticateController } from "../sign-up/authenticate_controller";
@@ -56,10 +57,17 @@ import { ClientModule } from "../client/client.module";
         new LoginUseCase(prisma, jwt),
       inject: [PrismaService, JwtService],
     },
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionFilter,
+    // },
+    // {
+    //   provide: APP_PIPE,
+    //   useValue: new ValidationPipe({
+    //     whitelist: true,
+    //     forbidNonWhitelisted: true,
+    //   }),
+    // },
   ],
 })
 export class AppModule implements NestModule {
