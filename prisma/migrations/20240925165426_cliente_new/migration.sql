@@ -52,6 +52,8 @@ CREATE TABLE "Client" (
     "state_registration" TEXT NOT NULL,
     "municipal_registration" TEXT,
     "rural_registration" TEXT,
+    "name_account" TEXT,
+    "id_account" INTEGER NOT NULL,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
@@ -85,10 +87,10 @@ CREATE TABLE "Address" (
 CREATE TABLE "Accounting" (
     "accounting_id" SERIAL NOT NULL,
     "observation" TEXT,
-    "establishment_type_id" INTEGER NOT NULL,
+    "establishment_type_id" INTEGER,
     "taxation_type_id" INTEGER,
-    "status" TEXT NOT NULL,
-    "company_id" INTEGER NOT NULL DEFAULT 1,
+    "status" TEXT,
+    "company_id" INTEGER DEFAULT 1,
     "representative_id" INTEGER,
     "owner_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -139,9 +141,6 @@ ALTER TABLE "users" ADD CONSTRAINT "users_profileId_fkey" FOREIGN KEY ("profileI
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Accounting" ADD CONSTRAINT "Accounting_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Contact" ADD CONSTRAINT "Contact_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;

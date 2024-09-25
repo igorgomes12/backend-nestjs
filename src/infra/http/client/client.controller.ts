@@ -79,7 +79,6 @@ export class ClientController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(ClientSchema))
   async update(@Query("id") id: string, @Body() updateClientDto: TClient) {
     const clientId = Number(id);
     if (isNaN(clientId)) {

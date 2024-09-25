@@ -24,24 +24,24 @@ export type TClientProps = {
 export class Client {
   private constructor(private props: TClientProps) {}
 
-  public static create(client: TClient) {
-    return new Client({
-      id: Math.floor(Math.random() * 1000000),
-      identifier: client.identifier,
-      createdAt: client.createdAt,
-      updatedAt: client.updatedAt,
-      deletedAt: client.deletedAt,
-      corporate_name: client.corporate_name,
-      fantasy_name: client.fantasy_name,
-      contacts: client.contacts,
-      cpf_cnpj: client.cpf_cnpj,
-      state_registration: client.state_registration,
-      municipal_registration: client.municipal_registration,
-      rural_registration: client.rural_registration,
-      address: client.address,
-      accounting: client.accounting,
-      owner: client.owner,
-    });
+  public static create(client: any) {
+    // return new Client({
+    //   id: Math.floor(Math.random() * 1000000),
+    //   identifier: client.identifier,
+    //   createdAt: client.createdAt,
+    //   updatedAt: client.updatedAt,
+    //   deletedAt: client.deletedAt,
+    //   corporate_name: client.corporate_name,
+    //   fantasy_name: client.fantasy_name,
+    //   contacts: client.contacts,
+    //   cpf_cnpj: client.cpf_cnpj,
+    //   state_registration: client.state_registration,
+    //   municipal_registration: client.municipal_registration,
+    //   rural_registration: client.rural_registration,
+    //   address: client.address,
+    //   // accounting: client.accounting,
+    //   owner: client.owner,
+    // });
   }
 
   public get id() {

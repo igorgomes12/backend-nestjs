@@ -1,6 +1,6 @@
 import { formatCpfOrCnpj } from "@infra/utils/regex/cpf-cnpj";
 import { z } from "zod";
-import { AccountingSchema, AddressSchema, ContactSchema, OwnerSchema } from ".";
+import { AddressSchema, ContactSchema, OwnerSchema } from ".";
 
 export const ClientSchema = z.object({
   id: z
@@ -10,14 +10,14 @@ export const ClientSchema = z.object({
       message:
         "O campo 'id' é obrigatório e deve ser um número inteiro positivo.",
     })
-    .optional(), // Torne opcional para criação
+    .optional(),
 
   identifier: z
     .string()
     .uuid({
       message: "O campo 'identifier' deve ser um UUID válido.",
     })
-    .optional(), // Torne opcional para criação
+    .optional(),
 
   createdAt: z
     .string()
@@ -25,7 +25,7 @@ export const ClientSchema = z.object({
       message:
         "O campo 'createdAt' deve ser uma data válida no formato ISO 8601.",
     })
-    .optional(), // Torne opcional para criação
+    .optional(),
 
   updatedAt: z
     .string()
@@ -33,9 +33,9 @@ export const ClientSchema = z.object({
       message:
         "O campo 'updatedAt' deve ser uma data válida no formato ISO 8601.",
     })
-    .optional(), // Torne opcional para criação
+    .optional(),
 
-  deletedAt: z.string().datetime().nullable().optional(), // Torne opcional para criação
+  deletedAt: z.string().datetime().nullable().optional(),
 
   corporate_name: z.string().nonempty("Corporate name is required"),
 
@@ -68,14 +68,8 @@ export const ClientSchema = z.object({
     .min(1, { message: "É necessário fornecer pelo menos um endereço." })
     .max(10, { message: "O número máximo de endereços permitidos é 10." }),
 
-  accounting: z
-    .array(AccountingSchema)
-    .min(1, {
-      message: "É necessário fornecer pelo menos uma informação contábil.",
-    })
-    .max(1, {
-      message: "O número máximo de informações contábeis permitidas é 1.",
-    }),
+  name_account: z.string(),
+  id_account: z.number(),
 
   owner: z
     .array(OwnerSchema)

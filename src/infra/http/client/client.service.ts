@@ -4,11 +4,12 @@ import {
   type TClient,
 } from "@infra/http/client/dto/schemas/zod_client.schema";
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
+  Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import z from "zod";
 
 @Injectable()
@@ -173,17 +174,6 @@ export class ClientService {
           main: addr.main,
         })),
       },
-      accounting: {
-        create: createClientDto.accounting.map((acc) => ({
-          observation: acc.observation || null,
-          establishment_type_id: acc.establishment_type_id,
-          taxation_type_id: acc.taxation_type_id || null,
-          status: acc.status,
-          company_id: acc.company_id || 1,
-          representative_id: acc.representative_id || null,
-          owner_id: acc.owner_id || null,
-        })),
-      },
       owner: {
         create: createClientDto.owner.map((owner) => ({
           name: owner.name,
@@ -191,6 +181,8 @@ export class ClientService {
           birth_date: new Date(owner.birth_date),
         })),
       },
+      name_account: createClientDto.name_account,
+      id_account: createClientDto.id_account,
     };
 
     try {
@@ -199,7 +191,6 @@ export class ClientService {
         include: {
           owner: true,
           address: true,
-          accounting: true,
           contacts: true,
         },
       });
@@ -228,10 +219,13 @@ export class ClientService {
           corporate_name: { contains: corporate_name, mode: "insensitive" },
         }),
       },
+      orderBy: {
+        id: "asc",
+      },
+      take: 100,
       include: {
         contacts: true,
         address: true,
-        accounting: true,
         owner: true,
       },
     });
@@ -247,10 +241,12 @@ export class ClientService {
 
   async findAll() {
     return this.prisma.client.findMany({
+      orderBy: {
+        id: "asc",
+      },
       include: {
         owner: true,
         address: true,
-        accounting: true,
         contacts: true,
       },
     });
@@ -266,29 +262,49 @@ export class ClientService {
     return client;
   }
 
-  async update(id: number, updateClientDto: TClient) {
+  async update(id: number, updateClientDto: Partial<TClient>) {
     try {
-      updateClientDto.contacts = updateClientDto.contacts.map((contact) => ({
-        ...contact,
-        clientId: id,
-      }));
+      // Preparar dados do cliente para atualização
+      const clientData: any = {};
 
-      updateClientDto.address = updateClientDto.address.map((addr) => ({
-        ...addr,
-        clientId: id,
-      }));
+      // Atualizar apenas os campos presentes no DTO
+      if (updateClientDto.corporate_name !== undefined) {
+        clientData.corporate_name = updateClientDto.corporate_name;
+      }
+      if (updateClientDto.fantasy_name !== undefined) {
+        clientData.fantasy_name = updateClientDto.fantasy_name;
+      }
+      if (updateClientDto.cpf_cnpj !== undefined) {
+        // Validação de CPF/CNPJ se necessário
+        const cpfCnpj = updateClientDto.cpf_cnpj.replace(/\D/g, "");
+        if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
+          throw new BadRequestException(
+            "O CPF deve ter 11 dígitos e o CNPJ deve ter 14 dígitos."
+          );
+        }
+        clientData.cpf_cnpj = updateClientDto.cpf_cnpj;
+      }
+      if (updateClientDto.state_registration !== undefined) {
+        clientData.state_registration = updateClientDto.state_registration;
+      }
+      if (updateClientDto.municipal_registration !== undefined) {
+        clientData.municipal_registration =
+          updateClientDto.municipal_registration;
+      }
+      if (updateClientDto.rural_registration !== undefined) {
+        clientData.rural_registration = updateClientDto.rural_registration;
+      }
+      if (updateClientDto.name_account !== undefined) {
+        clientData.name_account = updateClientDto.name_account;
+      }
+      if (updateClientDto.id_account !== undefined) {
+        clientData.id_account = updateClientDto.id_account;
+      }
 
-      const parsedClientData = ClientSchema.parse(updateClientDto);
-
-      const clientData = {
-        corporate_name: parsedClientData.corporate_name,
-        fantasy_name: parsedClientData.fantasy_name,
-        cpf_cnpj: parsedClientData.cpf_cnpj,
-        state_registration: parsedClientData.state_registration,
-        municipal_registration: parsedClientData.municipal_registration || null,
-        rural_registration: parsedClientData.rural_registration || null,
-        contacts: {
-          upsert: parsedClientData.contacts.map((contact) => ({
+      // Atualizar contatos e endereços se fornecidos
+      if (updateClientDto.contacts) {
+        clientData.contacts = {
+          upsert: updateClientDto.contacts.map((contact) => ({
             where: { id: contact.id || 0 },
             create: {
               description: contact.description,
@@ -303,9 +319,12 @@ export class ClientService {
               main_account: contact.main_account,
             },
           })),
-        },
-        address: {
-          upsert: parsedClientData.address.map((addr) => ({
+        };
+      }
+
+      if (updateClientDto.address) {
+        clientData.address = {
+          upsert: updateClientDto.address.map((addr) => ({
             where: { id: addr.id || 0 },
             create: {
               street: addr.street,
@@ -338,39 +357,16 @@ export class ClientService {
               main: addr.main,
             },
           })),
-        },
-        accounting: {
-          upsert: parsedClientData.accounting.map((acc) => ({
-            where: { accounting_id: acc.accounting_id || 0 },
-            create: {
-              observation: acc.observation || null,
-              establishment_type_id: acc.establishment_type_id,
-              taxation_type_id: acc.taxation_type_id || null,
-              status: acc.status,
-              company_id: acc.company_id || 1,
-              representative_id: acc.representative_id || null,
-              owner_id: acc.owner_id || null,
-            },
-            update: {
-              observation: acc.observation || null,
-              establishment_type_id: acc.establishment_type_id,
-              taxation_type_id: acc.taxation_type_id || null,
-              status: acc.status,
-              company_id: acc.company_id || 1,
-              representative_id: acc.representative_id || null,
-              owner_id: acc.owner_id || null,
-            },
-          })),
-        },
-      };
+        };
+      }
 
+      // Realizar a atualização do cliente
       return await this.prisma.client.update({
         where: { id },
         data: clientData,
         include: {
           owner: true,
           address: true,
-          accounting: true,
           contacts: true,
         },
       });
@@ -386,6 +382,15 @@ export class ClientService {
         );
       }
 
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Tratar erros conhecidos do Prisma
+        if (error.code === "P2025") {
+          throw new NotFoundException(
+            `Cliente com ID ${id} não foi encontrado.`
+          );
+        }
+      }
+
       throw new BadRequestException(
         "Erro ao tentar atualizar o cliente. Verifique os dados fornecidos."
       );
@@ -399,7 +404,6 @@ export class ClientService {
         include: {
           contacts: true,
           address: true,
-          accounting: true,
           owner: true,
         },
       });

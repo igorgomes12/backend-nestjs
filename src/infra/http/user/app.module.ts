@@ -1,7 +1,6 @@
 import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
 import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
 import { AuthModule } from "@infra/auth/auth.module";
-import { HttpExceptionFilter } from "@infra/auth/guards/httpException";
 import { JwtStrategy } from "@infra/auth/guards/strategies/jwt.strategy";
 import { envSchema } from "@infra/database/env/env";
 import { PrismaModule } from "@infra/database/prisma.module";
@@ -14,16 +13,14 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  ValidationPipe,
 } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_FILTER, APP_PIPE } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
+import { ClientModule } from "../client/client.module";
 import { HttpModule } from "../http.module";
 import { AuthenticateController } from "../sign-up/authenticate_controller";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { ClientModule } from "../client/client.module";
 
 @Module({
   imports: [
@@ -57,17 +54,6 @@ import { ClientModule } from "../client/client.module";
         new LoginUseCase(prisma, jwt),
       inject: [PrismaService, JwtService],
     },
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: HttpExceptionFilter,
-    // },
-    // {
-    //   provide: APP_PIPE,
-    //   useValue: new ValidationPipe({
-    //     whitelist: true,
-    //     forbidNonWhitelisted: true,
-    //   }),
-    // },
   ],
 })
 export class AppModule implements NestModule {

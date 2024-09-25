@@ -33,21 +33,22 @@ model Profile {
 }
 
 model Client {
-  id                     Int          @id @default(autoincrement())
-  identifier             String       @default(uuid())
-  createdAt              DateTime     @default(now())
-  updatedAt              DateTime     @updatedAt
+  id                     Int       @id @default(autoincrement())
+  identifier             String    @default(uuid())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
   deletedAt              DateTime?
   corporate_name         String
   fantasy_name           String
-  contacts               Contact[]    @relation("ClientToContacts")
+  contacts               Contact[] @relation("ClientToContacts")
   cpf_cnpj               String
   state_registration     String
   municipal_registration String?
   rural_registration     String?
-  address                Address[]    @relation("ClientToAddress")
-  accounting             Accounting[] @relation("ClientToAccounting")
-  owner                  Owner[]      @relation("ClientToOwner")
+  name_account           String?
+  id_account             Int
+  address                Address[] @relation("ClientToAddress")
+  owner                  Owner[]   @relation("ClientToOwner")
 }
 
 model Address {
@@ -78,19 +79,17 @@ model Address {
 model Accounting {
   accounting_id         Int     @id @default(autoincrement())
   observation           String?
-  establishment_type_id Int
+  establishment_type_id Int?
   taxation_type_id      Int?
-  status                String
-  company_id            Int     @default(1)
+  status                String?
+  company_id            Int?    @default(1)
   representative_id     Int?
   owner_id              Int?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-
-  Client   Client? @relation("ClientToAccounting", fields: [clientId], references: [id], onDelete: NoAction)
-  clientId Int
+  clientId  Int
 }
 
 enum Type {
