@@ -1,21 +1,21 @@
 /*
   Warnings:
 
-  - You are about to drop the `profiles` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `Profile` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
 
 */
 -- CreateEnum
 CREATE TYPE "Type" AS ENUM ('TELEFONE', 'CELULAR', 'EMAIL', 'WHATSAPP');
 
 -- DropForeignKey
-ALTER TABLE "public"."users" DROP CONSTRAINT "users_profileId_fkey";
+ALTER TABLE "public"."User" DROP CONSTRAINT "User_profileId_fkey";
 
 -- DropTable
-DROP TABLE "public"."profiles";
+DROP TABLE "public"."Profile";
 
 -- DropTable
-DROP TABLE "public"."users";
+DROP TABLE "public"."User";
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -54,6 +54,7 @@ CREATE TABLE "Client" (
     "rural_registration" TEXT,
     "name_account" TEXT,
     "id_account" INTEGER NOT NULL,
+    "establishment_typeId" INTEGER NOT NULL,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
@@ -130,14 +131,32 @@ CREATE TABLE "Owner" (
     CONSTRAINT "Owner_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Establishment_type" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN NOT NULL,
+
+    CONSTRAINT "Establishment_type_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "profiles_name_key" ON "profiles"("name");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Client_establishment_typeId_key" ON "Client"("establishment_typeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Establishment_type_name_key" ON "Establishment_type"("name");
+
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Client" ADD CONSTRAINT "Client_establishment_typeId_fkey" FOREIGN KEY ("establishment_typeId") REFERENCES "Establishment_type"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;

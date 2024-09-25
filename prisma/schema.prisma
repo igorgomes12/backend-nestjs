@@ -47,8 +47,11 @@ model Client {
   rural_registration     String?
   name_account           String?
   id_account             Int
-  address                Address[] @relation("ClientToAddress")
-  owner                  Owner[]   @relation("ClientToOwner")
+  establishment_typeId   Int       @unique
+
+  address            Address[]          @relation("ClientToAddress")
+  owner              Owner[]            @relation("ClientToOwner")
+  establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
 }
 
 model Address {
@@ -126,4 +129,12 @@ model Owner {
 
   Client   Client? @relation("ClientToOwner", fields: [clientId], references: [id], onDelete: NoAction)
   clientId Int
+}
+
+model Establishment_type {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  status Boolean
+
+  client Client?
 }

@@ -1,4 +1,4 @@
-import { PrismaService } from "@infra/database/prisma/prisma.service";
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ClientController } from "./client.controller";
 import { ClientService } from "./client.service";

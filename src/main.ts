@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./infra/http/user/app.module";
-import { TEnv } from "./infra/database/env/env";
+import { TEnv } from "./infra/auth/database/env/env";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });

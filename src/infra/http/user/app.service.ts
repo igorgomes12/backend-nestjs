@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { PrismaService } from "../../database/prisma/prisma.service";
+import { PrismaService } from "../../auth/database/prisma/prisma.service";
 import {
   CreateUserBodySchemaDto,
   type TCreateUserBodyFormDto,

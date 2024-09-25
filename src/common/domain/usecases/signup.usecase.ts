@@ -1,4 +1,4 @@
-import { PrismaService } from "@infra/database/prisma/prisma.service";
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcryptjs";
@@ -29,8 +29,8 @@ export class LoginUseCase {
 
     // Gerar o token JWT com o payload adequado
     const payload = {
-      sub: user.id,       // ID do usuário
-      name: user.name,    // Nome do usuário
+      sub: user.id, // ID do usuário
+      name: user.name, // Nome do usuário
       profile: user.profile, // Perfil do usuário (caso seja um objeto, verifique o que precisa ser incluído)
     };
 

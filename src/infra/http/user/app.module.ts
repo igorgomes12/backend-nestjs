@@ -2,9 +2,9 @@ import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
 import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
 import { AuthModule } from "@infra/auth/auth.module";
 import { JwtStrategy } from "@infra/auth/guards/strategies/jwt.strategy";
-import { envSchema } from "@infra/database/env/env";
-import { PrismaModule } from "@infra/database/prisma.module";
-import { PrismaService } from "@infra/database/prisma/prisma.service";
+import { envSchema } from "@infra/auth/database/env/env";
+import { PrismaModule } from "@infra/auth/database/prisma.module";
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { MiddlewareAuth } from "@infra/middleware/middleware_auth.middleware";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import { PrismaLiderUserRepository } from "@infra/repositories/prisma/prisma_lider_user_repository";
@@ -21,6 +21,7 @@ import { HttpModule } from "../http.module";
 import { AuthenticateController } from "../sign-up/authenticate_controller";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { EstablishmentModule } from "../establishment/establishment.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AppService } from "./app.service";
     }),
     AuthModule,
     ClientModule,
+    EstablishmentModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [

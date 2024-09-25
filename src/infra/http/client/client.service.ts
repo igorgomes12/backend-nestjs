@@ -1,8 +1,5 @@
-import { PrismaService } from "@infra/database/prisma/prisma.service";
-import {
-  ClientSchema,
-  type TClient,
-} from "@infra/http/client/dto/schemas/zod_client.schema";
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
+import { type TClient } from "@infra/http/client/dto/schemas/zod_client.schema";
 import {
   BadRequestException,
   Injectable,
@@ -183,6 +180,7 @@ export class ClientService {
       },
       name_account: createClientDto.name_account,
       id_account: createClientDto.id_account,
+      establishment_typeId: createClientDto.establishment_typeId,
     };
 
     try {
