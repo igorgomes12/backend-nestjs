@@ -81,6 +81,12 @@ export class ClientService {
       );
     }
 
+    if (clientDto.corporate_name === clientDto.fantasy_name) {
+      throw new BadRequestException(
+        "O nome fantasia não pode ser igual ao nome corporativo."
+      );
+    }
+
     const cpfCnpj = clientDto.cpf_cnpj.replace(/\D/g, "");
     if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
       throw new BadRequestException(
