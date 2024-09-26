@@ -11,6 +11,15 @@ import {
   type SchemaEstablished,
 } from "./dto/create-establishment.dto";
 
+type FilterConditions = {
+  status?: boolean;
+  name?: {
+    contains: string;
+    mode: "insensitive";
+  };
+  id?: number;
+};
+
 @Injectable()
 export class EstablishmentService {
   constructor(private readonly prisma: PrismaService) {}
@@ -30,14 +39,12 @@ export class EstablishmentService {
     if (existingEstablishment) {
       throw new BadRequestException("Nome já cadastrado");
     }
-
-    // Define status como true se não for fornecido
     const establishmentStatus = status !== undefined ? status : true;
 
     try {
       const establishment = await this.prisma.establishment_type.create({
         data: {
-          name: body.name,
+          name: body.name.toLocaleUpperCase(),
           status: establishmentStatus,
         },
       });
@@ -125,17 +132,17 @@ export class EstablishmentService {
   }
 
   async remove(id: number) {
-    console.log("id => ", id);
     try {
       await this.prisma.establishment_type.delete({
         where: { id },
       });
     } catch (error) {
-      console.log("Error trying to remove the establishment:", error);
+      throw new BadRequestException(
+        `O estabelecimento com ID ${id} já foi excluído.`
+      );
     }
   }
 
-  // Novo método de filtro
   async filter({
     status,
     name,
@@ -145,7 +152,7 @@ export class EstablishmentService {
     name?: string;
     id?: number;
   }): Promise<Establishment[]> {
-    const filterConditions: any = {};
+    const filterConditions: FilterConditions = {};
 
     if (status !== undefined) {
       filterConditions.status = status;

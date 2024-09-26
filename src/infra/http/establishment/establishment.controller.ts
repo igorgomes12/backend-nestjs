@@ -13,6 +13,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -22,6 +23,7 @@ import {
 } from "./dto/create-establishment.dto";
 import { EstablishmentService } from "./establishment.service";
 import type { Establishment } from "./entities/establishment.entity";
+import { Response } from "express";
 
 @Controller("establishment")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -96,8 +98,21 @@ export class EstablishmentController {
     "PROGRAMMING_SUPERVISOR"
   )
   @HttpCode(HttpStatus.OK)
-  async remove(@Query("id") id: number) {
-    await this.establishmentService.remove(id);
-    return { message: "Removido com sucesso" };
+  async remove(@Query("id") id: number, @Res() res: Response) {
+    try {
+      await this.establishmentService.remove(id);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: "Removido com sucesso" });
+    } catch (error) {
+      if (error === "P2025") {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: `O estabelecimento com ID ${id} já foi excluído.`,
+        });
+      }
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: `Erro ao excluir o estabelecimento com ID ${id}.`,
+      });
+    }
   }
 }
