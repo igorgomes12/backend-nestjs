@@ -47,7 +47,7 @@ model Client {
   rural_registration     String?
   name_account           String?
   id_account             Int
-  establishment_typeId   Int       @unique
+  establishment_typeId   Int
 
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
@@ -95,18 +95,18 @@ model Accounting {
   clientId  Int
 }
 
-enum Type {
-  TELEFONE
-  CELULAR
-  EMAIL
-  WHATSAPP
-}
+// enum Type {
+//   TELEFONE
+//   CELULAR
+//   EMAIL
+//   WHATSAPP
+// }
 
 model Contact {
   id           Int     @id @default(autoincrement())
   description  String
   contact      String
-  type         Type    @default(CELULAR)
+  type         String
   main_account Boolean
 
   createdAt DateTime  @default(now())
@@ -136,5 +136,5 @@ model Establishment_type {
   name   String  @unique
   status Boolean
 
-  client Client?
+  client Client[]
 }

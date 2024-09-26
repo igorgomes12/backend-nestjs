@@ -1,27 +1,27 @@
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { Roles } from "@infra/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
 import { RolesGuard } from "@infra/middleware/roles_guard";
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Patch,
   Post,
   Query,
   UseGuards,
   UsePipes,
-  BadRequestException,
 } from "@nestjs/common";
-import { EstablishmentService } from "./establishment.service";
 import {
   schemaEstablished,
   type SchemaEstablished,
 } from "./dto/create-establishment.dto";
-import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
+import { EstablishmentService } from "./establishment.service";
+import type { Establishment } from "./entities/establishment.entity";
 
 @Controller("establishment")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,10 +45,22 @@ export class EstablishmentController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll() {
-    return this.establishmentService.findAll();
-  }
+  async findAll(
+    @Query("status") status?: string,
+    @Query("name") name?: string,
+    @Query("id") id?: string
+  ): Promise<Establishment[]> {
+    const statusBoolean = status !== undefined ? status === "true" : undefined;
+    const idNumber = id !== undefined ? parseInt(id, 10) : undefined;
 
+    const result = await this.establishmentService.filter({
+      status: statusBoolean,
+      name,
+      id: idNumber,
+    });
+
+    return result;
+  }
   @Patch()
   @HttpCode(HttpStatus.OK)
   @Roles(

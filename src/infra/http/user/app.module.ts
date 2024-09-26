@@ -1,21 +1,21 @@
-import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
-import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
-import { AuthModule } from "@infra/auth/auth.module";
-import { JwtStrategy } from "@infra/auth/guards/strategies/jwt.strategy";
-import { envSchema } from "@infra/auth/database/env/env";
-import { PrismaModule } from "@infra/auth/database/prisma.module";
-import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { MiddlewareAuth } from "@infra/middleware/middleware_auth.middleware";
-import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
-import { PrismaLiderUserRepository } from "@infra/repositories/prisma/prisma_lider_user_repository";
 import {
-  MiddlewareConsumer,
   Module,
+  MiddlewareConsumer,
   NestModule,
   RequestMethod,
 } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { PrismaModule } from "@infra/auth/database/prisma.module";
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
+import { MiddlewareAuth } from "@infra/middleware/middleware_auth.middleware";
+import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
+import { PrismaLiderUserRepository } from "@infra/repositories/prisma/prisma_lider_user_repository";
+import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
+import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
+import { JwtStrategy } from "@infra/auth/guards/strategies/jwt.strategy";
+import { envSchema } from "@infra/auth/database/env/env";
+import { AuthModule } from "@infra/auth/auth.module";
 import { ClientModule } from "../client/client.module";
 import { HttpModule } from "../http.module";
 import { AuthenticateController } from "../sign-up/authenticate_controller";

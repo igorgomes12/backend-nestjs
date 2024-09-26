@@ -6,24 +6,45 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Establishment } from "./entities/establishment.entity";
-import type { SchemaEstablished } from "./dto/create-establishment.dto";
+import {
+  schemaEstablished,
+  type SchemaEstablished,
+} from "./dto/create-establishment.dto";
 
 @Injectable()
 export class EstablishmentService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createEstablishmentDto: SchemaEstablished) {
+  async create(body: SchemaEstablished) {
+    const { name, status } = schemaEstablished.parse(body);
+
+    if (name.length < 1) {
+      throw new BadRequestException("Nome inválido");
+    }
+
+    const existingEstablishment =
+      await this.prisma.establishment_type.findUnique({
+        where: { name },
+      });
+
+    if (existingEstablishment) {
+      throw new BadRequestException("Nome já cadastrado");
+    }
+
+    // Define status como true se não for fornecido
+    const establishmentStatus = status !== undefined ? status : true;
+
     try {
       const establishment = await this.prisma.establishment_type.create({
         data: {
-          name: createEstablishmentDto.name,
-          status: createEstablishmentDto.status,
+          name: body.name,
+          status: establishmentStatus,
         },
       });
 
       return establishment;
     } catch (error) {
-      throw error;
+      throw new InternalServerErrorException("Erro ao criar estabelecimento");
     }
   }
 
@@ -112,5 +133,39 @@ export class EstablishmentService {
     } catch (error) {
       console.log("Error trying to remove the establishment:", error);
     }
+  }
+
+  // Novo método de filtro
+  async filter({
+    status,
+    name,
+    id,
+  }: {
+    status?: boolean;
+    name?: string;
+    id?: number;
+  }): Promise<Establishment[]> {
+    const filterConditions: any = {};
+
+    if (status !== undefined) {
+      filterConditions.status = status;
+    }
+
+    if (name) {
+      filterConditions.name = { contains: name, mode: "insensitive" };
+    }
+
+    if (id) {
+      filterConditions.id = id;
+    }
+
+    const establishments = await this.prisma.establishment_type.findMany({
+      where: filterConditions,
+      orderBy: { id: "asc" },
+    });
+
+    return establishments.map(
+      (establishment) => new Establishment(establishment)
+    );
   }
 }

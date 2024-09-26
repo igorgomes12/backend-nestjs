@@ -262,6 +262,9 @@ export class ClientService {
 
   async update(id: number, updateClientDto: Partial<TClient>) {
     try {
+      console.log("Iniciando atualização do cliente:", id);
+      console.log("Dados recebidos para atualização:", updateClientDto);
+
       // Preparar dados do cliente para atualização
       const clientData: any = {};
 
@@ -298,8 +301,13 @@ export class ClientService {
       if (updateClientDto.id_account !== undefined) {
         clientData.id_account = updateClientDto.id_account;
       }
+      if (updateClientDto.establishment_typeId !== undefined) {
+        clientData.establishment_typeId = updateClientDto.establishment_typeId;
+      }
 
-      // Atualizar contatos e endereços se fornecidos
+      console.log("Dados preparados para atualização:", clientData);
+
+      // Atualizar contatos se fornecidos
       if (updateClientDto.contacts) {
         clientData.contacts = {
           upsert: updateClientDto.contacts.map((contact) => ({
@@ -320,6 +328,7 @@ export class ClientService {
         };
       }
 
+      // Atualizar endereços se fornecidos
       if (updateClientDto.address) {
         clientData.address = {
           upsert: updateClientDto.address.map((addr) => ({
@@ -358,8 +367,29 @@ export class ClientService {
         };
       }
 
+      // Atualizar proprietários se fornecidos
+      if (updateClientDto.owner) {
+        clientData.owner = {
+          upsert: updateClientDto.owner.map((owner) => ({
+            where: { id: owner.id || 0 },
+            create: {
+              name: owner.name,
+              cpf_cnpj: owner.cpf_cnpj,
+              birth_date: new Date(owner.birth_date),
+            },
+            update: {
+              name: owner.name,
+              cpf_cnpj: owner.cpf_cnpj,
+              birth_date: new Date(owner.birth_date),
+            },
+          })),
+        };
+      }
+
+      console.log("Dados finais preparados para atualização:", clientData);
+
       // Realizar a atualização do cliente
-      return await this.prisma.client.update({
+      const updatedClient = await this.prisma.client.update({
         where: { id },
         data: clientData,
         include: {
@@ -368,6 +398,9 @@ export class ClientService {
           contacts: true,
         },
       });
+
+      console.log("Cliente atualizado com sucesso:", updatedClient);
+      return updatedClient;
     } catch (error) {
       console.error("Erro ao tentar atualizar o cliente:", error);
 
@@ -394,7 +427,6 @@ export class ClientService {
       );
     }
   }
-
   async remove(id: number) {
     try {
       const client = await this.prisma.client.findUnique({
