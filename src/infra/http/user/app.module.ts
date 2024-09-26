@@ -22,6 +22,7 @@ import { AuthenticateController } from "../sign-up/authenticate_controller";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { EstablishmentModule } from "../establishment/establishment.module";
+import { AccoutingModule } from "../accouting/accouting.module";
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { EstablishmentModule } from "../establishment/establishment.module";
     AuthModule,
     ClientModule,
     EstablishmentModule,
+    AccoutingModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [

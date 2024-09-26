@@ -52,6 +52,7 @@ model Client {
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
   establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
+  accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
 }
 
 model Address {
@@ -112,6 +113,18 @@ model Establishment_type {
   id     Int     @id @default(autoincrement())
   name   String  @unique
   status Boolean
+
+  client Client[]
+}
+
+model Accounting {
+  id      Int    @id @default(autoincrement())
+  name    String
+  phone   String
+  email   String
+  contact String
+  crc     String
+  cnpj    String
 
   client Client[]
 }

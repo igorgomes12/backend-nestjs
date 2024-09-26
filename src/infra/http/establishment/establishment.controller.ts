@@ -77,7 +77,7 @@ export class EstablishmentController {
     @Query("id") id: number,
     @Body() updateEstablishmentDto: SchemaEstablished
   ) {
-    const establishmentId = Number(id);
+    const establishmentId = id;
     if (isNaN(establishmentId)) {
       throw new BadRequestException("Invalid ID");
     }
