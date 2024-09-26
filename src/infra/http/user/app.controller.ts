@@ -114,7 +114,7 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN", "PROGRAMMING")
-  @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
+  // @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async updateUser(
     @Res() res: Response,
     @Query("id") id: string,

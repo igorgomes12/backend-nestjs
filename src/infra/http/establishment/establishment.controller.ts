@@ -14,6 +14,7 @@ import {
   Query,
   UseGuards,
   UsePipes,
+  BadRequestException,
 } from "@nestjs/common";
 import { EstablishmentService } from "./establishment.service";
 import {
@@ -58,12 +59,19 @@ export class EstablishmentController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(schemaEstablished))
   update(
     @Query("id") id: number,
     @Body() updateEstablishmentDto: SchemaEstablished
   ) {
-    return this.establishmentService.update(id, updateEstablishmentDto);
+    const establishmentId = Number(id);
+    if (isNaN(establishmentId)) {
+      throw new BadRequestException("Invalid ID");
+    }
+
+    return this.establishmentService.update(
+      establishmentId,
+      updateEstablishmentDto
+    );
   }
 
   @Delete()
@@ -75,7 +83,6 @@ export class EstablishmentController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(schemaEstablished))
   @HttpCode(HttpStatus.OK)
   async remove(@Query("id") id: number) {
     await this.establishmentService.remove(id);

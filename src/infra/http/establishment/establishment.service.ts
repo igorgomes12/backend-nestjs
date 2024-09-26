@@ -28,7 +28,9 @@ export class EstablishmentService {
   }
 
   async findAll(): Promise<Establishment[]> {
-    const establishments = await this.prisma.establishment_type.findMany();
+    const establishments = await this.prisma.establishment_type.findMany({
+      orderBy: { id: "asc" },
+    });
     return establishments.map(
       (establishment) => new Establishment(establishment)
     );
@@ -49,15 +51,32 @@ export class EstablishmentService {
     updateEstablishmentDto: Partial<SchemaEstablished>
   ): Promise<Establishment[]> {
     try {
+      const existingEstablishment =
+        await this.prisma.establishment_type.findUnique({
+          where: { id },
+        });
+
+      if (!existingEstablishment) {
+        throw new NotFoundException(`Establishment with ID ${id} not found.`);
+      }
+
+      if (updateEstablishmentDto.name) {
+        const nameExists = await this.prisma.establishment_type.findUnique({
+          where: { name: updateEstablishmentDto.name },
+        });
+
+        if (nameExists && nameExists.id !== id) {
+          throw new BadRequestException(
+            `O nome inserido ${updateEstablishmentDto.name} já existe!`
+          );
+        }
+      }
+
       const updatedEstablishment = await this.prisma.establishment_type.update({
         where: { id },
         data: {
-          ...(updateEstablishmentDto.name && {
-            name: updateEstablishmentDto.name,
-          }),
-          ...(updateEstablishmentDto.status !== undefined && {
-            status: updateEstablishmentDto.status,
-          }),
+          name: updateEstablishmentDto.name,
+          status: updateEstablishmentDto.status,
         },
       });
 
@@ -65,12 +84,17 @@ export class EstablishmentService {
     } catch (error) {
       console.error("Error trying to update the establishment:", error);
 
-      if (error instanceof NotFoundException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
 
-      if (error === "P2025") {
-        throw new NotFoundException(`Establishment with ID ${id} not found.`);
+      if (error === "P2002") {
+        throw new BadRequestException(
+          `Establishment with name ${updateEstablishmentDto.name} already exists.`
+        );
       }
 
       throw new InternalServerErrorException(
