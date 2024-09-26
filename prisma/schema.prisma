@@ -79,29 +79,6 @@ model Address {
   clientId Int
 }
 
-model Accounting {
-  accounting_id         Int     @id @default(autoincrement())
-  observation           String?
-  establishment_type_id Int?
-  taxation_type_id      Int?
-  status                String?
-  company_id            Int?    @default(1)
-  representative_id     Int?
-  owner_id              Int?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  clientId  Int
-}
-
-// enum Type {
-//   TELEFONE
-//   CELULAR
-//   EMAIL
-//   WHATSAPP
-// }
-
 model Contact {
   id           Int     @id @default(autoincrement())
   description  String

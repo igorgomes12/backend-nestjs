@@ -444,7 +444,6 @@ export class ClientService {
 
       await this.prisma.contact.deleteMany({ where: { clientId: id } });
       await this.prisma.address.deleteMany({ where: { clientId: id } });
-      await this.prisma.accounting.deleteMany({ where: { clientId: id } });
       await this.prisma.owner.deleteMany({ where: { clientId: id } });
 
       await this.prisma.client.delete({
