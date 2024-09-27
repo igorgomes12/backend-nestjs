@@ -141,3 +141,12 @@ model Systems {
 
   client Client[]
 }
+
+model Municipio {
+  id               Int    @id @default(autoincrement())
+  mun_cd_municipio Int
+  mun_ds_municipio String
+  mun_ds_uf        String
+  mun_ds_estado    String
+  mun_cd_estado    Int
+}

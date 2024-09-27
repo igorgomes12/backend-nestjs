@@ -65,9 +65,9 @@ import { SystemsModule } from "../systems/systems.module";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(MiddlewareAuth)
-      .exclude({ path: "login", method: RequestMethod.ALL })
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer;
+    // .apply(MiddlewareAuth)
+    // .exclude({ path: "login", method: RequestMethod.ALL })
+    // .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

@@ -154,8 +154,8 @@ export class AppController {
   }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("ADMIN", "PROGRAMMING")
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles("ADMIN", "PROGRAMMING")
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     const {
