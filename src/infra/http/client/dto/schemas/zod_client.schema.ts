@@ -71,6 +71,7 @@ export const ClientSchema = z.object({
   name_account: z.string(),
   id_account: z.number(),
   establishment_typeId: z.number(),
+  systemsId: z.number(),
 
   owner: z
     .array(OwnerSchema)

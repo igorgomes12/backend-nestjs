@@ -48,11 +48,13 @@ model Client {
   name_account           String?
   id_account             Int
   establishment_typeId   Int
+  systemsId              Int
 
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
   establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
   accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
+  systems            Systems            @relation(fields: [systemsId], references: [id], onDelete: NoAction)
 }
 
 model Address {
@@ -125,6 +127,17 @@ model Accounting {
   contact String
   crc     String
   cnpj    String
+
+  client Client[]
+}
+
+model Systems {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 
   client Client[]
 }

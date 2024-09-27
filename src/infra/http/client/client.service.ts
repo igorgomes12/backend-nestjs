@@ -187,6 +187,7 @@ export class ClientService {
       name_account: createClientDto.name_account,
       id_account: createClientDto.id_account,
       establishment_typeId: createClientDto.establishment_typeId,
+      systemsId: createClientDto.systemsId,
     };
 
     try {

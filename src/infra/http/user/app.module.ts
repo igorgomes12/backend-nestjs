@@ -23,6 +23,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { EstablishmentModule } from "../establishment/establishment.module";
 import { AccoutingModule } from "../accouting/accouting.module";
+import { SystemsModule } from "../systems/systems.module";
 
 @Module({
   imports: [
@@ -36,12 +37,14 @@ import { AccoutingModule } from "../accouting/accouting.module";
     ClientModule,
     EstablishmentModule,
     AccoutingModule,
+    SystemsModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
     JwtStrategy,
     MiddlewareAuth,
     AppService,
+
     {
       provide: LiderUserRepository,
       useClass: PrismaLiderUserRepository,
