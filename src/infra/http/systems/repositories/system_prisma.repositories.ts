@@ -1,12 +1,12 @@
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import {
   Injectable,
-  BadRequestException,
   InternalServerErrorException,
   NotImplementedException,
 } from "@nestjs/common";
-import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { ISystemRepository } from "./system.repositories";
 import { TSystemSchemaDto } from "../dto/system.dto";
+import { ISystemRepository } from "./system.repositories";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class SystemRepository implements ISystemRepository {
@@ -15,7 +15,13 @@ export class SystemRepository implements ISystemRepository {
   async findAll(): Promise<TSystemSchemaDto[]> {
     return this.prisma.systems.findMany({
       where: { deletedAt: null },
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        image_url: true,
+        stable_version: true,
+      },
       orderBy: { id: "asc" },
     });
   }
@@ -32,19 +38,38 @@ export class SystemRepository implements ISystemRepository {
       select: { id: true, name: true },
     });
   }
+  async findByVersion(version: string): Promise<TSystemSchemaDto | null> {
+    return this.prisma.systems.findFirst({
+      where: {
+        stable_version: version,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        image_url: true,
+        stable_version: true,
+      },
+    });
+  }
 
   async create(data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     try {
       return await this.prisma.systems.create({
         data: {
           name: data.name,
+          description: data.description,
+          image_url: data.imagem_url,
         },
       });
     } catch (error) {
-      if (error === "P2002") {
-        throw new NotImplementedException(
-          "Já existe um sistema com esse nome."
-        );
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          throw new NotImplementedException(
+            "Já existe um sistema com esse nome ou versão."
+          );
+        }
       }
       throw new InternalServerErrorException("Erro ao tentar criar sistema.");
     }
@@ -53,14 +78,18 @@ export class SystemRepository implements ISystemRepository {
   async update(id: number, data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     return this.prisma.systems.update({
       where: { id },
-      data: { name: data.name },
+      data: {
+        name: data.name,
+        description: data.description,
+        image_url: data.imagem_url,
+        stable_version: data.stable_version,
+      },
     });
   }
 
   async remove(id: number): Promise<{ message: string }> {
-    await this.prisma.systems.update({
+    await this.prisma.systems.delete({
       where: { id },
-      data: { deletedAt: new Date() },
     });
     return { message: "Sistema removido com sucesso." };
   }

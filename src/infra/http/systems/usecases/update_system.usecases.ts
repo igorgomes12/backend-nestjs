@@ -14,21 +14,49 @@ export class UpdateSystemUsecase {
       );
     }
 
-    const { name } = systemSchemaDto.parse(data);
+    const { name, description, imagem_url, stable_version } =
+      systemSchemaDto.parse(data);
     if (!name) {
       throw new NotFoundException(
         "Não foi possível criar um novo sistema, favor digitar um nome válido."
       );
     }
+    if (!imagem_url) {
+      throw new NotFoundException(
+        "Não foi possível criar um novo sistema, favor digitar uma URL válida para a imagem."
+      );
+    }
+    if (!description || description.length === 0) {
+      throw new NotFoundException(
+        "Não foi possível criar um novo sistema, favor digitar uma descrição válida."
+      );
+    }
 
-    // Verifique se já existe outro sistema com o mesmo nome
+    const existStableVersion =
+      await this.systemsService.findByVersion(stable_version);
+
+    if (stable_version.length === 0 || undefined) {
+      throw new NotFoundException(
+        "Não foi possível criar um novo sistema, favor digitar uma versão estável válida."
+      );
+    } else if (existStableVersion) {
+      throw new NotFoundException(
+        "Já existe um sistema com essa versão estável."
+      );
+    }
+
     const existingName = await this.systemsService.findByName(name);
     if (existingName && existingName.id !== id) {
       throw new Error("Já existe um sistema com esse nome.");
     }
 
     try {
-      return await this.systemsService.update(id, { name });
+      return await this.systemsService.update(id, {
+        name,
+        description,
+        imagem_url,
+        stable_version,
+      });
     } catch (error) {
       throw new Error("Erro ao tentar atualizar o sistema");
     }

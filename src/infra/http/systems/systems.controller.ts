@@ -59,7 +59,6 @@ export class SystemsController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(systemSchemaDto))
   @HttpCode(HttpStatus.OK)
   update(@Query("id") id: number, @Body() updateSystemDto: TSystemSchemaDto) {
     return this.updateSystemsUseCase.execute(id, updateSystemDto);
@@ -74,7 +73,6 @@ export class SystemsController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(systemSchemaDto))
   @HttpCode(HttpStatus.OK)
   remove(@Query("id") id: number) {
     return this.deleteSystemsUseCase.execute(id);

@@ -132,14 +132,31 @@ model Accounting {
 }
 
 model Systems {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id             Int     @id @default(autoincrement())
+  name           String  @unique
+  description    String?
+  image_url      String?
+  stable_version String?
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
 
-  client Client[]
+  client   Client[]
+  versions Systems_Version[] @relation("SystemVersions")
+}
+
+model Systems_Version {
+  id            Int       @id @default(autoincrement())
+  system_id     Int
+  version       String
+  releases_date String
+  description   String?
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  deletedAt     DateTime?
+
+  system Systems @relation("SystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
 }
 
 model Municipio {

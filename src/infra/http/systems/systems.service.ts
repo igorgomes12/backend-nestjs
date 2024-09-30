@@ -22,6 +22,10 @@ export class SystemsService {
     return this.systemRepository.findByName(name);
   }
 
+  findByVersion(version: string) {
+    return this.systemRepository.findByVersion(version);
+  }
+
   findOne(id: number) {
     return this.systemRepository.findOne(id);
   }
