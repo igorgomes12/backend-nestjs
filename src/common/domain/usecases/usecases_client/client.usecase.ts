@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
-import type { ClientService } from "../client.service";
-import type { ClientCreateService } from "../dto/interface.create.dto";
-import type { TClient } from "../dto/schemas/zod_client.schema";
+import { ClientService } from "../../service/service_client/client.service";
+import type { TClient } from "@common/domain/entities/entities_client/zod_client.schema";
+import { ClientCreateService } from "@infra/http/client/dto/interface.create.dto";
 
 export class UseCaseClient {
   constructor(private client: ClientService) {}

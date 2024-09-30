@@ -1,5 +1,5 @@
+import type { TClient } from "@common/domain/entities/entities_client/zod_client.schema";
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { type TClient } from "@infra/http/client/dto/schemas/zod_client.schema";
 import {
   BadRequestException,
   Injectable,

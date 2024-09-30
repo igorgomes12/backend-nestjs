@@ -1,10 +1,10 @@
-import { LoginUseCase } from "@common/domain/usecases/signup.usecase";
+import { LoginUseCase } from "@common/domain/usecases/usecases_sign_in/signup.usecase";
 import {
   authenticateBodySchema,
   type TAuthenticateBodyForm,
 } from "@common/domain/validator/zod_validator_fields";
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
 import { Body, Controller, Post, UsePipes } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 

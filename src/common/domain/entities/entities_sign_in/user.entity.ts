@@ -1,4 +1,4 @@
-import { Entity } from "../../../../common/domain/entities/entity";
+import { Entity } from "../entities_user/entity";
 
 export type UserProps = {
   email: string;
@@ -6,7 +6,10 @@ export type UserProps = {
 };
 
 export class UserEntity extends Entity<UserProps> {
-  constructor(public readonly users: UserProps, id?: string) {
+  constructor(
+    public readonly users: UserProps,
+    id?: string
+  ) {
     super(users, id);
     const { email, password } = users;
 
@@ -27,17 +30,15 @@ export class UserEntity extends Entity<UserProps> {
     return this.users.email;
   }
 
-  private set email(value: string){
+  private set email(value: string) {
     this.props.email = value;
-
   }
 
   get password(): string {
     return this.users.password;
   }
 
- private set password(value: string) {
+  private set password(value: string) {
     this.props.password = value;
   }
 }
- 

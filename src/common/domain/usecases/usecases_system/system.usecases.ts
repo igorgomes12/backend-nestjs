@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { SystemsService } from "../systems.service";
+import { SystemsService } from "../../service/service_system/systems.service";
 
 @Injectable()
 export class FindAllSystemsUseCase {

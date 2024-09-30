@@ -1,4 +1,4 @@
-import type { TClient } from "./schemas/zod_client.schema";
+import type { TClient } from "@common/domain/entities/entities_client/zod_client.schema";
 
 export namespace ClientCreateService {
   export type TInput = {

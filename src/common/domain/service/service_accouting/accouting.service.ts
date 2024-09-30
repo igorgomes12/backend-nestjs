@@ -5,8 +5,14 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { AccountingSchema, TAccountingSchema } from "./dto/accounting_zod";
-import { AccoutingEntities, type TOutput } from "./entities/accouting.entity";
+import {
+  AccountingSchema,
+  TAccountingSchema,
+} from "@infra/http/accouting/dto/accounting_zod";
+import {
+  AccoutingEntities,
+  type TOutput,
+} from "@common/domain/entities/entities_accounting/accouting.entity";
 
 @Injectable()
 export class AccoutingService {

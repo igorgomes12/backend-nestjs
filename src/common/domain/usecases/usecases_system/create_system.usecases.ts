@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { systemSchemaDto, TSystemSchemaDto } from "../dto/system.dto";
-import { SystemsService } from "../systems.service";
+import {
+  systemSchemaDto,
+  TSystemSchemaDto,
+} from "../../../../infra/http/systems/dto/system.dto";
+import { SystemsService } from "../../service/service_system/systems.service";
 
 @Injectable()
 export class CreateSystemUsecase {

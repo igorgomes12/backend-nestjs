@@ -1,7 +1,7 @@
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/middleware/roles_guard";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
   BadRequestException,
   Body,
@@ -16,8 +16,11 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ClientService } from "./client.service";
-import { ClientSchema, type TClient } from "./dto/schemas/zod_client.schema";
+import { ClientService } from "../../../common/domain/service/service_client/client.service";
+import {
+  ClientSchema,
+  type TClient,
+} from "@common/domain/entities/entities_client/zod_client.schema";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)

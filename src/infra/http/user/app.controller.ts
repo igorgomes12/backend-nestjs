@@ -1,6 +1,6 @@
-import { Roles } from "@infra/middleware/decorator.rolues";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
 import { hash } from "bcryptjs";
-import { RolesGuard } from "@infra/middleware/roles_guard";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import {
   Body,
@@ -18,13 +18,13 @@ import {
   UsePipes,
 } from "@nestjs/common";
 import { Response } from "express";
-import { ZodValidationPipe } from "../../middleware/pipes/zod_validation_pipes";
+import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
 import {
   CreateUserBodySchemaDto,
   TCreateUserBodyFormDto,
 } from "./dtos/create_user_body_dto";
 
-import { UserAddUseCase } from "@common/domain/usecases/user_add.usecase";
+import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.usecase";
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 

@@ -1,7 +1,7 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { Module, ValidationPipe } from "@nestjs/common";
 import { ClientController } from "./client.controller";
-import { ClientService } from "./client.service";
+import { ClientService } from "../../../common/domain/service/service_client/client.service";
 import { APP_PIPE } from "@nestjs/core";
 
 @Module({

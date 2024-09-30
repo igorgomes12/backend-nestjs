@@ -1,5 +1,5 @@
-import { Roles } from "@infra/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/middleware/pipes/zod_validation_pipes";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
 import {
   BadRequestException,
   Body,
@@ -15,11 +15,11 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { AccoutingService } from "./accouting.service";
 import { AccountingSchema, type TAccountingSchema } from "./dto/accounting_zod";
 import { Response } from "express";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { RolesGuard } from "@infra/middleware/roles_guard";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { AccoutingService } from "@common/domain/service/service_accouting/accouting.service";
 
 @Controller("accouting")
 @UseGuards(JwtAuthGuard, RolesGuard)
