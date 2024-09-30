@@ -69,9 +69,16 @@ export const ClientSchema = z.object({
     .max(10, { message: "O número máximo de endereços permitidos é 10." }),
 
   name_account: z.string(),
-  id_account: z.number(),
-  establishment_typeId: z.number(),
-  systemsId: z.number(),
+  id_account: z.number().int().positive({
+    message: "O campo 'id_account' deve ser um número inteiro positivo.",
+  }),
+  establishment_typeId: z.number().int().positive({
+    message:
+      "O campo 'establishment_typeId' deve ser um número inteiro positivo.",
+  }),
+  systemsId: z.string().min(1, {
+    message: "O campo 'systemsId' deve ser um número inteiro positivo.",
+  }),
 
   owner: z
     .array(OwnerSchema)

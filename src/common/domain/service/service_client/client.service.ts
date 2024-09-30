@@ -1,4 +1,4 @@
-import type { TClient } from "@common/domain/entities/entities_client/zod_client.schema";
+import { TClient } from "@common/domain/entities/entities_client/zod_client.schema";
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import {
   BadRequestException,
@@ -190,6 +190,8 @@ export class ClientService {
       systemsId: createClientDto.systemsId,
     };
 
+    console.log("Dados para criação do cliente:", clientData);
+
     try {
       return await this.prisma.client.create({
         data: clientData,
@@ -204,7 +206,6 @@ export class ClientService {
       throw new BadRequestException("Erro ao criar cliente.");
     }
   }
-
   async filterClients(filters: {
     cpf_cnpj?: string;
     fantasy_name?: string;

@@ -48,7 +48,7 @@ model Client {
   name_account           String?
   id_account             Int
   establishment_typeId   Int
-  systemsId              Int
+  systemsId              String
 
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
@@ -132,48 +132,46 @@ model Accounting {
 }
 
 model System {
-  id             Int     @id @default(autoincrement())
+  id             String  @id @default(uuid())
   name           String  @unique
   description    String?
   image_url      String?
   stable_version String?
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  client                   Client[]
   versions                 System_Version[]          @relation("SystemVersions")
   customer_system_versions Customer_System_Version[] @relation("CustomerSystemVersions")
+  Client                   Client[]
 }
 
 model System_Version {
-  id            Int       @id @default(autoincrement())
-  system_id     Int
-  version       String
-  releases_date String
-  description   String?
-  createdAt     DateTime? @default(now())
-  updatedAt     DateTime? @updatedAt
-  deletedAt     DateTime?
+  id             Int       @id @default(autoincrement())
+  system_id      String
+  version_number String
+  release_date   DateTime
+  description    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
 
-  system                  System                    @relation("SystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
-  Customer_System_Version Customer_System_Version[] @relation("SystemVersions")
+  system System @relation("SystemVersions", fields: [system_id], references: [id])
 }
 
 model Customer_System_Version {
-  id             Int      @id @default(autoincrement())
-  customer_id    Int
-  system_id      Int
-  version_id     Int
-  assingned_date DateTime
+  id            Int      @id @default(autoincrement())
+  customer_id   String
+  system_id     String
+  version_id    Int
+  assigned_date DateTime
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  system  System[]       @relation("CustomerSystemVersions")
-  version System_Version @relation("SystemVersions", fields: [version_id], references: [id], onDelete: Cascade)
+  system System @relation("CustomerSystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
 }
 
 model Municipio {

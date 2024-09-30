@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSystemVersionDto } from './dto/create-system_version.dto';
-import { UpdateSystemVersionDto } from './dto/update-system_version.dto';
+import { Inject, Injectable } from "@nestjs/common";
+import { TSystemVersionSchemaDto } from "./dto/system_version.dtos";
+import { ISystemVersionRepository } from "./repositories/system_version.repositories";
 
 @Injectable()
 export class SystemVersionService {
-  create(createSystemVersionDto: CreateSystemVersionDto) {
-    return 'This action adds a new systemVersion';
+  constructor(
+    @Inject("ISystemVersionRepository")
+    private readonly DtoSchema: ISystemVersionRepository
+  ) {}
+  async create(data: TSystemVersionSchemaDto) {
+    return this.DtoSchema.create(data);
   }
 
   findAll() {
-    return `This action returns all systemVersion`;
+    return this.DtoSchema.findAll();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} systemVersion`;
+    return this.DtoSchema.findOne(id);
   }
 
-  update(id: number, updateSystemVersionDto: UpdateSystemVersionDto) {
-    return `This action updates a #${id} systemVersion`;
+  update(id: number, updateSystemVersionDto: TSystemVersionSchemaDto) {
+    return this.DtoSchema.update(id, updateSystemVersionDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} systemVersion`;
+    return this.DtoSchema.remove(id);
   }
 }

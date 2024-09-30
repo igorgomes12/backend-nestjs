@@ -60,7 +60,7 @@ export class SystemsController {
     "PROGRAMMING_SUPERVISOR"
   )
   @HttpCode(HttpStatus.OK)
-  update(@Query("id") id: number, @Body() updateSystemDto: TSystemSchemaDto) {
+  update(@Query("id") id: string, @Body() updateSystemDto: TSystemSchemaDto) {
     return this.updateSystemsUseCase.execute(id, updateSystemDto);
   }
 
@@ -74,7 +74,7 @@ export class SystemsController {
     "PROGRAMMING_SUPERVISOR"
   )
   @HttpCode(HttpStatus.OK)
-  remove(@Query("id") id: number) {
+  remove(@Query("id") id: string) {
     return this.deleteSystemsUseCase.execute(id);
   }
 }

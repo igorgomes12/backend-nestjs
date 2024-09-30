@@ -26,18 +26,32 @@ export class SystemRepository implements ISystemRepository {
     });
   }
 
-  async findOne(id: number): Promise<TSystemSchemaDto | null> {
+  async findOne(id: string): Promise<TSystemSchemaDto | null> {
     return this.prisma.system.findUnique({
-      where: { id, deletedAt: null },
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        image_url: true,
+        stable_version: true,
+      },
     });
   }
 
   async findByName(name: string): Promise<TSystemSchemaDto | null> {
     return this.prisma.system.findUnique({
-      where: { name, deletedAt: null },
-      select: { id: true, name: true },
+      where: { name },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        image_url: true,
+        stable_version: true,
+      },
     });
   }
+
   async findByVersion(version: string): Promise<TSystemSchemaDto | null> {
     return this.prisma.system.findFirst({
       where: {
@@ -60,7 +74,8 @@ export class SystemRepository implements ISystemRepository {
         data: {
           name: data.name,
           description: data.description,
-          image_url: data.imagem_url,
+          image_url: data.image_url,
+          stable_version: data.stable_version,
         },
       });
     } catch (error) {
@@ -75,19 +90,19 @@ export class SystemRepository implements ISystemRepository {
     }
   }
 
-  async update(id: number, data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
+  async update(id: string, data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     return this.prisma.system.update({
       where: { id },
       data: {
         name: data.name,
         description: data.description,
-        image_url: data.imagem_url,
+        image_url: data.image_url,
         stable_version: data.stable_version,
       },
     });
   }
 
-  async remove(id: number): Promise<{ message: string }> {
+  async remove(id: string): Promise<{ message: string }> {
     await this.prisma.system.delete({
       where: { id },
     });

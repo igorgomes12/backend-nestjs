@@ -5,7 +5,7 @@ import { SystemsService } from "../../service/service_system/systems.service";
 export class DeleteSystemUsecase {
   constructor(private readonly systemsService: SystemsService) {}
 
-  async execute(id: number) {
+  async execute(id: string) {
     if (!id) {
       throw new NotFoundException("ID não fornecido.");
     }

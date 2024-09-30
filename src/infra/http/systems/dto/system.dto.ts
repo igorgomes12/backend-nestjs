@@ -1,18 +1,13 @@
 import z from "zod";
 
 export const systemSchemaDto = z.object({
-  id: z
-    .number()
-    .int()
-    .optional()
-    .refine((val) => val === undefined || val > 0, {
-      message: "O ID deve ser um número inteiro positivo",
-    }),
+  id: z.string().uuid().optional(),
   name: z.string().min(1, { message: "Favor digitar o nome do sistema" }),
   description: z.string().optional(),
-  imagem_url: z
+  image_url: z
     .string()
-    .url({ message: "Favor fornecer uma URL válida para a imagem" }),
+    .url({ message: "Favor fornecer uma URL válida para a imagem" })
+    .optional(),
   stable_version: z
     .string()
     .regex(/^\d+(\.\d+)*$/, {

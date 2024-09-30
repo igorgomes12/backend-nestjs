@@ -9,7 +9,7 @@ import { SystemsService } from "../../service/service_system/systems.service";
 export class UpdateSystemUsecase {
   constructor(private readonly systemsService: SystemsService) {}
 
-  async execute(id: number, data: TSystemSchemaDto) {
+  async execute(id: string, data: TSystemSchemaDto) {
     const existingSystem = await this.systemsService.findOne(id);
     if (!existingSystem) {
       throw new NotFoundException(
@@ -17,14 +17,14 @@ export class UpdateSystemUsecase {
       );
     }
 
-    const { name, description, imagem_url, stable_version } =
+    const { name, description, image_url, stable_version } =
       systemSchemaDto.parse(data);
     if (!name) {
       throw new NotFoundException(
         "Não foi possível criar um novo sistema, favor digitar um nome válido."
       );
     }
-    if (!imagem_url) {
+    if (!image_url) {
       throw new NotFoundException(
         "Não foi possível criar um novo sistema, favor digitar uma URL válida para a imagem."
       );
@@ -57,7 +57,7 @@ export class UpdateSystemUsecase {
       return await this.systemsService.update(id, {
         name,
         description,
-        imagem_url,
+        image_url,
         stable_version,
       });
     } catch (error) {

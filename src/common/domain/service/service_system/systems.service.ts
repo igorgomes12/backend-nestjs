@@ -26,15 +26,15 @@ export class SystemsService {
     return this.systemRepository.findByVersion(version);
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.systemRepository.findOne(id);
   }
 
-  update(id: number, updateSystemDto: TSystemSchemaDto) {
+  update(id: string, updateSystemDto: TSystemSchemaDto) {
     return this.systemRepository.update(id, updateSystemDto);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.systemRepository.remove(id);
   }
 }
