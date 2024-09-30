@@ -24,6 +24,7 @@ import { AppService } from "./app.service";
 import { EstablishmentModule } from "../establishment/establishment.module";
 import { AccoutingModule } from "../accouting/accouting.module";
 import { SystemsModule } from "../systems/systems.module";
+import { SystemVersionModule } from "../system_version/system_version.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { SystemsModule } from "../systems/systems.module";
     EstablishmentModule,
     AccoutingModule,
     SystemsModule,
+    SystemVersionModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [

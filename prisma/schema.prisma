@@ -54,7 +54,7 @@ model Client {
   owner              Owner[]            @relation("ClientToOwner")
   establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
   accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
-  systems            Systems            @relation(fields: [systemsId], references: [id], onDelete: NoAction)
+  systems            System             @relation(fields: [systemsId], references: [id], onDelete: NoAction)
 }
 
 model Address {
@@ -131,7 +131,7 @@ model Accounting {
   client Client[]
 }
 
-model Systems {
+model System {
   id             Int     @id @default(autoincrement())
   name           String  @unique
   description    String?
@@ -143,10 +143,10 @@ model Systems {
   deletedAt DateTime?
 
   client   Client[]
-  versions Systems_Version[] @relation("SystemVersions")
+  versions System_Version[] @relation("SystemVersions")
 }
 
-model Systems_Version {
+model System_Version {
   id            Int       @id @default(autoincrement())
   system_id     Int
   version       String
@@ -156,7 +156,7 @@ model Systems_Version {
   updatedAt     DateTime? @updatedAt
   deletedAt     DateTime?
 
-  system Systems @relation("SystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
+  system System @relation("SystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
 }
 
 model Municipio {

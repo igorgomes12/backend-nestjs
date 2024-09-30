@@ -13,7 +13,7 @@ export class SystemRepository implements ISystemRepository {
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<TSystemSchemaDto[]> {
-    return this.prisma.systems.findMany({
+    return this.prisma.system.findMany({
       where: { deletedAt: null },
       select: {
         id: true,
@@ -27,19 +27,19 @@ export class SystemRepository implements ISystemRepository {
   }
 
   async findOne(id: number): Promise<TSystemSchemaDto | null> {
-    return this.prisma.systems.findUnique({
+    return this.prisma.system.findUnique({
       where: { id, deletedAt: null },
     });
   }
 
   async findByName(name: string): Promise<TSystemSchemaDto | null> {
-    return this.prisma.systems.findUnique({
+    return this.prisma.system.findUnique({
       where: { name, deletedAt: null },
       select: { id: true, name: true },
     });
   }
   async findByVersion(version: string): Promise<TSystemSchemaDto | null> {
-    return this.prisma.systems.findFirst({
+    return this.prisma.system.findFirst({
       where: {
         stable_version: version,
         deletedAt: null,
@@ -56,7 +56,7 @@ export class SystemRepository implements ISystemRepository {
 
   async create(data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     try {
-      return await this.prisma.systems.create({
+      return await this.prisma.system.create({
         data: {
           name: data.name,
           description: data.description,
@@ -76,7 +76,7 @@ export class SystemRepository implements ISystemRepository {
   }
 
   async update(id: number, data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
-    return this.prisma.systems.update({
+    return this.prisma.system.update({
       where: { id },
       data: {
         name: data.name,
@@ -88,7 +88,7 @@ export class SystemRepository implements ISystemRepository {
   }
 
   async remove(id: number): Promise<{ message: string }> {
-    await this.prisma.systems.delete({
+    await this.prisma.system.delete({
       where: { id },
     });
     return { message: "Sistema removido com sucesso." };
