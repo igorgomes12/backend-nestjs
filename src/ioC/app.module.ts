@@ -20,6 +20,7 @@ import { AccoutingModule } from "../infra/http/accouting/accouting.module";
 import { SystemsModule } from "../infra/http/systems/systems.module";
 import { SystemVersionModule } from "../infra/http/system_version/system_version.module";
 import { AppService } from "@common/domain/service/service_user/app.service";
+import { CustomerVersionModule } from "@infra/http/customer_version/customer_version.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AppService } from "@common/domain/service/service_user/app.service";
     AccoutingModule,
     SystemsModule,
     SystemVersionModule,
+    CustomerVersionModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [

@@ -148,30 +148,30 @@ model System {
 }
 
 model System_Version {
-  id             Int       @id @default(autoincrement())
-  system_id      Int
-  version_number String
-  release_date   DateTime  @default(now())
-  description    String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  id           Int       @id @default(autoincrement())
+  system_id    Int
+  version      String
+  release_date DateTime  @default(now())
+  description  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   system System @relation("SystemVersions", fields: [system_id], references: [id])
 }
 
 model Customer_System_Version {
   id            Int      @id @default(autoincrement())
-  customer_id   String
+  customer_id   Int
   system_id     Int
-  version_id    Int
+  version       String
   assigned_date DateTime
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  system System @relation("CustomerSystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
+  system System @relation("CustomerSystemVersions", fields: [customer_id], references: [id], onDelete: Cascade)
 }
 
 model Municipio {

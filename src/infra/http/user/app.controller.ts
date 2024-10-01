@@ -77,7 +77,14 @@ export class AppController {
   @Delete()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("ADMIN", "PROGRAMMING")
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
   @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async deleteUser(@Res() res: Response, @Query("id") id: string) {
     try {
@@ -116,7 +123,14 @@ export class AppController {
   @Put()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("ADMIN", "PROGRAMMING")
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
   async updateUser(
     @Res() res: Response,
     @Query("id") id: string,

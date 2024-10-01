@@ -21,7 +21,7 @@ export class SystemVersionPrismaRepositories
           id: true,
           description: true,
           release_date: true,
-          version_number: true,
+          version: true,
           system_id: true,
         },
       });
@@ -29,7 +29,7 @@ export class SystemVersionPrismaRepositories
         id: result.id,
         description: result.description,
         release_date: result.release_date,
-        version: result.version_number,
+        version: result.version,
         system_id: result.system_id,
       }));
     } catch (error) {
@@ -47,7 +47,7 @@ export class SystemVersionPrismaRepositories
         select: {
           description: true,
           release_date: true,
-          version_number: true,
+          version: true,
           system_id: true,
         },
       });
@@ -59,7 +59,7 @@ export class SystemVersionPrismaRepositories
       return {
         description: result.description,
         release_date: result.release_date,
-        version: result.version_number,
+        version: result.version,
         system_id: result.system_id,
       };
     } catch (error) {
@@ -77,7 +77,7 @@ export class SystemVersionPrismaRepositories
         select: {
           description: true,
           release_date: true,
-          version_number: true,
+          version: true,
           system_id: true,
         },
       });
@@ -89,7 +89,7 @@ export class SystemVersionPrismaRepositories
       return {
         description: result.description,
         release_date: result.release_date,
-        version: result.version_number,
+        version: result.version,
         system_id: result.system_id,
       };
     } catch (error) {
@@ -105,11 +105,11 @@ export class SystemVersionPrismaRepositories
   ): Promise<TSystemVersionSchemaDto | null> {
     try {
       const result = await this.prisma.system_Version.findFirst({
-        where: { version_number: version, deletedAt: null },
+        where: { version: version, deletedAt: null },
         select: {
           description: true,
           release_date: true,
-          version_number: true,
+          version: true,
           system_id: true,
         },
       });
@@ -121,7 +121,7 @@ export class SystemVersionPrismaRepositories
       return {
         description: result.description,
         release_date: result.release_date,
-        version: result.version_number,
+        version: result.version,
         system_id: result.system_id,
       };
     } catch (error) {
@@ -138,7 +138,7 @@ export class SystemVersionPrismaRepositories
     try {
       const createdVersion = await this.prisma.system_Version.create({
         data: {
-          version_number: data.version,
+          version: data.version,
           description: data.description,
           system_id: data.system_id,
         },
@@ -157,7 +157,7 @@ export class SystemVersionPrismaRepositories
       return {
         description: createdVersion.description,
         release_date: createdVersion.release_date,
-        version: createdVersion.version_number,
+        version: createdVersion.version,
         system_id: createdVersion.system_id,
       };
     } catch (error) {
@@ -191,14 +191,14 @@ export class SystemVersionPrismaRepositories
         data: {
           description: data.description,
           release_date: data.release_date,
-          version_number: data.version,
+          version: data.version,
           system_id: data.system_id,
         },
         select: {
           id: true,
           description: true,
           release_date: true,
-          version_number: true,
+          version: true,
           system_id: true,
         },
       });
@@ -221,7 +221,7 @@ export class SystemVersionPrismaRepositories
       return {
         description: result.description,
         release_date: result.release_date,
-        version: result.version_number,
+        version: result.version,
         system_id: result.system_id,
       };
     } catch (error) {

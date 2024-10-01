@@ -54,10 +54,28 @@ export class SystemVersionController {
   }
 
   @Get()
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.ListSystemVersionUsecase.execute();
   }
   @Patch()
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  @HttpCode(HttpStatus.OK)
   update(
     @Query("id") id: number,
     @Body() updateSystemVersionDto: TSystemVersionSchemaDto
@@ -66,6 +84,15 @@ export class SystemVersionController {
   }
 
   @Delete()
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  @HttpCode(HttpStatus.OK)
   remove(@Query("id") id: number) {
     return this.DeleteSystemVersionUsecase.execute(id);
   }
