@@ -1,5 +1,6 @@
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
 import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
   Body,
@@ -11,6 +12,7 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -19,18 +21,21 @@ import {
   TSystemVersionSchemaDto,
   type TPostValid,
 } from "./dto/system_version.dtos";
-import { SystemVersionService } from "./system_version.service";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { CreateSystemVersionUseCase } from "./usecases/create_system_version.usecases";
-import { DeleteSystemVersionUsecase } from "./usecases/delete_system_version.usecases";
+import { CreateSystemVersionUseCase } from "../../../common/domain/usecases/usecases_system_version/create_system_version.usecases";
+import { DeleteSystemVersionUsecase } from "../../../common/domain/usecases/usecases_system_version/delete_system_version.usecases";
+import { ListSystemVersionUsecase } from "../../../common/domain/usecases/usecases_system_version/list_system_version.usecase";
+import { UpdateSystemVersionUsecase } from "../../../common/domain/usecases/usecases_system_version/update_system_version.usecase";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("system-version")
+@UseFilters(AllExceptionsFilter)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SystemVersionController {
   constructor(
-    private readonly systemVersionService: SystemVersionService,
     private readonly CreateSystemVersionUseCase: CreateSystemVersionUseCase,
-    private readonly DeleteSystemVersionUsecase: DeleteSystemVersionUsecase
+    private readonly DeleteSystemVersionUsecase: DeleteSystemVersionUsecase,
+    private readonly UpdateSystemVersionUsecase: UpdateSystemVersionUsecase,
+    private readonly ListSystemVersionUsecase: ListSystemVersionUsecase
   ) {}
 
   @Post()
@@ -50,20 +55,14 @@ export class SystemVersionController {
 
   @Get()
   findAll() {
-    return this.systemVersionService.findAll();
+    return this.ListSystemVersionUsecase.execute();
   }
-
-  @Get(":id")
-  findOne(@Query("id") id: string) {
-    return this.systemVersionService.findOne(+id);
-  }
-
   @Patch()
   update(
-    @Query("id") id: string,
+    @Query("id") id: number,
     @Body() updateSystemVersionDto: TSystemVersionSchemaDto
   ) {
-    return this.systemVersionService.update(+id, updateSystemVersionDto);
+    return this.UpdateSystemVersionUsecase.execute(id, updateSystemVersionDto);
   }
 
   @Delete()

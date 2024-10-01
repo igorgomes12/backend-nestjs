@@ -12,6 +12,7 @@ import {
   Post,
   Query,
   Res,
+  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -20,9 +21,11 @@ import { Response } from "express";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import { AccoutingService } from "@common/domain/service/service_accouting/accouting.service";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("accouting")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseFilters(AllExceptionsFilter)
 export class AccoutingController {
   constructor(private readonly accoutingService: AccoutingService) {}
 

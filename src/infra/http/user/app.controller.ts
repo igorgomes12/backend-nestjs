@@ -14,6 +14,7 @@ import {
   Put,
   Query,
   Res,
+  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -27,8 +28,10 @@ import {
 import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.usecase";
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("/user")
+@UseFilters(AllExceptionsFilter)
 export class AppController {
   constructor(
     private liderUserRepository: LiderUserRepository,
@@ -114,7 +117,6 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN", "PROGRAMMING")
-  // @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
   async updateUser(
     @Res() res: Response,
     @Query("id") id: string,

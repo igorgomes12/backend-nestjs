@@ -1,6 +1,6 @@
+import { TSystemVersionSchemaDto } from "@infra/http/system_version/dto/system_version.dtos";
+import { ISystemVersionRepository } from "@infra/http/system_version/repositories/system_version.repositories";
 import { Inject, Injectable } from "@nestjs/common";
-import { TSystemVersionSchemaDto } from "./dto/system_version.dtos";
-import { ISystemVersionRepository } from "./repositories/system_version.repositories";
 
 @Injectable()
 export class SystemVersionService {

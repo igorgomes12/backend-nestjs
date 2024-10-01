@@ -14,6 +14,7 @@ import {
   Post,
   Query,
   Res,
+  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -24,9 +25,11 @@ import {
 import { Establishment } from "../../../common/domain/entities/entities_establishment/establishment.entity";
 import { Response } from "express";
 import { EstablishmentService } from "@common/domain/service/service_establishment/establishment.service";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("establishment")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseFilters(AllExceptionsFilter)
 export class EstablishmentController {
   constructor(private readonly establishmentService: EstablishmentService) {}
 

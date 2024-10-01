@@ -11,14 +11,14 @@ import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.u
 import { JwtStrategy } from "@infra/auth/guards/strategies/jwt.strategy";
 import { envSchema } from "@infra/auth/database/env/env";
 import { AuthModule } from "@infra/auth/auth.module";
-import { ClientModule } from "../client/client.module";
-import { HttpModule } from "../http.module";
-import { AuthenticateController } from "../sign-up/authenticate_controller";
-import { AppController } from "./app.controller";
-import { EstablishmentModule } from "../establishment/establishment.module";
-import { AccoutingModule } from "../accouting/accouting.module";
-import { SystemsModule } from "../systems/systems.module";
-import { SystemVersionModule } from "../system_version/system_version.module";
+import { ClientModule } from "../infra/http/client/client.module";
+import { HttpModule } from "../infra/auth/http.module";
+import { AuthenticateController } from "../infra/http/sign-up/authenticate_controller";
+import { AppController } from "../infra/http/user/app.controller";
+import { EstablishmentModule } from "../infra/http/establishment/establishment.module";
+import { AccoutingModule } from "../infra/http/accouting/accouting.module";
+import { SystemsModule } from "../infra/http/systems/systems.module";
+import { SystemVersionModule } from "../infra/http/system_version/system_version.module";
 import { AppService } from "@common/domain/service/service_user/app.service";
 
 @Module({

@@ -1,4 +1,4 @@
-import { SystemVersion } from "../entities/system_version.entity";
+import { SystemVersion } from "../../../../common/domain/entities/entities_system_version/system_version.entity";
 import { TSystemVersionSchemaDto } from "../dto/system_version.dtos";
 
 export class SystemMapper {

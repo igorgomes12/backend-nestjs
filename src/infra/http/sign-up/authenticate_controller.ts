@@ -5,10 +5,12 @@ import {
 } from "@common/domain/validator/zod_validator_fields";
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { Body, Controller, Post, UsePipes } from "@nestjs/common";
+import { Body, Controller, Post, UseFilters, UsePipes } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller()
+@UseFilters(AllExceptionsFilter)
 export class AuthenticateController {
   private loginUseCase: LoginUseCase;
 

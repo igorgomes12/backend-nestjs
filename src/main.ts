@@ -1,8 +1,9 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AppModule } from "./infra/http/user/app.module";
+import { AppModule } from "./ioC/app.module";
 import { TEnv } from "./infra/auth/database/env/env";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -14,6 +15,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     })
   );
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const configService = app.get<ConfigService<TEnv, true>>(ConfigService);
   const port = configService.get("PORT", { infer: true });

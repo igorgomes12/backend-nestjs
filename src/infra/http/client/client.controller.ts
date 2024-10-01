@@ -13,6 +13,7 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -21,9 +22,11 @@ import {
   ClientSchema,
   type TClient,
 } from "@common/domain/entities/entities_client/zod_client.schema";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseFilters(AllExceptionsFilter)
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 

@@ -131,6 +131,7 @@ export class SystemVersionPrismaRepositories
       );
     }
   }
+
   async create(
     data: Omit<TSystemVersionSchemaDto, "id" | "release_date">
   ): Promise<TSystemVersionSchemaDto> {
@@ -166,11 +167,25 @@ export class SystemVersionPrismaRepositories
       );
     }
   }
+
   async update(
     id: number,
     data: Omit<TSystemVersionSchemaDto, "id">
   ): Promise<TSystemVersionSchemaDto> {
     try {
+      console.log(`Iniciando atualização da versão do sistema com ID: ${id}`);
+
+      // Verificar se a versão do sistema existe
+      const existingVersion = await this.prisma.system_Version.findUnique({
+        where: { id },
+      });
+
+      if (!existingVersion) {
+        console.error(`Versão do sistema com ID ${id} não encontrada.`);
+        throw new NotFoundException("Versão do sistema não encontrada.");
+      }
+
+      // Atualizar a versão do sistema específico
       const result = await this.prisma.system_Version.update({
         where: { id },
         data: {
@@ -188,10 +203,20 @@ export class SystemVersionPrismaRepositories
         },
       });
 
-      await this.prisma.system.update({
-        where: { id: data.system_id },
-        data: { stable_version: data.version },
-      });
+      console.log(`Versão do sistema com ID ${id} atualizada com sucesso.`);
+
+      // Atualizar a versão estável para todos os sistemas
+      const allSystems = await this.prisma.system.findMany();
+      await Promise.all(
+        allSystems.map((system) =>
+          this.prisma.system.update({
+            where: { id: system.id },
+            data: { stable_version: data.version },
+          })
+        )
+      );
+
+      console.log(`Versão estável atualizada para todos os sistemas.`);
 
       return {
         description: result.description,

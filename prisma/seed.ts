@@ -1,4 +1,4 @@
-import { prisma } from "lib/prisma";
+import { prisma } from "@infra/utils/lib/prisma";
 
 async function seed() {
   await prisma.$connect();

@@ -1,5 +1,5 @@
+import { SystemVersionService } from "@common/domain/service/service_system_version/system_version.service";
 import { NotFoundException } from "@nestjs/common";
-import { SystemVersionService } from "../system_version.service";
 
 export class DeleteSystemVersionUsecase {
   constructor(private readonly systemVersionService: SystemVersionService) {}
