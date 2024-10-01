@@ -48,7 +48,7 @@ model Client {
   name_account           String?
   id_account             Int
   establishment_typeId   Int
-  systemsId              String
+  systemsId              Int
 
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
@@ -132,7 +132,7 @@ model Accounting {
 }
 
 model System {
-  id             String  @id @default(uuid())
+  id             Int     @id @default(autoincrement())
   name           String  @unique
   description    String?
   image_url      String?
@@ -149,9 +149,9 @@ model System {
 
 model System_Version {
   id             Int       @id @default(autoincrement())
-  system_id      String
+  system_id      Int
   version_number String
-  release_date   DateTime
+  release_date   DateTime  @default(now())
   description    String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -163,7 +163,7 @@ model System_Version {
 model Customer_System_Version {
   id            Int      @id @default(autoincrement())
   customer_id   String
-  system_id     String
+  system_id     Int
   version_id    Int
   assigned_date DateTime
 

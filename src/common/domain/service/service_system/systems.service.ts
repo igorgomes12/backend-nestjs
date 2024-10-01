@@ -1,7 +1,6 @@
-// systems.service.ts
 import { Injectable, Inject } from "@nestjs/common";
 import { TSystemSchemaDto } from "../../../../infra/http/systems/dto/system.dto";
-import type { ISystemRepository } from "../../../../infra/http/systems/repositories/system.repositories";
+import { ISystemRepository } from "../../../../infra/http/systems/repositories/system.repositories";
 
 @Injectable()
 export class SystemsService {
@@ -11,7 +10,12 @@ export class SystemsService {
   ) {}
 
   async create(data: TSystemSchemaDto) {
-    return this.systemRepository.create(data);
+    return this.systemRepository.create({
+      name: data.name,
+      description: data.description,
+      image_url: data.image_url,
+      stable_version: data.stable_version,
+    });
   }
 
   findAll() {
@@ -26,15 +30,15 @@ export class SystemsService {
     return this.systemRepository.findByVersion(version);
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.systemRepository.findOne(id);
   }
 
-  update(id: string, updateSystemDto: TSystemSchemaDto) {
+  update(id: number, updateSystemDto: TSystemSchemaDto) {
     return this.systemRepository.update(id, updateSystemDto);
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.systemRepository.remove(id);
   }
 }

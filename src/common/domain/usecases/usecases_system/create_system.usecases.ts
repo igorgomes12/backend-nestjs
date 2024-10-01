@@ -10,7 +10,8 @@ export class CreateSystemUsecase {
   constructor(private readonly systemsService: SystemsService) {}
 
   async execute(data: TSystemSchemaDto) {
-    const { name, description, image_url } = systemSchemaDto.parse(data);
+    const { name, description, image_url, stable_version } =
+      systemSchemaDto.parse(data);
 
     if (!name || name.trim().length === 0) {
       throw new NotFoundException(
@@ -37,6 +38,7 @@ export class CreateSystemUsecase {
         name,
         description,
         image_url,
+        stable_version,
       });
     } catch (error) {
       throw new NotFoundException("Erro ao tentar criar sistema");

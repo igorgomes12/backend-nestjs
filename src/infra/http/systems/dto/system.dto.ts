@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const systemSchemaDto = z.object({
-  id: z.string().uuid().optional(),
+  id: z.number().int().positive().optional(),
   name: z.string().min(1, { message: "Favor digitar o nome do sistema" }),
   description: z.string().optional(),
   image_url: z

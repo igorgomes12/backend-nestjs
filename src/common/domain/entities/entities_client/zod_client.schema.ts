@@ -76,10 +76,7 @@ export const ClientSchema = z.object({
     message:
       "O campo 'establishment_typeId' deve ser um número inteiro positivo.",
   }),
-  systemsId: z.string().min(1, {
-    message: "O campo 'systemsId' deve ser um número inteiro positivo.",
-  }),
-
+  systemsId: z.number().int().positive(),
   owner: z
     .array(OwnerSchema)
     .min(1, { message: "É necessário fornecer pelo menos um proprietário." })

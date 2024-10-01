@@ -12,14 +12,26 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from "@nestjs/common";
-import { TSystemVersionSchemaDto } from "./dto/system_version.dtos";
+import {
+  SystemVersionSchemaDto,
+  TSystemVersionSchemaDto,
+  type TPostValid,
+} from "./dto/system_version.dtos";
 import { SystemVersionService } from "./system_version.service";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { CreateSystemVersionUseCase } from "./usecases/create_system_version.usecases";
+import { DeleteSystemVersionUsecase } from "./usecases/delete_system_version.usecases";
 
 @Controller("system-version")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SystemVersionController {
-  constructor(private readonly systemVersionService: SystemVersionService) {}
+  constructor(
+    private readonly systemVersionService: SystemVersionService,
+    private readonly CreateSystemVersionUseCase: CreateSystemVersionUseCase,
+    private readonly DeleteSystemVersionUsecase: DeleteSystemVersionUsecase
+  ) {}
 
   @Post()
   @Roles(
@@ -31,8 +43,9 @@ export class SystemVersionController {
     "PROGRAMMING_SUPERVISOR"
   )
   @HttpCode(HttpStatus.OK)
-  create(@Body() createSystemVersionDto: TSystemVersionSchemaDto) {
-    return this.systemVersionService.create(createSystemVersionDto);
+  @UsePipes(new ZodValidationPipe(SystemVersionSchemaDto))
+  create(@Body() createSystemVersionDto: TPostValid) {
+    return this.CreateSystemVersionUseCase.execute(createSystemVersionDto);
   }
 
   @Get()
@@ -54,7 +67,7 @@ export class SystemVersionController {
   }
 
   @Delete()
-  remove(@Query("id") id: string) {
-    return this.systemVersionService.remove(+id);
+  remove(@Query("id") id: number) {
+    return this.DeleteSystemVersionUsecase.execute(id);
   }
 }

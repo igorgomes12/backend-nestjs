@@ -17,7 +17,6 @@ export class SystemMapper {
       release_date: entity.release_date,
       version: entity.version_number,
       system_id: entity.system_id,
-      id: entity.id,
     };
   }
 }

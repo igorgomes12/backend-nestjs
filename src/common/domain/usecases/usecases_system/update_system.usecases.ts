@@ -9,7 +9,7 @@ import { SystemsService } from "../../service/service_system/systems.service";
 export class UpdateSystemUsecase {
   constructor(private readonly systemsService: SystemsService) {}
 
-  async execute(id: string, data: TSystemSchemaDto) {
+  async execute(id: number, data: TSystemSchemaDto) {
     const existingSystem = await this.systemsService.findOne(id);
     if (!existingSystem) {
       throw new NotFoundException(
