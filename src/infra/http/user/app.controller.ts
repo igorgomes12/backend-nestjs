@@ -21,26 +21,30 @@ import {
 import { Response } from "express";
 import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
 import {
-  CreateUserBodySchemaDto,
+  createUserBodySchemaDto,
   TCreateUserBodyFormDto,
-} from "./dtos/create_user_body_dto";
+} from "../../../features/user/domain/dto/user_body_dto";
 
 import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.usecase";
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
+import { CreateBodySchemaDto } from "features/user/domain/dto/create_body.dto";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
 export class AppController {
   constructor(
     private liderUserRepository: LiderUserRepository,
-    private readonly signupUseCase: UserAddUseCase.UseCase
+    private readonly signupUseCase: UserAddUseCase.UseCase,
+    private readonly findAllUserUseCase: FindAllUserUseCase
   ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @UsePipes(new ZodValidationPipe(CreateBodySchemaDto))
   @Roles(
     "ADMIN",
     "FINANCE",
@@ -52,7 +56,7 @@ export class AppController {
   )
   async getUsers(@Res() res: Response, @Query() query: TCreateUserBodyFormDto) {
     try {
-      const users = await this.liderUserRepository.findAll();
+      const users = await this.findAllUserUseCase.execute(query);
 
       const filteredUsers = users.filter((user) => {
         return Object.keys(query).every((key) => {
@@ -85,7 +89,7 @@ export class AppController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
+  @UsePipes(new ZodValidationPipe(createUserBodySchemaDto))
   async deleteUser(@Res() res: Response, @Query("id") id: string) {
     try {
       if (!id) {
@@ -172,7 +176,7 @@ export class AppController {
   @HttpCode(HttpStatus.CREATED)
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles("ADMIN", "PROGRAMMING")
-  @UsePipes(new ZodValidationPipe(CreateUserBodySchemaDto))
+  @UsePipes(new ZodValidationPipe(createUserBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     const {
       channel = 0,

@@ -16,9 +16,9 @@ model User {
   channel      Int     @default(1)
   status       String  @default("active")
   organization String?
+  profileId    Int
 
-  profile   Profile? @relation("user-to-profiles", fields: [profileId], references: [id])
-  profileId Int
+  profile Profile? @relation("user-to-profiles", fields: [profileId], references: [id])
 
   @@map("users")
 }

@@ -21,6 +21,8 @@ import { SystemsModule } from "../infra/http/systems/systems.module";
 import { SystemVersionModule } from "../infra/http/system_version/system_version.module";
 import { AppService } from "@common/domain/service/service_user/app.service";
 import { CustomerVersionModule } from "@infra/http/customer_version/customer_version.module";
+import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
+import { UserServiceFactory } from "features/user/data/service";
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { CustomerVersionModule } from "@infra/http/customer_version/customer_ver
     JwtStrategy,
     MiddlewareAuth,
     AppService,
+    FindAllUserUseCase,
+    UserServiceFactory,
 
     {
       provide: LiderUserRepository,

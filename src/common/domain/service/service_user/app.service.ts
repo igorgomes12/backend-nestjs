@@ -7,16 +7,16 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import {
-  CreateUserBodySchemaDto,
-  type TCreateUserBodyFormDto,
-} from "@infra/http/user/dtos/create_user_body_dto";
+  TCreateUserBodyFormDto,
+  createUserBodySchemaDto,
+} from "features/user/domain/dto/user_body_dto";
 
 @Injectable()
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(data: TCreateUserBodyFormDto) {
-    const parsedData = CreateUserBodySchemaDto.parse(data);
+    const parsedData = createUserBodySchemaDto.parse(data);
     try {
       return await this.prisma.user.create({
         data: {

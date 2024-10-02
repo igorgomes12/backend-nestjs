@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-// Define o esquema de validação com Zod
-export const CreateUserBodySchemaDto = z.object({
+export const createUserBodySchemaDto = z.object({
   name: z
     .string()
     .min(1, { message: "O nome do usuário é obrigatório" })
@@ -55,5 +54,4 @@ export const CreateUserBodySchemaDto = z.object({
 
   organization: z.enum(["lider", "Quality"]).optional(),
 });
-
-export type TCreateUserBodyFormDto = z.infer<typeof CreateUserBodySchemaDto>;
+export type TCreateUserBodyFormDto = z.infer<typeof createUserBodySchemaDto>;
