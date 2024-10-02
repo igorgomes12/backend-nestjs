@@ -23,13 +23,15 @@ import {
   TCustomerVersionDto,
 } from "./dto/zod_customer.dto";
 import { TInput } from "./entities/customer_version.entity";
+import { CreateCustomerSystemUsecase } from "./usecases/create_customer.usecases";
 
 @Controller("customer-version")
 @UseFilters(AllExceptionsFilter)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CustomerVersionController {
   constructor(
-    private readonly customerVersionService: CustomerVersionService
+    private readonly customerVersionService: CustomerVersionService,
+    private readonly Create: CreateCustomerSystemUsecase
   ) {}
 
   @Post()
@@ -45,7 +47,7 @@ export class CustomerVersionController {
   @UsePipes(new ZodValidationPipe(customerVersionSchemaDto))
   async create(@Body() data: TCustomerVersionDto) {
     try {
-      const result = await this.customerVersionService.create({
+      const result = await this.Create.execute({
         system_id: data.system_id,
         version: data.version,
         customer_id: data.customer_id,

@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { customerVersionSchemaDto } from "./dto/zod_customer.dto";
 import { TInput, TOutput } from "./entities/customer_version.entity";
+import { System } from "@prisma/client";
 
 @Injectable()
 export class CustomerVersionService {
@@ -55,7 +56,6 @@ export class CustomerVersionService {
       );
     }
   }
-
   async findAll(): Promise<TOutput[]> {
     try {
       const records = await this.prisma.customer_System_Version.findMany({
@@ -109,6 +109,24 @@ export class CustomerVersionService {
         `Erro ao buscar CustomerVersion com ID ${id}`
       );
     }
+  }
+
+  async findById(system_id: number): Promise<System | null> {
+    return this.prisma.system.findUnique({
+      where: { id: system_id },
+    });
+  }
+
+  async findBySystemIdAndVersion(
+    system_id: number,
+    version: string
+  ): Promise<TOutput | null> {
+    return this.prisma.customer_System_Version.findFirst({
+      where: {
+        system_id,
+        version,
+      },
+    });
   }
 
   async update(

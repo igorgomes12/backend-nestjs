@@ -1,3 +1,7 @@
+import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
   Body,
   Controller,
@@ -8,19 +12,14 @@ import {
   Patch,
   Post,
   Query,
-  UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { systemSchemaDto, TSystemSchemaDto } from "./dto/system.dto";
 import { CreateSystemUsecase } from "../../../common/domain/usecases/usecases_system/create_system.usecases";
 import { DeleteSystemUsecase } from "../../../common/domain/usecases/usecases_system/delete_system.usecases";
 import { FindAllSystemsUseCase } from "../../../common/domain/usecases/usecases_system/system.usecases";
 import { UpdateSystemUsecase } from "../../../common/domain/usecases/usecases_system/update_system.usecases";
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { systemSchemaDto, TSystemSchemaDto } from "./dto/system.dto";
 
 @Controller("systems")
 @UseGuards(JwtAuthGuard, RolesGuard)

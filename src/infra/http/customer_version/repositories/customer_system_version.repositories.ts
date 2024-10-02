@@ -13,6 +13,39 @@ export class CustomerSystemVersionRepositories
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findBySystemIdAndVersion(
+    system_id: number,
+    version: string
+  ): Promise<CustomerVersion | null> {
+    try {
+      const result = await this.prisma.customer_System_Version.findFirst({
+        where: { system_id, version, deletedAt: null },
+        include: {
+          system: true,
+        },
+      });
+
+      if (!result) {
+        return null;
+      }
+
+      return new CustomerVersion({
+        id: result.id,
+        customer_id: result.customer_id,
+        system_id: result.system_id,
+        version: result.version,
+        assigned_date: result.assigned_date,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        deletedAt: result.deletedAt,
+      });
+    } catch (error) {
+      throw new NotFoundException(
+        `Erro ao buscar CustomerVersion com system_id ${system_id} e versão ${version}`
+      );
+    }
+  }
+
   async findAll(): Promise<CustomerVersion[]> {
     try {
       const results = await this.prisma.customer_System_Version.findMany({
