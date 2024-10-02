@@ -6,8 +6,8 @@ import {
 import {
   customerVersionSchemaDto,
   type TCustomerVersionDto,
-} from "../dto/zod_customer.dto";
-import { CustomerVersionService } from "../customer_version.service";
+} from "../../../../infra/http/customer_version/dto/zod_customer.dto";
+import { CustomerVersionService } from "../../service/service_customer_system/customer_version.service";
 
 @Injectable()
 export class CreateCustomerSystemUsecase {

@@ -1,7 +1,7 @@
 import {
   customerVersionSchemaDto,
   type TCustomerVersionDto,
-} from "../dto/zod_customer.dto";
+} from "@infra/http/customer_version/dto/zod_customer.dto";
 
 export interface TInput {
   id?: number;

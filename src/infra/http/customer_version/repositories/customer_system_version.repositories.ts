@@ -1,5 +1,8 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { CustomerVersion, TInput } from "../entities/customer_version.entity";
+import {
+  CustomerVersion,
+  TInput,
+} from "@common/domain/entities/entities_customer_system/customer_version.entity";
 import { ICustomerSystemVersionRepositoryTypes } from "./customer_system_version_types.repositories";
 import {
   NotFoundException,

@@ -17,13 +17,14 @@ import {
   UsePipes,
 } from "@nestjs/common";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
-import { CustomerVersionService } from "./customer_version.service";
+import { CustomerVersionService } from "../../../common/domain/service/service_customer_system/customer_version.service";
 import {
   customerVersionSchemaDto,
   TCustomerVersionDto,
 } from "./dto/zod_customer.dto";
-import { TInput } from "./entities/customer_version.entity";
-import { CreateCustomerSystemUsecase } from "./usecases/create_customer.usecases";
+import { CreateCustomerSystemUsecase } from "../../../common/domain/usecases/usecases_customer_system/create_customer.usecases";
+import { TInput } from "@common/domain/entities/entities_customer_system/customer_version.entity";
+import { ListCustomerSystemUsecase } from "@common/domain/usecases/usecases_customer_system/list_customer.usecases";
 
 @Controller("customer-version")
 @UseFilters(AllExceptionsFilter)
@@ -31,7 +32,8 @@ import { CreateCustomerSystemUsecase } from "./usecases/create_customer.usecases
 export class CustomerVersionController {
   constructor(
     private readonly customerVersionService: CustomerVersionService,
-    private readonly Create: CreateCustomerSystemUsecase
+    private readonly createCustomerSystemUsecase: CreateCustomerSystemUsecase,
+    private readonly listCustomerSystemUsecase: ListCustomerSystemUsecase
   ) {}
 
   @Post()
@@ -47,7 +49,7 @@ export class CustomerVersionController {
   @UsePipes(new ZodValidationPipe(customerVersionSchemaDto))
   async create(@Body() data: TCustomerVersionDto) {
     try {
-      const result = await this.Create.execute({
+      const result = await this.createCustomerSystemUsecase.execute({
         system_id: data.system_id,
         version: data.version,
         customer_id: data.customer_id,
@@ -63,7 +65,7 @@ export class CustomerVersionController {
   @Get()
   async findAll() {
     try {
-      const result = await this.customerVersionService.findAll();
+      const result = await this.listCustomerSystemUsecase.execute();
       return result;
     } catch (error) {
       throw error;

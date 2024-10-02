@@ -1,4 +1,4 @@
-import { CustomerVersion } from "../entities/customer_version.entity";
+import type { CustomerVersion } from "@common/domain/entities/entities_customer_system/customer_version.entity";
 
 export interface ICustomerSystemVersionRepositoryTypes {
   findAll(): Promise<CustomerVersion[]>;
