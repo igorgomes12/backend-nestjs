@@ -171,7 +171,7 @@ model Customer_System_Version {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  system System @relation("CustomerSystemVersions", fields: [customer_id], references: [id], onDelete: Cascade)
+  system System @relation("CustomerSystemVersions", fields: [system_id], references: [id], onDelete: Cascade)
 }
 
 model Municipio {

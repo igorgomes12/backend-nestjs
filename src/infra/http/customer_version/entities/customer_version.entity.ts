@@ -3,11 +3,16 @@ import {
   type TCustomerVersionDto,
 } from "../dto/zod_customer.dto";
 
-export type TInput = {
+export interface TInput {
+  id?: number;
+  customer_id: number;
   system_id: number;
   version: string;
-};
-
+  assigned_date: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+}
 export type TOutput = {
   id: number;
   customer_id: number;

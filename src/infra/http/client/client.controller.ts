@@ -23,9 +23,11 @@ import {
   type TClient,
 } from "@common/domain/entities/entities_client/zod_client.schema";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { customerVersionSchemaDto } from "../customer_version/dto/zod_customer.dto";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UsePipes(new ZodValidationPipe(customerVersionSchemaDto))
 @UseFilters(AllExceptionsFilter)
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}

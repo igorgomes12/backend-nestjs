@@ -1,36 +1,33 @@
+import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Query,
+  Controller,
   Delete,
-  UseFilters,
-  UseGuards,
+  Get,
   HttpCode,
   HttpStatus,
+  Patch,
+  Post,
+  Query,
+  UseFilters,
+  UseGuards,
   UsePipes,
-  Logger,
 } from "@nestjs/common";
-import { CustomerVersionService } from "./customer_version.service";
-import { TInput } from "./entities/customer_version.entity";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { CustomerVersionService } from "./customer_version.service";
 import {
   customerVersionSchemaDto,
   TCustomerVersionDto,
 } from "./dto/zod_customer.dto";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { TInput } from "./entities/customer_version.entity";
 
 @Controller("customer-version")
 @UseFilters(AllExceptionsFilter)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CustomerVersionController {
-  private readonly logger = new Logger(CustomerVersionController.name);
-
   constructor(
     private readonly customerVersionService: CustomerVersionService
   ) {}
@@ -47,86 +44,56 @@ export class CustomerVersionController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(customerVersionSchemaDto))
   async create(@Body() data: TCustomerVersionDto) {
-    this.logger.log("Recebendo solicitação para criar CustomerVersion", data);
     try {
       const result = await this.customerVersionService.create({
         system_id: data.system_id,
         version: data.version,
+        customer_id: data.customer_id,
+        assigned_date: data.assigned_date,
       });
-      this.logger.log("CustomerVersion criado com sucesso", result);
+
       return result;
     } catch (error) {
-      this.logger.error("Erro ao criar CustomerVersion", error);
       throw error;
     }
   }
 
   @Get()
   async findAll() {
-    this.logger.log(
-      "Recebendo solicitação para buscar todos os CustomerVersions"
-    );
     try {
       const result = await this.customerVersionService.findAll();
-      this.logger.log("CustomerVersions encontrados com sucesso", result);
       return result;
     } catch (error) {
-      this.logger.error("Erro ao buscar todos os CustomerVersions", error);
       throw error;
     }
   }
 
   @Get()
-  async findOne(@Query("id") id: string) {
-    this.logger.log(
-      `Recebendo solicitação para buscar CustomerVersion com ID ${id}`
-    );
+  async findOne(@Query("id") id: number) {
     try {
-      const result = await this.customerVersionService.findOne(+id);
-      this.logger.log(
-        `CustomerVersion com ID ${id} encontrado com sucesso`,
-        result
-      );
+      const result = await this.customerVersionService.findOne(id);
       return result;
     } catch (error) {
-      this.logger.error(`Erro ao buscar CustomerVersion com ID ${id}`, error);
       throw error;
     }
   }
 
   @Patch()
-  async update(@Query("id") id: string, @Body() data: Partial<TInput>) {
-    this.logger.log(
-      `Recebendo solicitação para atualizar CustomerVersion com ID ${id}`,
-      data
-    );
+  async update(@Query("id") id: number, @Body() data: Partial<TInput>) {
     try {
-      const result = await this.customerVersionService.update(+id, data);
-      this.logger.log(
-        `CustomerVersion com ID ${id} atualizado com sucesso`,
-        result
-      );
+      const result = await this.customerVersionService.update(id, data);
       return result;
     } catch (error) {
-      this.logger.error(
-        `Erro ao atualizar CustomerVersion com ID ${id}`,
-        error
-      );
       throw error;
     }
   }
 
   @Delete()
-  async remove(@Query("id") id: string) {
-    this.logger.log(
-      `Recebendo solicitação para remover CustomerVersion com ID ${id}`
-    );
+  async remove(@Query("id") id: number) {
     try {
-      const result = await this.customerVersionService.remove(+id);
-      this.logger.log(`CustomerVersion com ID ${id} removido com sucesso`);
+      const result = await this.customerVersionService.remove(id);
       return result;
     } catch (error) {
-      this.logger.error(`Erro ao remover CustomerVersion com ID ${id}`, error);
       throw error;
     }
   }

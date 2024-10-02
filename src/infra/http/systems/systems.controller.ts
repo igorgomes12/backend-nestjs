@@ -21,11 +21,9 @@ import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import { Roles } from "@infra/repositories/middleware/decorator.rolues";
 import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { AllExceptionsFilter } from "core/filters/exception.filter";
 
 @Controller("systems")
 @UseGuards(JwtAuthGuard, RolesGuard)
-@UseFilters(AllExceptionsFilter)
 export class SystemsController {
   constructor(
     private readonly findAllSystemsUseCase: FindAllSystemsUseCase,
