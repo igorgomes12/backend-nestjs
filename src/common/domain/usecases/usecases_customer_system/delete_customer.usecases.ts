@@ -1,5 +1,5 @@
+import type { CustomerSystemVersionRepositories } from "@infra/http/modules/customer_version/repositories/customer_system_version.repositories";
 import { NotFoundException } from "@nestjs/common";
-import { CustomerSystemVersionRepositories } from "../../../../infra/http/customer_version/repositories/customer_system_version.repositories";
 
 export class DeleteCustomerUsecase {
   constructor(

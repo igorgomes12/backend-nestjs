@@ -6,7 +6,6 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  establishment: any;
   constructor() {
     super({ log: ["warn", "error"] });
   }

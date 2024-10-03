@@ -3,11 +3,12 @@ import {
   ConflictException,
   Injectable,
 } from "@nestjs/common";
-import {
-  customerVersionSchemaDto,
-  type TCustomerVersionDto,
-} from "../../../../infra/http/customer_version/dto/zod_customer.dto";
+
 import { CustomerVersionService } from "../../service/service_customer_system/customer_version.service";
+import {
+  type TCustomerVersionDto,
+  customerVersionSchemaDto,
+} from "@infra/http/modules/customer_version/dto/zod_customer.dto";
 
 @Injectable()
 export class CreateCustomerSystemUsecase {

@@ -5,11 +5,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import {
-  schemaEstablished,
-  type SchemaEstablished,
-} from "@infra/http/establishment/dto/create-establishment.dto";
+
 import { Establishment } from "@common/domain/entities/entities_establishment/establishment.entity";
+import {
+  SchemaEstablished,
+  schemaEstablished,
+} from "@infra/http/modules/establishment/dto/create-establishment.dto";
 
 type FilterConditions = {
   status?: boolean;

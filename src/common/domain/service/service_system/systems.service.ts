@@ -1,6 +1,6 @@
+import { TSystemSchemaDto } from "@infra/http/modules/systems/dto/system.dto";
+import { ISystemRepository } from "@infra/http/modules/systems/repositories/system.repositories";
 import { Injectable, Inject } from "@nestjs/common";
-import { TSystemSchemaDto } from "../../../../infra/http/systems/dto/system.dto";
-import { ISystemRepository } from "../../../../infra/http/systems/repositories/system.repositories";
 
 @Injectable()
 export class SystemsService {

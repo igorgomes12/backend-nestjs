@@ -4,12 +4,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { customerVersionSchemaDto } from "../../../../infra/http/customer_version/dto/zod_customer.dto";
+
 import { System } from "@prisma/client";
 import type {
   TInput,
   TOutput,
 } from "@common/domain/entities/entities_customer_system/customer_version.entity";
+import { customerVersionSchemaDto } from "@infra/http/modules/customer_version/dto/zod_customer.dto";
 
 @Injectable()
 export class CustomerVersionService {

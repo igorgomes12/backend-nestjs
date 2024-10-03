@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { TSystemVersionSchemaDto } from "@infra/http/system_version/dto/system_version.dtos";
+
 import { SystemVersionService } from "@common/domain/service/service_system_version/system_version.service";
+import { TSystemVersionSchemaDto } from "@infra/http/modules/system_version/dto/system_version.dtos";
 
 @Injectable()
 export class CreateSystemVersionUseCase {

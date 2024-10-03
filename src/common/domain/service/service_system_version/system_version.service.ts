@@ -1,5 +1,5 @@
-import { TSystemVersionSchemaDto } from "@infra/http/system_version/dto/system_version.dtos";
-import { ISystemVersionRepository } from "@infra/http/system_version/repositories/system_version.repositories";
+import { TSystemVersionSchemaDto } from "@infra/http/modules/system_version/dto/system_version.dtos";
+import { ISystemVersionRepository } from "@infra/http/modules/system_version/repositories/system_version.repositories";
 import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()

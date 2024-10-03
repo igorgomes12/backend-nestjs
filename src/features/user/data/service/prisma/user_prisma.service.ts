@@ -1,6 +1,5 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { InternalServerErrorException } from "@nestjs/common";
-import { User } from "@prisma/client";
 
 import {
   createBodySchemaDto,
