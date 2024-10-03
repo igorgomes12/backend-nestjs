@@ -29,6 +29,7 @@ import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.
 import { UserServiceFactory } from "features/user/data/service";
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
+import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.use
     FindAllUserUseCase,
     CreateUserUseCase,
     DeleteUserUsecase,
+    UpdateUserUsecase,
     UserServiceFactory,
 
     {

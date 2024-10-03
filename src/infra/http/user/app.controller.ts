@@ -33,15 +33,16 @@ import {
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
+import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
 export class AppController {
   constructor(
-    private liderUserRepository: LiderUserRepository,
     private readonly findAllUserUseCase: FindAllUserUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
-    private readonly deleteUserUseCase: DeleteUserUsecase
+    private readonly deleteUserUseCase: DeleteUserUsecase,
+    private readonly updateUserUseCase: UpdateUserUsecase
   ) {}
 
   @Get()
@@ -114,37 +115,27 @@ export class AppController {
     @Body() updateData: Partial<TCreateUserBodyFormDto>
   ) {
     try {
-      const ID = Number(id);
-      if (isNaN(ID)) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ error: "Id inválido" });
-      }
-
-      const existingUser = await this.liderUserRepository.findById(ID);
-      if (!existingUser) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ error: "Usuário não encontrado" });
-      }
-
       if (updateData.password) {
         const saltRounds = 10;
         updateData.password = await hash(updateData.password, saltRounds);
       }
 
-      const updatedUser = await this.liderUserRepository.update(ID, updateData);
+      const updatedUser = await this.updateUserUseCase.execute(id, updateData);
 
-      return res.status(HttpStatus.OK).json({
-        message: "Usuário atualizado com sucesso",
-        updatedUser,
-      });
+      return res.status(HttpStatus.OK).json(updatedUser);
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        return res.status(error.getStatus()).json({ error: error.message });
+      }
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ error: "Erro ao atualizar usuário" });
     }
   }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard, RolesGuard)

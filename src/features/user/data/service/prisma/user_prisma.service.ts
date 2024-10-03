@@ -8,6 +8,7 @@ import {
 } from "features/user/domain/dto/create_body.dto";
 import { CreateEntitiy } from "features/user/domain/entity/create.entity";
 import { DeleteUserEntity } from "features/user/domain/entity/delete.entity";
+import { UpdateserEntity } from "features/user/domain/entity/update.entity";
 import { UserEntitiy } from "features/user/domain/entity/user.entity";
 import { UserService } from "features/user/domain/services/user.service";
 
@@ -19,6 +20,9 @@ export class UserPrismaService implements UserService {
         name: params.name,
         email: params.email,
         status: params.status,
+      },
+      orderBy: {
+        id: "asc",
       },
       select: {
         id: true,
@@ -87,8 +91,23 @@ export class UserPrismaService implements UserService {
       throw new Error("Failed to create user");
     }
   }
-  update(user_id: number, user: User): Promise<UserEntitiy> {
-    throw new Error("Method not implemented.");
+  async update(
+    userId: number,
+    updateData: Partial<UpdateserEntity>
+  ): Promise<UpdateserEntity> {
+    return this.service.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        name: updateData.name,
+        email: updateData.email,
+        password: updateData.password,
+        channel: updateData.channel,
+        status: updateData.status,
+        organization: updateData.organization,
+      },
+    });
   }
 
   async findById(userId: number): Promise<DeleteUserEntity | null> {
@@ -105,7 +124,9 @@ export class UserPrismaService implements UserService {
       throw new InternalServerErrorException("Erro ao deletar usuário");
     }
   }
-  findByName(name: string): Promise<UserEntitiy | null> {
-    throw new Error("Method not implemented.");
+  async findByName(name: string): Promise<UpdateserEntity | null> {
+    return await this.service.user.findFirst({
+      where: { name },
+    });
   }
 }
