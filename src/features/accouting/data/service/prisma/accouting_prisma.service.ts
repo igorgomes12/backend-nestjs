@@ -6,6 +6,7 @@ import { AccoutingServiceMethods } from "features/accouting/domain/services/acco
 
 export class AccoutingPrismaService implements AccoutingServiceMethods {
   constructor(private readonly prisma: PrismaService) {}
+
   findAll(params: TAccountingSchema): Promise<AccountingFindAllEntity[]> {
     const data = this.prisma.accounting.findMany({
       where: {

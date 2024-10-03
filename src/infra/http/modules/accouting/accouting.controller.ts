@@ -25,12 +25,16 @@ import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import { AccoutingService } from "@common/domain/service/service_accouting/accouting.service";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
+import { ListFindAllUseCase } from "features/accouting/domain/usecases/list-findAll.usecase";
 
 @Controller("accouting")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseFilters(AllExceptionsFilter)
 export class AccoutingController {
-  constructor(private readonly accoutingService: AccoutingService) {}
+  constructor(
+    private readonly accoutingService: AccoutingService,
+    private readonly listFindAllUseCase: ListFindAllUseCase
+  ) {}
 
   @Post()
   @Roles(
@@ -57,26 +61,9 @@ export class AccoutingController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  findAll(
-    @Query("id") id?: number,
-    @Query("name") name?: string,
-    @Query("contact") contact?: string,
-    @Query("crc") crc?: string,
-    @Query("cnpj") cnpj?: string,
-    @Query("email") email?: string,
-    @Query("phone") phone?: string
-  ) {
-    return this.accoutingService.filter({
-      id,
-      name,
-      contact,
-      crc,
-      cnpj,
-      email,
-      phone,
-    });
+  findAll(@Body() data: TAccountingSchema) {
+    return this.listFindAllUseCase.execute(data);
   }
-
   @Patch()
   @Roles(
     "ADMIN",
