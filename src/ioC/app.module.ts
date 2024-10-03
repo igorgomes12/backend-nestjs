@@ -1,4 +1,9 @@
-import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
+import {
+  Module,
+  MiddlewareConsumer,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaModule } from "@infra/auth/database/prisma.module";
@@ -19,10 +24,10 @@ import { EstablishmentModule } from "../infra/http/establishment/establishment.m
 import { AccoutingModule } from "../infra/http/accouting/accouting.module";
 import { SystemsModule } from "../infra/http/systems/systems.module";
 import { SystemVersionModule } from "../infra/http/system_version/system_version.module";
-import { AppService } from "@common/domain/service/service_user/app.service";
 import { CustomerVersionModule } from "@infra/http/customer_version/customer_version.module";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UserServiceFactory } from "features/user/data/service";
+import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 
 @Module({
   imports: [
@@ -44,8 +49,8 @@ import { UserServiceFactory } from "features/user/data/service";
   providers: [
     JwtStrategy,
     MiddlewareAuth,
-    AppService,
     FindAllUserUseCase,
+    CreateUserUseCase,
     UserServiceFactory,
 
     {
@@ -68,9 +73,9 @@ import { UserServiceFactory } from "features/user/data/service";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer;
-    // .apply(MiddlewareAuth)
-    // .exclude({ path: "login", method: RequestMethod.ALL })
-    // .forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer
+      .apply(MiddlewareAuth)
+      .exclude({ path: "login", method: RequestMethod.ALL })
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

@@ -12,9 +12,7 @@ export class FindAllUserUseCase {
       const data = await this.service.findAll({
         name: query.name,
         email: query.email,
-        channel: query.channel,
         status: query.status,
-        organization: query.organization,
       });
       return data;
     } catch (error) {

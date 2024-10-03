@@ -1,7 +1,6 @@
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { hash } from "bcryptjs";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
+import { Roles } from "@infra/repositories/middleware/decorator.rolues";
+import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
   Body,
   ConflictException,
@@ -18,33 +17,37 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
+import { hash } from "bcryptjs";
 import { Response } from "express";
-import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
 import {
   createUserBodySchemaDto,
   TCreateUserBodyFormDto,
 } from "../../../features/user/domain/dto/user_body_dto";
+import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
 
 import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.usecase";
 import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import {
+  createBodySchemaDto,
+  TCreateBodySchemaDto,
+} from "features/user/domain/dto/create_body.dto";
+import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
-import { CreateBodySchemaDto } from "features/user/domain/dto/create_body.dto";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
 export class AppController {
   constructor(
     private liderUserRepository: LiderUserRepository,
-    private readonly signupUseCase: UserAddUseCase.UseCase,
-    private readonly findAllUserUseCase: FindAllUserUseCase
+    private readonly findAllUserUseCase: FindAllUserUseCase,
+    private readonly createUserUseCase: CreateUserUseCase
   ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UsePipes(new ZodValidationPipe(CreateBodySchemaDto))
   @Roles(
     "ADMIN",
     "FINANCE",
@@ -54,23 +57,10 @@ export class AppController {
     "SUPPORT",
     "SUPPORT_SUPERVISOR"
   )
-  async getUsers(@Res() res: Response, @Query() query: TCreateUserBodyFormDto) {
+  async getUsers(@Res() res: Response, @Query() query: TCreateBodySchemaDto) {
     try {
       const users = await this.findAllUserUseCase.execute(query);
-
-      const filteredUsers = users.filter((user) => {
-        return Object.keys(query).every((key) => {
-          return user[key] && user[key].toString().includes(query[key]);
-        });
-      });
-
-      if (filteredUsers.length === 0) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: "Usuário inexistente" });
-      }
-
-      return res.status(HttpStatus.OK).json(filteredUsers);
+      return res.status(HttpStatus.OK).json(users);
     } catch (error) {
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -174,48 +164,30 @@ export class AppController {
   }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles("ADMIN", "PROGRAMMING")
-  @UsePipes(new ZodValidationPipe(createUserBodySchemaDto))
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN", "PROGRAMMING")
+  @UsePipes(new ZodValidationPipe(createBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
-    const {
-      channel = 0,
-      organization = "lider",
-      email,
-      name,
-      password,
-      profile,
-      status,
-    } = body;
-
     try {
-      const user = await this.signupUseCase.execute({
-        name,
-        email,
-        password,
-        channel,
-        profile,
-        status,
-        organization,
+      const { password } = body;
+
+      const saltRounds = 10;
+      const hashedPassword = await hash(password, saltRounds);
+
+      const user = await this.createUserUseCase.execute({
+        ...body,
+        password: hashedPassword,
       });
 
-      return res.status(HttpStatus.CREATED).json({
-        data: user,
-      });
+      return res.status(HttpStatus.CREATED).json(user);
     } catch (error) {
       if (error instanceof ConflictException) {
         return res.status(HttpStatus.CONFLICT).json({ error: error.message });
       }
 
-      if (error instanceof ServerError) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ error: error.message });
-      }
-
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        error: "Erro ao criar usuário",
-      });
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: "Erro ao cadastrar usuário" });
     }
   }
 }
