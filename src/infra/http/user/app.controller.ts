@@ -2,6 +2,7 @@ import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
 import { Roles } from "@infra/repositories/middleware/decorator.rolues";
 import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
@@ -9,6 +10,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Post,
   Put,
   Query,
@@ -19,14 +21,9 @@ import {
 } from "@nestjs/common";
 import { hash } from "bcryptjs";
 import { Response } from "express";
-import {
-  createUserBodySchemaDto,
-  TCreateUserBodyFormDto,
-} from "../../../features/user/domain/dto/user_body_dto";
+import { TCreateUserBodyFormDto } from "../../../features/user/domain/dto/user_body_dto";
 import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
 
-import { UserAddUseCase } from "@common/domain/usecases/usecases_user/user_add.usecase";
-import { ServerError } from "@common/errors/server.error";
 import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import {
@@ -34,6 +31,7 @@ import {
   TCreateBodySchemaDto,
 } from "features/user/domain/dto/create_body.dto";
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
+import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 
 @Controller("/user")
@@ -42,7 +40,8 @@ export class AppController {
   constructor(
     private liderUserRepository: LiderUserRepository,
     private readonly findAllUserUseCase: FindAllUserUseCase,
-    private readonly createUserUseCase: CreateUserUseCase
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUsecase
   ) {}
 
   @Get()
@@ -79,35 +78,19 @@ export class AppController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(createUserBodySchemaDto))
   async deleteUser(@Res() res: Response, @Query("id") id: string) {
     try {
-      if (!id) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ error: "ID é necessário" });
-      }
-
-      const ID = Number(id);
-      if (isNaN(ID)) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ error: "Id inválido" });
-      }
-
-      const user = await this.liderUserRepository.findById(ID);
-      if (!user) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ error: "Usuário não encontrado" });
-      }
-
-      await this.liderUserRepository.delete(ID);
-
+      await this.deleteUserUseCase.execute(id);
       return res.status(HttpStatus.OK).json({
-        message: `O usuário ${ID} foi deletado com sucesso!`,
+        message: `O usuário com ID ${id} foi deletado com sucesso!`,
       });
     } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        return res.status(error.getStatus()).json({ error: error.message });
+      }
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ error: "Erro ao deletar usuário" });

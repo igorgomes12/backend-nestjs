@@ -28,6 +28,7 @@ import { CustomerVersionModule } from "@infra/http/customer_version/customer_ver
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UserServiceFactory } from "features/user/data/service";
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
+import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CreateUserUseCase } from "features/user/domain/usecases/create_user.use
     MiddlewareAuth,
     FindAllUserUseCase,
     CreateUserUseCase,
+    DeleteUserUsecase,
     UserServiceFactory,
 
     {
@@ -73,9 +75,9 @@ import { CreateUserUseCase } from "features/user/domain/usecases/create_user.use
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(MiddlewareAuth)
-      .exclude({ path: "login", method: RequestMethod.ALL })
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer;
+    // .apply(MiddlewareAuth)
+    // .exclude({ path: "login", method: RequestMethod.ALL })
+    // .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }
