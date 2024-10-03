@@ -1,7 +1,6 @@
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   BadRequestException,
   Body,
@@ -26,6 +25,7 @@ import { Establishment } from "../../../common/domain/entities/entities_establis
 import { Response } from "express";
 import { EstablishmentService } from "@common/domain/service/service_establishment/establishment.service";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("establishment")
 @UseGuards(JwtAuthGuard, RolesGuard)

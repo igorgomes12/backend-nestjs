@@ -1,7 +1,6 @@
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   BadRequestException,
   Body,
@@ -24,6 +23,7 @@ import {
 } from "@common/domain/entities/entities_client/zod_client.schema";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import { customerVersionSchemaDto } from "../customer_version/dto/zod_customer.dto";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)

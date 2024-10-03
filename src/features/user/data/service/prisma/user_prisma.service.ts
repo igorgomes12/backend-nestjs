@@ -64,6 +64,19 @@ export class UserPrismaService implements UserService {
   async create(user: TCreateBodySchemaDto): Promise<CreateEntitiy> {
     try {
       const parsedData = createBodySchemaDto.parse(user);
+
+      let profile = await this.service.profile.findUnique({
+        where: { name: parsedData.profile },
+      });
+
+      if (!profile) {
+        profile = await this.service.profile.create({
+          data: {
+            name: parsedData.profile,
+          },
+        });
+      }
+
       const createdUser = await this.service.user.create({
         data: {
           name: parsedData.name,
@@ -71,7 +84,7 @@ export class UserPrismaService implements UserService {
           email: parsedData.email,
           channel: parsedData.channel || 0,
           profile: {
-            connect: { name: parsedData.profile },
+            connect: { id: profile.id },
           },
           status: parsedData.status,
           organization: parsedData.organization,
@@ -88,7 +101,7 @@ export class UserPrismaService implements UserService {
         createdUser.organization
       );
     } catch (error) {
-      throw new Error("Failed to create user");
+      throw new Error("Falha ao criar usuário");
     }
   }
   async update(

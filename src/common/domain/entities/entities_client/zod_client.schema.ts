@@ -1,4 +1,4 @@
-import { formatCpfOrCnpj } from "@infra/utils/regex/cpf-cnpj";
+import { formatCpfOrCnpj } from "@common/utils/regex/cpf-cnpj";
 import { z } from "zod";
 import { AddressSchema, ContactSchema, OwnerSchema } from ".";
 

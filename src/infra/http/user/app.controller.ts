@@ -1,6 +1,5 @@
-import { LiderUserRepository } from "@infra/repositories/lider_user_repository";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   BadRequestException,
   Body,
@@ -22,9 +21,8 @@ import {
 import { hash } from "bcryptjs";
 import { Response } from "express";
 import { TCreateUserBodyFormDto } from "../../../features/user/domain/dto/user_body_dto";
-import { ZodValidationPipe } from "../../repositories/middleware/pipes/zod_validation_pipes";
+import { ZodValidationPipe } from "../pipes/zod_validation_pipes";
 
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import {
   createBodySchemaDto,
@@ -34,6 +32,7 @@ import { CreateUserUseCase } from "features/user/domain/usecases/create_user.use
 import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
@@ -138,9 +137,9 @@ export class AppController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("ADMIN", "PROGRAMMING")
-  @UsePipes(new ZodValidationPipe(createBodySchemaDto))
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles("ADMIN", "PROGRAMMING")
+  // @UsePipes(new ZodValidationPipe(createBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     try {
       const { password } = body;

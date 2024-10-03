@@ -1,7 +1,6 @@
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   Body,
   Controller,
@@ -20,6 +19,7 @@ import { DeleteSystemUsecase } from "../../../common/domain/usecases/usecases_sy
 import { FindAllSystemsUseCase } from "../../../common/domain/usecases/usecases_system/system.usecases";
 import { UpdateSystemUsecase } from "../../../common/domain/usecases/usecases_system/update_system.usecases";
 import { systemSchemaDto, TSystemSchemaDto } from "./dto/system.dto";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("systems")
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -1,7 +1,6 @@
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   Body,
   Controller,
@@ -26,6 +25,7 @@ import { DeleteSystemVersionUsecase } from "../../../common/domain/usecases/usec
 import { ListSystemVersionUsecase } from "../../../common/domain/usecases/usecases_system_version/list_system_version.usecase";
 import { UpdateSystemVersionUsecase } from "../../../common/domain/usecases/usecases_system_version/update_system_version.usecase";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("system-version")
 @UseFilters(AllExceptionsFilter)

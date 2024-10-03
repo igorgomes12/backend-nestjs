@@ -1,5 +1,5 @@
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import {
   BadRequestException,
   Body,
@@ -18,10 +18,10 @@ import {
 } from "@nestjs/common";
 import { AccountingSchema, type TAccountingSchema } from "./dto/accounting_zod";
 import { Response } from "express";
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import { AccoutingService } from "@common/domain/service/service_accouting/accouting.service";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("accouting")
 @UseGuards(JwtAuthGuard, RolesGuard)

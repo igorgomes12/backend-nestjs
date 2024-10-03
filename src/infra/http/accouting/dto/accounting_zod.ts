@@ -1,5 +1,5 @@
-import { formatCNPJ } from "@infra/utils/regex/cpnj";
-import { formatPhone } from "@infra/utils/regex/phone";
+import { formatCNPJ } from "@common/utils/regex/cpnj";
+import { formatPhone } from "@common/utils/regex/phone";
 import z from "zod";
 
 export const AccountingSchema = z.object({

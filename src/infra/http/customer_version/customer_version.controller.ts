@@ -1,7 +1,6 @@
-import { JwtAuthGuard } from "@infra/auth/guards/decorators/jwt_auth.decorator";
-import { Roles } from "@infra/repositories/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/repositories/middleware/pipes/zod_validation_pipes";
-import { RolesGuard } from "@infra/repositories/middleware/roles_guard";
+import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
   Body,
   Controller,
@@ -25,6 +24,7 @@ import {
 import { CreateCustomerSystemUsecase } from "../../../common/domain/usecases/usecases_customer_system/create_customer.usecases";
 import { TInput } from "@common/domain/entities/entities_customer_system/customer_version.entity";
 import { ListCustomerSystemUsecase } from "@common/domain/usecases/usecases_customer_system/list_customer.usecases";
+import { JwtAuthGuard } from "../guards/decorators/jwt_auth.decorator";
 
 @Controller("customer-version")
 @UseFilters(AllExceptionsFilter)
