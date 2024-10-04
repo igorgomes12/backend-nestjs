@@ -1,0 +1,8 @@
+Arctcheture:
+    ✔ Entitites (regras de negócio mais gerais e estáveis) @done(24-10-04 08:45)
+    ✔ Usecases (controle de fluxo de dados entre as entities, definindo como as funcionalidades são executadas) @done(24-10-04 08:47)
+    ✔ Interfaces (controllers, presenters e gateways) @done(24-10-04 08:47)
+    ✔ Infrastructure (camada externa, frameworks web, bd, interação com o mundo externo) @done(24-10-04 08:47)
+    ✔ Domain (domínio de negócio) @done(24-10-04 08:47)
+    ✔ Core (funcionalidades comuns) @done(24-10-04 08:47)
+                 

@@ -8,6 +8,8 @@ export abstract class AccoutingServiceMethods {
   abstract findById(user_id: number): Promise<AccountingFindAllEntity | null>;
   abstract findByEmail(email: string): Promise<AccountingFindAllEntity | null>;
   abstract create(user: TAccountingSchema): Promise<AccountingFindAllEntity>;
+  abstract findByCNPJ(cnpj: string): Promise<AccountingFindAllEntity | null>;
+
   abstract update(
     user_id: number,
     user: Partial<AccountingFindAllEntity>

@@ -1,4 +1,6 @@
+import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
 import { Roles } from "@infra/http/middleware/decorator.rolues";
+import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import {
   BadRequestException,
@@ -11,29 +13,29 @@ import {
   Patch,
   Post,
   Query,
-  Res,
   UseFilters,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
+import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { CreateAccountingUseCase } from "features/accouting/domain/usecases/create-accounting.usecase";
+import { DeleteAccountUsecase } from "features/accouting/domain/usecases/delete-accounting.usecase";
+import { ListFindAllUseCase } from "features/accouting/domain/usecases/list-findAll.usecase";
+import { UpdateAccountingUseCase } from "features/accouting/domain/usecases/update-acoounting.usecase";
 import {
   AccountingSchema,
-  type TAccountingSchema,
+  TAccountingSchema,
 } from "../../../../features/accouting/domain/dto/accounting_zod";
-import { Response } from "express";
-import { RolesGuard } from "@infra/http/middleware/roles_guard";
-import { AccoutingService } from "@common/domain/service/service_accouting/accouting.service";
-import { AllExceptionsFilter } from "core/filters/exception.filter";
-import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
-import { ListFindAllUseCase } from "features/accouting/domain/usecases/list-findAll.usecase";
 
 @Controller("accouting")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseFilters(AllExceptionsFilter)
 export class AccoutingController {
   constructor(
-    private readonly accoutingService: AccoutingService,
-    private readonly listFindAllUseCase: ListFindAllUseCase
+    private readonly listFindAllUseCase: ListFindAllUseCase,
+    private readonly createAccountingUseCase: CreateAccountingUseCase,
+    private readonly deleteAccountUseCase: DeleteAccountUsecase,
+    private readonly updateAccountingUseCase: UpdateAccountingUseCase
   ) {}
 
   @Post()
@@ -47,8 +49,9 @@ export class AccoutingController {
   )
   @UsePipes(new ZodValidationPipe(AccountingSchema))
   @HttpCode(HttpStatus.OK)
-  create(@Body() data: TAccountingSchema) {
-    return this.accoutingService.create(data);
+  async create(@Body() data: TAccountingSchema) {
+    await this.createAccountingUseCase.execute(data);
+    return { message: "Criado com sucesso" };
   }
 
   @Get()
@@ -61,24 +64,19 @@ export class AccoutingController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  findAll(@Body() data: TAccountingSchema) {
-    return this.listFindAllUseCase.execute(data);
+  findAll(@Query() query: TAccountingSchema) {
+    return this.listFindAllUseCase.execute(query);
   }
   @Patch()
-  @Roles(
-    "ADMIN",
-    "FINANCE",
-    "REPRESENTATIVE",
-    "REPRESENTATIVE_SUPERVISOR",
-    "SUPPORT_SUPERVISOR",
-    "PROGRAMMING_SUPERVISOR"
-  )
-  @UsePipes(new ZodValidationPipe(AccountingSchema))
-  @HttpCode(HttpStatus.OK)
-  update(@Query("id") id: number, @Body() data: TAccountingSchema) {
-    if (isNaN(id)) throw new BadRequestException("ID está invalido");
-
-    return this.accoutingService.update(id, data);
+  async update(
+    @Query("id") id: string,
+    @Body() data: Partial<TAccountingSchema>
+  ) {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      throw new BadRequestException("ID deve ser um número válido");
+    }
+    return await this.updateAccountingUseCase.execute(numericId, data);
   }
 
   @Delete()
@@ -90,21 +88,9 @@ export class AccoutingController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(AccountingSchema))
   @HttpCode(HttpStatus.OK)
-  async remove(@Query("id") id: number, @Res() res: Response) {
-    try {
-      await this.accoutingService.remove(id);
-      res.status(HttpStatus.OK).json({ message: "Removido com sucesso" });
-    } catch (error) {
-      if (error === "P2025") {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: `O estabelecimento com ID ${id} já foi excluído.`,
-        });
-      }
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: `Erro ao excluir o estabelecimento com ID ${id}.`,
-      });
-    }
+  async remove(@Query("id") id: number) {
+    await this.deleteAccountUseCase.execute(id);
+    return { message: "Removido com sucesso" };
   }
 }

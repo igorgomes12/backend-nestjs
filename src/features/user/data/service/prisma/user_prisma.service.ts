@@ -89,6 +89,8 @@ export class UserPrismaService implements UserService {
           organization: parsedData.organization,
         },
       });
+      if (!createdUser)
+        throw new Error("Falha ao criar usuário, não tem usuário cadastrado");
 
       return new CreateEntitiy(
         createdUser.name,

@@ -6,32 +6,62 @@ import { AccoutingServiceMethods } from "features/accouting/domain/services/acco
 
 export class AccoutingPrismaService implements AccoutingServiceMethods {
   constructor(private readonly prisma: PrismaService) {}
+  async findByCNPJ(cnpj: string): Promise<AccountingFindAllEntity | null> {
+    try {
+      const account = await this.prisma.accounting.findFirst({
+        where: {
+          cnpj: cnpj,
+        },
+      });
+
+      if (!account) {
+        return null;
+      }
+
+      return new AccountingFindAllEntity(
+        account.id,
+        account.name,
+        account.phone,
+        account.email,
+        account.contact,
+        account.crc,
+        account.cnpj
+      );
+    } catch (error) {
+      console.error("Erro ao buscar CNPJ:", error);
+      throw new Error("Erro ao buscar CNPJ");
+    }
+  }
 
   findAll(params: TAccountingSchema): Promise<AccountingFindAllEntity[]> {
-    const data = this.prisma.accounting.findMany({
-      where: {
-        name: params.name,
-        cnpj: params.cnpj,
-        contact: params.contact,
-        crc: params.crc,
-        email: params.email,
-        phone: params.phone,
-      },
-      orderBy: {
-        id: "asc",
-      },
-      select: {
-        id: true,
-        name: true,
-        cnpj: true,
-        contact: true,
-        crc: true,
-        email: true,
-        phone: true,
-      },
-    });
-
-    return data;
+    try {
+      return this.prisma.accounting.findMany({
+        where: {
+          name: params.name,
+          cnpj: params.cnpj,
+          contact: params.contact,
+          crc: params.crc,
+          email: params.email,
+          phone: params.phone,
+        },
+        orderBy: {
+          id: "asc",
+        },
+        select: {
+          id: true,
+          name: true,
+          cnpj: true,
+          contact: true,
+          crc: true,
+          email: true,
+          phone: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        "Erro ao buscar dados de contabilidade"
+      );
+    }
   }
   findById(user_id: number): Promise<AccountingFindAllEntity | null> {
     const data = this.prisma.accounting.findUnique({

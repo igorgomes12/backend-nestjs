@@ -52,6 +52,7 @@ import { accountingServiceFactory } from "features/accouting/data/service";
     DeleteUserUsecase,
     UpdateUserUsecase,
     UserServiceFactory,
+    AccoutingModule,
     accountingServiceFactory,
     {
       provide: LoginUseCase,

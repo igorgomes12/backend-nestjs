@@ -1,19 +1,27 @@
-import type { TAccountingSchema } from "../dto/accounting_zod";
-import type { AccountingFindAllEntity } from "../entity/accouting-findAll.entity";
-import type { AccoutingServiceMethods } from "../services/accouting.service";
+import {
+  Injectable,
+  Inject,
+  InternalServerErrorException,
+} from "@nestjs/common";
+import { TAccountingSchema } from "../dto/accounting_zod";
+import { AccountingFindAllEntity } from "../entity/accouting-findAll.entity";
+import { AccoutingServiceMethods } from "../services/accouting.service";
 
+@Injectable()
 export class ListFindAllUseCase {
-  constructor(private readonly service: AccoutingServiceMethods) {}
-  async execute(data: TAccountingSchema): Promise<AccountingFindAllEntity[]> {
-    const result = await this.service.findAll({
-      name: data.name,
-      cnpj: data.cnpj,
-      contact: data.contact,
-      crc: data.crc,
-      email: data.email,
-      phone: data.phone,
-    });
+  constructor(
+    @Inject("AccoutingServiceMethods")
+    private readonly service: AccoutingServiceMethods
+  ) {}
 
-    return result;
+  async execute(data: TAccountingSchema): Promise<AccountingFindAllEntity[]> {
+    try {
+      const result = await this.service.findAll({
+        ...data,
+      });
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }
