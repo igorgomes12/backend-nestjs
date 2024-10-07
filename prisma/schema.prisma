@@ -182,3 +182,70 @@ model Municipio {
   mun_ds_estado    String
   mun_cd_estado    Int
 }
+
+model Contracts {
+  id             String         @id @default(uuid())
+  customer_id    String
+  start_date     DateTime
+  end_date       DateTime
+  status         ContractStatus
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  first_due_date DateTime
+  number         String
+  observation    String?
+  monthly_fee    Float
+  seller_id      String
+  fee_type       FeeType
+
+  Licenses        Licenses[]
+  Payments        Payments[]
+  ContractHistory ContractHistory[]
+}
+
+model Licenses {
+  id          Int       @id @default(autoincrement())
+  contract_id String
+  system_id   String
+  settings    Json
+  deleted_at  DateTime?
+  monthly_fee Float
+
+  Contracts Contracts @relation(fields: [contract_id], references: [id])
+}
+
+model Payments {
+  id           String   @id @default(uuid())
+  contract_id  String
+  payment_type String
+  amount       Float
+  payment_data Json
+  created_at   DateTime @default(now())
+  user_id      String
+
+  Contracts Contracts @relation(fields: [contract_id], references: [id])
+}
+
+model ContractHistory {
+  id                  String    @id @default(uuid())
+  contract_id         String
+  old_value           Float
+  new_value           Float
+  changed_at          DateTime
+  changed_by          String
+  cancellation_date   DateTime?
+  cancellation_reason String?
+
+  Contracts Contracts @relation(fields: [contract_id], references: [id])
+}
+
+enum ContractStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+}
+
+enum FeeType {
+  FIXED
+  VARIABLE
+}
