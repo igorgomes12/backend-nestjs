@@ -5,6 +5,8 @@ import { APP_PIPE } from "@nestjs/core";
 import { clientServiceFactory } from "features/clients/data/service";
 import { FindAllClientUseCase } from "features/clients/domain/usecases/find-all-client.usecase";
 import { CreateClientUseCase } from "features/clients/domain/usecases/create-client.usecase";
+import { DeleteClientUsecase } from "features/clients/domain/usecases/delete-client.usecase";
+import { UpdateClientUsecase } from "features/clients/domain/usecases/update-client.usecase";
 
 @Module({
   controllers: [ClientController],
@@ -12,6 +14,8 @@ import { CreateClientUseCase } from "features/clients/domain/usecases/create-cli
     PrismaService,
     FindAllClientUseCase,
     CreateClientUseCase,
+    DeleteClientUsecase,
+    UpdateClientUsecase,
     clientServiceFactory,
     {
       provide: APP_PIPE,

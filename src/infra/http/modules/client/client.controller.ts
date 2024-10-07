@@ -1,12 +1,16 @@
 import { Roles } from "@infra/http/middleware/decorator.rolues";
 import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
+  Query,
   UseFilters,
   UseGuards,
   UsePipes,
@@ -20,17 +24,20 @@ import { CreateClientUseCase } from "features/clients/domain/usecases/create-cli
 import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import {
   ClientSchema,
-  type TClient,
+  TClient,
 } from "features/clients/domain/dto/zod_client.schema";
+import { DeleteClientUsecase } from "features/clients/domain/usecases/delete-client.usecase";
+import { UpdateClientUsecase } from "features/clients/domain/usecases/update-client.usecase";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseFilters(AllExceptionsFilter)
-@UsePipes(new ZodValidationPipe(ClientSchema))
 export class ClientController {
   constructor(
     private readonly findAllClientUseCase: FindAllClientUseCase,
-    private readonly createClientUseCase: CreateClientUseCase
+    private readonly createClientUseCase: CreateClientUseCase,
+    private readonly deleteClientUseCase: DeleteClientUsecase,
+    private readonly updateClientUseCase: UpdateClientUsecase
   ) {}
 
   @Post()
@@ -67,37 +74,36 @@ export class ClientController {
     return await this.findAllClientUseCase.execute();
   }
 
-  // @Patch()
-  // @HttpCode(HttpStatus.OK)
-  // @Roles(
-  //   "ADMIN",
-  //   "FINANCE",
-  //   "REPRESENTATIVE",
-  //   "REPRESENTATIVE_SUPERVISOR",
-  //   "SUPPORT_SUPERVISOR",
-  //   "PROGRAMMING_SUPERVISOR"
-  // )
-  // async update(@Query("id") id: string, @Body() updateClientDto: TClient) {
-  //   const clientId = Number(id);
-  //   if (isNaN(clientId)) {
-  //     throw new BadRequestException("ID inválido fornecido.");
-  //   }
+  @Patch()
+  @HttpCode(HttpStatus.OK)
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  async update(@Query("id") id: string, @Body() updateClientDto: TClient) {
+    const clientId = Number(id);
+    if (isNaN(clientId)) {
+      throw new BadRequestException("ID inválido fornecido.");
+    }
 
-  //   return this.clientService.update(clientId, updateClientDto);
-  // }
-  // @Delete()
-  // @HttpCode(HttpStatus.OK)
-  // @Roles(
-  //   "ADMIN",
-  //   "FINANCE",
-  //   "REPRESENTATIVE",
-  //   "REPRESENTATIVE_SUPERVISOR",
-  //   "SUPPORT_SUPERVISOR",
-  //   "PROGRAMMING_SUPERVISOR"
-  // )
-  // @UsePipes(new ZodValidationPipe(ClientSchema))
-  // async remove(@Query("id") id: number) {
-  //   await this.clientService.remove(id);
-  //   return { message: "Removido com sucesso" };
-  // }
+    return this.updateClientUseCase.execute(clientId, updateClientDto);
+  }
+  @Delete()
+  @HttpCode(HttpStatus.OK)
+  @Roles(
+    "ADMIN",
+    "FINANCE",
+    "REPRESENTATIVE",
+    "REPRESENTATIVE_SUPERVISOR",
+    "SUPPORT_SUPERVISOR",
+    "PROGRAMMING_SUPERVISOR"
+  )
+  async remove(@Query("id") id: number) {
+    await this.deleteClientUseCase.execute(id);
+    return { message: "Removido com sucesso" };
+  }
 }

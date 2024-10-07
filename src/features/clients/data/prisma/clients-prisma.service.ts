@@ -52,6 +52,50 @@ export class ClientsPrismaService implements ClientEntityService {
     );
   }
 
+  async findById(user_id: number): Promise<ClientEntity | null> {
+    const client = await this.prisma.client.findUnique({
+      where: { id: user_id },
+      include: {
+        contacts: true,
+        address: true,
+        owner: true,
+      },
+    });
+
+    if (!client) {
+      return null;
+    }
+
+    return new ClientEntity({
+      id: client.id,
+      corporateName: client.corporate_name,
+      fantasyName: client.fantasy_name,
+      cpfCnpj: client.cpf_cnpj,
+      stateRegistration: client.state_registration,
+      municipalRegistration: client.municipal_registration || null,
+      ruralRegistration: client.rural_registration || null,
+      contacts: client.contacts.map((contact) => ({
+        description: contact.description,
+        contact: contact.contact,
+        type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
+        main_account: contact.main_account,
+      })),
+      addresses: client.address.map((addr) => ({
+        street: addr.street,
+        complement: addr.complement || null,
+        postalCode: addr.postal_code,
+        number: addr.number,
+        neighborhood: addr.neighborhood,
+        municipalityId: addr.municipality_id,
+      })),
+      owners: client.owner.map((owner) => ({
+        name: owner.name,
+        cpfCnpj: owner.cpf_cnpj,
+        birthDate: owner.birth_date.toISOString().split("T")[0],
+      })),
+    });
+  }
+
   async create(createClientDto: TClient): Promise<ClientEntity> {
     await this.validateClientData(createClientDto);
 
@@ -171,10 +215,22 @@ export class ClientsPrismaService implements ClientEntityService {
       console.log("Iniciando atualização do cliente:", id);
       console.log("Dados recebidos para atualização:", updateClientDto);
 
+      // Obtenha o cliente atual para comparação
+      const currentClient = await this.prisma.client.findUnique({
+        where: { id },
+        include: { contacts: true, address: true, owner: true },
+      });
+
+      if (!currentClient) {
+        throw new NotFoundException(`Cliente com ID ${id} não foi encontrado.`);
+      }
+
+      // Validação dos dados do cliente
       await this.validateClientData(updateClientDto, id);
 
       const clientData: any = {};
 
+      // Atualize somente os campos que foram modificados
       if (updateClientDto.corporate_name !== undefined) {
         clientData.corporate_name = updateClientDto.corporate_name;
       }
@@ -210,11 +266,21 @@ export class ClientsPrismaService implements ClientEntityService {
         clientData.establishment_typeId = updateClientDto.establishment_typeId;
       }
 
-      console.log("Dados preparados para atualização:", clientData);
-
+      // Atualização de contatos
       if (updateClientDto.contacts) {
+        const modifiedContacts = updateClientDto.contacts.filter((contact) => {
+          const existingContact = currentClient.contacts.find(
+            (c) => c.id === contact.id
+          );
+          return (
+            !existingContact || existingContact.contact !== contact.contact
+          );
+        });
+
+        await this.validateContacts(modifiedContacts, id);
+
         clientData.contacts = {
-          upsert: updateClientDto.contacts.map((contact) => ({
+          upsert: modifiedContacts.map((contact) => ({
             where: { id: contact.id || 0 },
             create: {
               description: contact.description,
@@ -232,6 +298,7 @@ export class ClientsPrismaService implements ClientEntityService {
         };
       }
 
+      // Atualização de endereços
       if (updateClientDto.address) {
         clientData.address = {
           upsert: updateClientDto.address.map((addr) => ({
@@ -270,6 +337,7 @@ export class ClientsPrismaService implements ClientEntityService {
         };
       }
 
+      // Atualização de proprietários
       if (updateClientDto.owner) {
         clientData.owner = {
           upsert: updateClientDto.owner.map((owner) => ({
@@ -424,33 +492,13 @@ export class ClientsPrismaService implements ClientEntityService {
   findByCpfCnpj(cpf_cnpj: string) {
     return this.prisma.client.findFirst({ where: { cpf_cnpj } });
   }
-  async validateContacts(contacts: TClient["contacts"]) {
+  async validateContacts(contacts: TClient["contacts"], clientId?: number) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const emailContacts = contacts.filter(
-      (contact) => contact.type === "EMAIL"
-    );
-
-    for (const contact of emailContacts) {
-      if (contact.contact === "teste@teste") {
-        throw new BadRequestException(
-          `O e-mail ${contact.contact} não é permitido.`
-        );
-      }
-
+    for (const contact of contacts.filter((c) => c.type === "EMAIL")) {
       if (!emailRegex.test(contact.contact)) {
         throw new BadRequestException(
           `O e-mail ${contact.contact} é inválido.`
-        );
-      }
-
-      const existingContact = await this.prisma.contact.findFirst({
-        where: { contact: contact.contact },
-      });
-
-      if (existingContact) {
-        throw new BadRequestException(
-          `O e-mail ${contact.contact} já está em uso.`
         );
       }
     }

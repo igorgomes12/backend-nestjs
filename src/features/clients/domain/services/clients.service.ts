@@ -8,6 +8,7 @@ export abstract class ClientEntityService {
   abstract update(id: number, data: TClient): Promise<ClientEntity>;
 
   abstract checkAccountExists(id_account: number): Promise<boolean>;
+  abstract findById(user_id: number): Promise<ClientEntity | null>;
 
   abstract remove(id: number): Promise<{
     message: string;
