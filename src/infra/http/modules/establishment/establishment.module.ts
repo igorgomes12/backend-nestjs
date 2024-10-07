@@ -1,12 +1,21 @@
-import { PrismaModule } from "@infra/auth/database/prisma.module";
-import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { Module } from "@nestjs/common";
+import { PrismaModule } from "@infra/auth/database/prisma.module";
 import { EstablishmentController } from "./establishment.controller";
-import { EstablishmentService } from "@common/domain/service/service_establishment/establishment.service";
+import { EstablishmentServiceFactory } from "features/establishment/data/service";
+import { FindAllEstablishmentUseCase } from "features/establishment/domain/usecases/find-all-establishment.usecase";
+import { CreateEstablishmentUsecase } from "features/establishment/domain/usecases/create-establishment.usecase";
+import { DeleteEstablishmentUsecase } from "features/establishment/domain/usecases/delete-establishment.usecase";
+import { UpdateEstablishmentUsecase } from "features/establishment/domain/usecases/update-establishment.usecase";
 
 @Module({
   imports: [PrismaModule],
   controllers: [EstablishmentController],
-  providers: [EstablishmentService, PrismaService],
+  providers: [
+    EstablishmentServiceFactory,
+    FindAllEstablishmentUseCase,
+    CreateEstablishmentUsecase,
+    UpdateEstablishmentUsecase,
+    DeleteEstablishmentUsecase,
+  ],
 })
 export class EstablishmentModule {}

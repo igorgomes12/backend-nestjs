@@ -9,7 +9,7 @@ export type EstablishmentOutput = {
   status: boolean;
 };
 
-export class Establishment {
+export class EstablishmentEntity {
   id: number;
   name: string;
   status: boolean;

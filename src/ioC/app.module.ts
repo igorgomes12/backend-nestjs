@@ -26,6 +26,7 @@ import { CustomerVersionModule } from "@infra/http/modules/customer_version/cust
 import { EstablishmentModule } from "@infra/http/modules/establishment/establishment.module";
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { accountingServiceFactory } from "features/accouting/data/service";
+import { EstablishmentServiceFactory } from "features/establishment/data/service";
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { accountingServiceFactory } from "features/accouting/data/service";
     UpdateUserUsecase,
     UserServiceFactory,
     AccoutingModule,
+    EstablishmentServiceFactory,
     accountingServiceFactory,
     {
       provide: LoginUseCase,

@@ -17,21 +17,30 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
+import { Response } from "express";
+
+import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
+import { FindAllEstablishmentUseCase } from "features/establishment/domain/usecases/find-all-establishment.usecase";
 import {
   schemaEstablished,
-  type SchemaEstablished,
-} from "./dto/create-establishment.dto";
-import { Response } from "express";
-import { EstablishmentService } from "@common/domain/service/service_establishment/establishment.service";
-import { AllExceptionsFilter } from "core/filters/exception.filter";
-import { Establishment } from "@common/domain/entities/entities_establishment/establishment.entity";
-import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
+  TSchemaEstablished,
+} from "features/establishment/domain/dto/create-establishment.dto";
+import { EstablishmentEntity } from "features/establishment/domain/entity/establishment.entity";
+import { CreateEstablishmentUsecase } from "features/establishment/domain/usecases/create-establishment.usecase";
+import { DeleteEstablishmentUsecase } from "features/establishment/domain/usecases/delete-establishment.usecase";
+import { UpdateEstablishmentUsecase } from "features/establishment/domain/usecases/update-establishment.usecase";
 
 @Controller("establishment")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseFilters(AllExceptionsFilter)
 export class EstablishmentController {
-  constructor(private readonly establishmentService: EstablishmentService) {}
+  constructor(
+    private readonly findAllEstablishmentUseCase: FindAllEstablishmentUseCase,
+    private readonly createEstablishmentUsecase: CreateEstablishmentUsecase,
+    private readonly deleteEstablishmentUsecase: DeleteEstablishmentUsecase,
+    private readonly updateEstablishmentUsecase: UpdateEstablishmentUsecase
+  ) {}
 
   @Post()
   @Roles(
@@ -44,28 +53,19 @@ export class EstablishmentController {
   )
   @UsePipes(new ZodValidationPipe(schemaEstablished))
   @HttpCode(HttpStatus.OK)
-  create(@Body() createEstablishmentDto: SchemaEstablished) {
-    return this.establishmentService.create(createEstablishmentDto);
+  async create(@Body() createEstablishmentDto: TSchemaEstablished) {
+    return await this.createEstablishmentUsecase.execute(
+      createEstablishmentDto
+    );
   }
-
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Query("status") status?: string,
-    @Query("name") name?: string,
-    @Query("id") id?: string
-  ): Promise<Establishment[]> {
-    const statusBoolean = status !== undefined ? status === "true" : undefined;
-    const idNumber = id !== undefined ? parseInt(id, 10) : undefined;
-
-    const result = await this.establishmentService.filter({
-      status: statusBoolean,
-      name,
-      id: idNumber,
-    });
-
-    return result;
+    @Query() query: Partial<TSchemaEstablished>
+  ): Promise<EstablishmentEntity[]> {
+    return await this.findAllEstablishmentUseCase.execute(query);
   }
+
   @Patch()
   @HttpCode(HttpStatus.OK)
   @Roles(
@@ -78,14 +78,14 @@ export class EstablishmentController {
   )
   update(
     @Query("id") id: number,
-    @Body() updateEstablishmentDto: SchemaEstablished
+    @Body() updateEstablishmentDto: TSchemaEstablished
   ) {
     const establishmentId = id;
     if (isNaN(establishmentId)) {
       throw new BadRequestException("Invalid ID");
     }
 
-    return this.establishmentService.update(
+    return this.updateEstablishmentUsecase.execute(
       establishmentId,
       updateEstablishmentDto
     );
@@ -103,7 +103,7 @@ export class EstablishmentController {
   @HttpCode(HttpStatus.OK)
   async remove(@Query("id") id: number, @Res() res: Response) {
     try {
-      await this.establishmentService.remove(id);
+      await this.deleteEstablishmentUsecase.execute(id);
       return res
         .status(HttpStatus.OK)
         .json({ message: "Removido com sucesso" });

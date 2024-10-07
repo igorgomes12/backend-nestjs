@@ -3,7 +3,7 @@ import { TAddress } from "../dto/zod_address.schema";
 import { TContact } from "../dto/zod_contact.schema";
 import { TAccounting } from "../dto/zod_accounting.schema";
 import { TSystemSchemaDto } from "@infra/http/modules/systems/dto/system.dto";
-import { SchemaEstablished } from "@infra/http/modules/establishment/dto/create-establishment.dto";
+import type { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto";
 
 export class ClientEntity {
   id?: number;
@@ -24,7 +24,7 @@ export class ClientEntity {
   contacts: TContact[];
   addresses: TAddress[];
   owners: TOwner[];
-  establishmentType?: SchemaEstablished;
+  establishmentType?: TSchemaEstablished;
   accounting?: TAccounting;
   systems?: TSystemSchemaDto;
 
