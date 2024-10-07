@@ -68,6 +68,7 @@ export class EstablishmentController {
 
   @Patch()
   @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(schemaEstablished))
   @Roles(
     "ADMIN",
     "FINANCE",
