@@ -5,11 +5,11 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { TSystemVersionSchemaDto } from "../../../../../features/system-version/domain/dto/system_version.dtos";
-import { ISystemVersionRepository } from "../../../domain/services/system_version.repositories";
+import { SystemVersionRepository } from "../../../domain/services/system_version.repositories";
 
 @Injectable()
 export class SystemVersionPrismaRepositories
-  implements ISystemVersionRepository
+  implements SystemVersionRepository
 {
   constructor(private readonly prisma: PrismaService) {}
 

@@ -1,8 +1,9 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { SystemVersionPrismaRepositories } from "@infra/http/modules/system_version/repositories/system_version_prisma.repositories";
+import { SystemVersionPrismaRepositories } from "./prisma/system-version.service";
+import { SystemVersionRepository } from "features/system-version/domain/services/system_version.repositories";
 
 const SystemVersionServiceFactory = {
-  provide: SystemVersionPrismaRepositories,
+  provide: SystemVersionRepository,
   useFactory: (prisma: PrismaService) =>
     new SystemVersionPrismaRepositories(prisma),
   inject: [PrismaService],

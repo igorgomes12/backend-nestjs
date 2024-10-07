@@ -1,16 +1,14 @@
-import { TSystemVersionSchemaDto } from "features/system-version/domain/dto/system_version.dtos";
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { SystemVersionPrismaRepositories } from "features/system-version/data/service/prisma/system-version.service";
+import { TSystemVersionSchemaDto } from "features/system-version/domain/dto/system_version.dtos";
+import { SystemVersionRepository } from "../services/system_version.repositories";
 
 @Injectable()
 export class UpdateSystemVersionUsecase {
-  constructor(
-    private readonly systemVersionService: SystemVersionPrismaRepositories
-  ) {}
+  constructor(private readonly systemVersionService: SystemVersionRepository) {}
 
   async execute(id: number, data: TSystemVersionSchemaDto) {
     if (!id) {

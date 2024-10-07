@@ -1,10 +1,8 @@
 import { NotFoundException } from "@nestjs/common";
-import { SystemVersionPrismaRepositories } from "features/system-version/data/service/prisma/system-version.service";
+import { SystemVersionRepository } from "../services/system_version.repositories";
 
 export class DeleteSystemVersionUsecase {
-  constructor(
-    private readonly systemVersionService: SystemVersionPrismaRepositories
-  ) {}
+  constructor(private readonly systemVersionService: SystemVersionRepository) {}
 
   async execute(id: number) {
     if (!id) {

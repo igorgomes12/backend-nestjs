@@ -1,11 +1,9 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { SystemVersionPrismaRepositories } from "features/system-version/data/service/prisma/system-version.service";
+import { SystemVersionRepository } from "../services/system_version.repositories";
 
 @Injectable()
 export class ListSystemVersionUsecase {
-  constructor(
-    private readonly systemVersionService: SystemVersionPrismaRepositories
-  ) {}
+  constructor(private readonly systemVersionService: SystemVersionRepository) {}
 
   async execute() {
     try {

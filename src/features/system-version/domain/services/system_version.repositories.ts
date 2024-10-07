@@ -1,14 +1,18 @@
 import { TSystemVersionSchemaDto } from "../dto/system_version.dtos";
 
-export interface ISystemVersionRepository {
-  findAll(): Promise<TSystemVersionSchemaDto[]>;
-  findOne(id: number): Promise<TSystemVersionSchemaDto | null>;
-  findByName(name: string): Promise<TSystemVersionSchemaDto | null>;
-  findByVersion(version: string): Promise<TSystemVersionSchemaDto | null>;
-  create(data: TSystemVersionSchemaDto): Promise<TSystemVersionSchemaDto>;
-  update(
+export abstract class SystemVersionRepository {
+  abstract findAll(): Promise<TSystemVersionSchemaDto[]>;
+  abstract findOne(id: number): Promise<TSystemVersionSchemaDto | null>;
+  abstract findByName(name: string): Promise<TSystemVersionSchemaDto | null>;
+  abstract findByVersion(
+    version: string
+  ): Promise<TSystemVersionSchemaDto | null>;
+  abstract create(
+    data: TSystemVersionSchemaDto
+  ): Promise<TSystemVersionSchemaDto>;
+  abstract update(
     id: number,
     data: TSystemVersionSchemaDto
   ): Promise<TSystemVersionSchemaDto>;
-  remove(id: number): Promise<{ message: string }>;
+  abstract remove(id: number): Promise<{ message: string }>;
 }

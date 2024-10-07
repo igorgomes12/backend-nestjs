@@ -58,8 +58,6 @@ import { SystemVersionServiceFactory } from "features/system-version/data/servic
     AccoutingModule,
     EstablishmentServiceFactory,
     accountingServiceFactory,
-    SystemServiceFactory,
-    SystemVersionServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>
