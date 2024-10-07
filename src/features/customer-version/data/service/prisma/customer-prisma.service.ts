@@ -1,14 +1,14 @@
+import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
+import {
+  CustomerVersion,
+  TInput,
+} from "features/customer-version/domain/entity/customer_version.entity";
 import { CustomerSystemVersionRepositoryTypes } from "../../../../../features/customer-version/domain/services/customer_system_version_types.repositories";
 import {
   NotFoundException,
   Injectable,
   InternalServerErrorException,
 } from "@nestjs/common";
-import {
-  CustomerVersion,
-  type TInput,
-} from "../../../../../features/customer-version/domain/entity/customer_version.entity";
-import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 
 @Injectable()
 export class CustomerSystemVersionRepositories

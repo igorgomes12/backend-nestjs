@@ -1,10 +1,10 @@
-import { CustomerVersionService } from "@common/domain/service/service_customer_system/customer_version.service";
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { CustomerSystemVersionRepositoryTypes } from "../services/customer_system_version_types.repositories";
 
 @Injectable()
 export class ListCustomerSystemUsecase {
   constructor(
-    private readonly customerVersionService: CustomerVersionService
+    private readonly customerVersionService: CustomerSystemVersionRepositoryTypes
   ) {}
 
   async execute() {

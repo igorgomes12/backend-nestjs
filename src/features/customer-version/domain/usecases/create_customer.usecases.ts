@@ -1,19 +1,20 @@
 import {
-  NotFoundException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
 
-import { CustomerVersionService } from "../../service/service_customer_system/customer_version.service";
 import {
-  type TCustomerVersionDto,
+  TCustomerVersionDto,
   customerVersionSchemaDto,
-} from "@infra/http/modules/customer_version/dto/zod_customer.dto";
+} from "features/customer-version/domain/dto/zod_customer.dto";
+import { CustomerSystemVersionRepositoryTypes } from "../services/customer_system_version_types.repositories";
+import { CustomerVersion } from "../entity/customer_version.entity";
 
 @Injectable()
 export class CreateCustomerSystemUsecase {
   constructor(
-    private readonly customerVersionService: CustomerVersionService
+    private readonly customerVersionService: CustomerSystemVersionRepositoryTypes
   ) {}
 
   async execute(data: TCustomerVersionDto) {
@@ -44,7 +45,6 @@ export class CreateCustomerSystemUsecase {
       );
     }
 
-    // Verificar se a versão já está cadastrada para o system_id
     const existingVersion =
       await this.customerVersionService.findBySystemIdAndVersion(
         system_id,
@@ -57,12 +57,15 @@ export class CreateCustomerSystemUsecase {
     }
 
     try {
-      const result = await this.customerVersionService.create({
+      const newCustomerVersion = new CustomerVersion({
         system_id,
         version,
         customer_id,
         assigned_date,
       });
+
+      const result =
+        await this.customerVersionService.create(newCustomerVersion);
       return result;
     } catch (error) {
       if (error instanceof ConflictException) {

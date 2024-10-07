@@ -1,9 +1,9 @@
-import type { CustomerSystemVersionRepositories } from "@infra/http/modules/customer_version/repositories/customer_system_version.repositories";
 import { NotFoundException } from "@nestjs/common";
+import type { CustomerSystemVersionRepositoryTypes } from "../services/customer_system_version_types.repositories";
 
 export class DeleteCustomerUsecase {
   constructor(
-    private readonly customerRepository: CustomerSystemVersionRepositories
+    private readonly customerRepository: CustomerSystemVersionRepositoryTypes
   ) {}
   async execute(id: number) {
     if (!id) {

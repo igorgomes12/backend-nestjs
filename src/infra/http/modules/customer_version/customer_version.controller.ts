@@ -1,6 +1,7 @@
+import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
 import { Roles } from "@infra/http/middleware/decorator.rolues";
-import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import { RolesGuard } from "@infra/http/middleware/roles_guard";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import {
   Body,
   Controller,
@@ -16,24 +17,25 @@ import {
   UsePipes,
 } from "@nestjs/common";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { CustomerVersion } from "features/customer-version/domain/entity/customer_version.entity";
+import { CreateCustomerSystemUsecase } from "features/customer-version/domain/usecases/create_customer.usecases";
+import { DeleteCustomerUsecase } from "features/customer-version/domain/usecases/delete_customer.usecases";
+import { ListCustomerSystemUsecase } from "features/customer-version/domain/usecases/list_customer.usecases";
+import { UpdateCustomerUseCase } from "features/customer-version/domain/usecases/update_customer.usecase";
 import {
   customerVersionSchemaDto,
   TCustomerVersionDto,
-} from "./dto/zod_customer.dto";
-import { TInput } from "@common/domain/entities/entities_customer_system/customer_version.entity";
-import { ListCustomerSystemUsecase } from "@common/domain/usecases/usecases_customer_system/list_customer.usecases";
-import { CustomerVersionService } from "@common/domain/service/service_customer_system/customer_version.service";
-import { CreateCustomerSystemUsecase } from "@common/domain/usecases/usecases_customer_system/create_customer.usecases";
-import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
+} from "../../../../features/customer-version/domain/dto/zod_customer.dto";
 
 @Controller("customer-version")
 @UseFilters(AllExceptionsFilter)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CustomerVersionController {
   constructor(
-    private readonly customerVersionService: CustomerVersionService,
     private readonly createCustomerSystemUsecase: CreateCustomerSystemUsecase,
-    private readonly listCustomerSystemUsecase: ListCustomerSystemUsecase
+    private readonly listCustomerSystemUsecase: ListCustomerSystemUsecase,
+    private readonly deleteCustomerSystemUsecase: DeleteCustomerUsecase,
+    private readonly updateCustomerUseCase: UpdateCustomerUseCase
   ) {}
 
   @Post()
@@ -72,20 +74,10 @@ export class CustomerVersionController {
     }
   }
 
-  @Get()
-  async findOne(@Query("id") id: number) {
-    try {
-      const result = await this.customerVersionService.findOne(id);
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   @Patch()
-  async update(@Query("id") id: number, @Body() data: Partial<TInput>) {
+  async update(@Query("id") id: number, @Body() data: CustomerVersion) {
     try {
-      const result = await this.customerVersionService.update(id, data);
+      const result = await this.updateCustomerUseCase.execute(id, data);
       return result;
     } catch (error) {
       throw error;
@@ -95,7 +87,7 @@ export class CustomerVersionController {
   @Delete()
   async remove(@Query("id") id: number) {
     try {
-      const result = await this.customerVersionService.remove(id);
+      const result = await this.deleteCustomerSystemUsecase.execute(id);
       return result;
     } catch (error) {
       throw error;
