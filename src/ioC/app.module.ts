@@ -14,21 +14,20 @@ import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.
 import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 import { HttpModule } from "../infra/auth/jwt/http.module";
 
-import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
-import { AppController } from "../infra/http/modules/user/app.controller";
-import { JwtStrategy } from "@infra/http/guards/strategies/jwt.strategy";
 import { AuthModule } from "@infra/auth/jwt/auth.module";
-import { SystemVersionModule } from "@infra/http/modules/system_version/system_version.module";
+import { JwtStrategy } from "@infra/http/guards/strategies/jwt.strategy";
 import { AccoutingModule } from "@infra/http/modules/accouting/accouting.module";
 import { ClientModule } from "@infra/http/modules/client/client.module";
 import { CustomerVersionModule } from "@infra/http/modules/customer_version/customer_version.module";
 import { EstablishmentModule } from "@infra/http/modules/establishment/establishment.module";
-import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
+import { LincesesModule } from "@infra/http/modules/linceses/linceses.module";
+import { SystemVersionModule } from "@infra/http/modules/system_version/system_version.module";
+import { SystemsModule } from "@infra/http/modules/systems/systems.module";
 import { accountingServiceFactory } from "features/accouting/data/service";
 import { EstablishmentServiceFactory } from "features/establishment/data/service";
-import { SystemsModule } from "@infra/http/modules/systems/systems.module";
-import { SystemServiceFactory } from "features/systems/data/service";
-import { SystemVersionServiceFactory } from "features/system-version/data/service";
+import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
+import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
+import { AppController } from "../infra/http/modules/user/app.controller";
 
 @Module({
   imports: [
@@ -45,6 +44,7 @@ import { SystemVersionServiceFactory } from "features/system-version/data/servic
     SystemsModule,
     SystemVersionModule,
     CustomerVersionModule,
+    LincesesModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
