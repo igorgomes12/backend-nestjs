@@ -19,15 +19,15 @@ import {
   SystemVersionSchemaDto,
   TSystemVersionSchemaDto,
   type TPostValid,
-} from "./dto/system_version.dtos";
+} from "../../../../features/system-version/domain/dto/system_version.dtos";
 
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
 
-import { CreateSystemVersionUseCase } from "@common/domain/usecases/usecases_system_version/create_system_version.usecases";
-import { DeleteSystemVersionUsecase } from "@common/domain/usecases/usecases_system_version/delete_system_version.usecases";
-import { ListSystemVersionUsecase } from "@common/domain/usecases/usecases_system_version/list_system_version.usecase";
-import { UpdateSystemVersionUsecase } from "@common/domain/usecases/usecases_system_version/update_system_version.usecase";
+import { CreateSystemVersionUseCase } from "features/system-version/domain/usecases/create_system_version.usecases";
+import { DeleteSystemVersionUsecase } from "features/system-version/domain/usecases/delete_system_version.usecases";
+import { ListSystemVersionUsecase } from "features/system-version/domain/usecases/list_system_version.usecase";
+import { UpdateSystemVersionUsecase } from "features/system-version/domain/usecases/update_system_version.usecase";
 
 @Controller("system-version")
 @UseFilters(AllExceptionsFilter)

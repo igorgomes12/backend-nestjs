@@ -18,7 +18,6 @@ import { AuthenticateController } from "../infra/http/modules/sign-up/authentica
 import { AppController } from "../infra/http/modules/user/app.controller";
 import { JwtStrategy } from "@infra/http/guards/strategies/jwt.strategy";
 import { AuthModule } from "@infra/auth/jwt/auth.module";
-import { SystemsModule } from "@infra/http/modules/systems/systems.module";
 import { SystemVersionModule } from "@infra/http/modules/system_version/system_version.module";
 import { AccoutingModule } from "@infra/http/modules/accouting/accouting.module";
 import { ClientModule } from "@infra/http/modules/client/client.module";
@@ -27,6 +26,9 @@ import { EstablishmentModule } from "@infra/http/modules/establishment/establish
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { accountingServiceFactory } from "features/accouting/data/service";
 import { EstablishmentServiceFactory } from "features/establishment/data/service";
+import { SystemsModule } from "@infra/http/modules/systems/systems.module";
+import { SystemServiceFactory } from "features/systems/data/service";
+import { SystemVersionServiceFactory } from "features/system-version/data/service";
 
 @Module({
   imports: [
@@ -56,6 +58,8 @@ import { EstablishmentServiceFactory } from "features/establishment/data/service
     AccoutingModule,
     EstablishmentServiceFactory,
     accountingServiceFactory,
+    SystemServiceFactory,
+    SystemVersionServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>

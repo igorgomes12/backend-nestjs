@@ -14,12 +14,16 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { CreateSystemUsecase } from "@common/domain/usecases/usecases_system/create_system.usecases";
-import { DeleteSystemUsecase } from "@common/domain/usecases/usecases_system/delete_system.usecases";
-import { FindAllSystemsUseCase } from "@common/domain/usecases/usecases_system/system.usecases";
-import { UpdateSystemUsecase } from "@common/domain/usecases/usecases_system/update_system.usecases";
-import { systemSchemaDto, TSystemSchemaDto } from "./dto/system.dto";
+
+import {
+  systemSchemaDto,
+  TSystemSchemaDto,
+} from "../../../../features/systems/domain/dto/system.dto";
 import { JwtAuthGuard } from "@infra/http/guards/decorators/jwt_auth.decorator";
+import { CreateSystemUsecase } from "features/systems/domain/usecases/create_system.usecases";
+import { DeleteSystemUsecase } from "features/systems/domain/usecases/delete_system.usecases";
+import { FindAllSystemsUseCase } from "features/systems/domain/usecases/system.usecases";
+import { UpdateSystemUsecase } from "features/systems/domain/usecases/update_system.usecases";
 
 @Controller("systems")
 @UseGuards(JwtAuthGuard, RolesGuard)

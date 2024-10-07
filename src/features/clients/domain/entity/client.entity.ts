@@ -2,7 +2,7 @@ import { TOwner } from "../dto/zod_owner.schema";
 import { TAddress } from "../dto/zod_address.schema";
 import { TContact } from "../dto/zod_contact.schema";
 import { TAccounting } from "../dto/zod_accounting.schema";
-import { TSystemSchemaDto } from "@infra/http/modules/systems/dto/system.dto";
+import { TSystemSchemaDto } from "features/systems/domain/dto/system.dto";
 import type { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto";
 
 export class ClientEntity {

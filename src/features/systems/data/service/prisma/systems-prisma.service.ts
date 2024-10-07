@@ -5,12 +5,12 @@ import {
   NotFoundException,
   NotImplementedException,
 } from "@nestjs/common";
-import { TSystemSchemaDto } from "../dto/system.dto";
-import { ISystemRepository } from "./system.repositories";
+import { TSystemSchemaDto } from "../../../../../features/systems/domain/dto/system.dto";
 import { Prisma } from "@prisma/client";
+import { SystemRepository } from "features/systems/domain/services/system.repositories";
 
 @Injectable()
-export class SystemRepository implements ISystemRepository {
+export class SystemPrismaRepository implements SystemRepository {
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<TSystemSchemaDto[]> {

@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { SystemPrismaRepository } from "features/systems/data/service/prisma/systems-prisma.service";
 
-import { SystemsService } from "../../service/service_system/systems.service";
 import {
   type TSystemSchemaDto,
   systemSchemaDto,
-} from "@infra/http/modules/systems/dto/system.dto";
+} from "features/systems/domain/dto/system.dto";
 
 @Injectable()
 export class UpdateSystemUsecase {
-  constructor(private readonly systemsService: SystemsService) {}
+  constructor(private readonly systemsService: SystemPrismaRepository) {}
 
   async execute(id: number, data: TSystemSchemaDto) {
     const existingSystem = await this.systemsService.findOne(id);

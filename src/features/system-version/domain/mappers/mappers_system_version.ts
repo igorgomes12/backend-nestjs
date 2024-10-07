@@ -1,9 +1,9 @@
-import { SystemVersion } from "@common/domain/entities/entities_system_version/system_version.entity";
 import { TSystemVersionSchemaDto } from "../dto/system_version.dtos";
+import { SystemVersionEntity } from "../entity/system_version.entity";
 
 export class SystemMapper {
-  static toEntity(dto: TSystemVersionSchemaDto): SystemVersion {
-    return new SystemVersion({
+  static toEntity(dto: TSystemVersionSchemaDto): SystemVersionEntity {
+    return new SystemVersionEntity({
       system_id: dto.system_id,
       version_number: dto.version,
       release_date: dto.release_date,
@@ -11,7 +11,7 @@ export class SystemMapper {
     });
   }
 
-  static toDto(entity: SystemVersion): TSystemVersionSchemaDto {
+  static toDto(entity: SystemVersionEntity): TSystemVersionSchemaDto {
     return {
       description: entity.description,
       release_date: entity.release_date,

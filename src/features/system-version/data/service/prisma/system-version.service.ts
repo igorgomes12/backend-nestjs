@@ -4,8 +4,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { TSystemVersionSchemaDto } from "../dto/system_version.dtos";
-import { ISystemVersionRepository } from "../repositories/system_version.repositories";
+import { TSystemVersionSchemaDto } from "../../../../../features/system-version/domain/dto/system_version.dtos";
+import { ISystemVersionRepository } from "../../../domain/services/system_version.repositories";
 
 @Injectable()
 export class SystemVersionPrismaRepositories

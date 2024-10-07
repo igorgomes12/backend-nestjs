@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { SystemsService } from "../../service/service_system/systems.service";
+import { SystemPrismaRepository } from "features/systems/data/service/prisma/systems-prisma.service";
 
 @Injectable()
 export class DeleteSystemUsecase {
-  constructor(private readonly systemsService: SystemsService) {}
+  constructor(private readonly systemsService: SystemPrismaRepository) {}
 
   async execute(id: number) {
     if (!id) {

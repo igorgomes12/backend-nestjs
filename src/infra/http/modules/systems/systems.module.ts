@@ -1,24 +1,18 @@
-import { Module } from "@nestjs/common";
-import { SystemsController } from "./systems.controller";
-import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { PrismaModule } from "@infra/auth/database/prisma.module";
-import { SystemRepository } from "./repositories/system_prisma.repositories";
-import { SystemsService } from "@common/domain/service/service_system/systems.service";
-import { CreateSystemUsecase } from "@common/domain/usecases/usecases_system/create_system.usecases";
-import { DeleteSystemUsecase } from "@common/domain/usecases/usecases_system/delete_system.usecases";
-import { FindAllSystemsUseCase } from "@common/domain/usecases/usecases_system/system.usecases";
-import { UpdateSystemUsecase } from "@common/domain/usecases/usecases_system/update_system.usecases";
+import { Module } from "@nestjs/common";
+import { SystemsController } from "../systems/systems.controller";
+
+import { SystemServiceFactory } from "features/systems/data/service";
+import { CreateSystemUsecase } from "features/systems/domain/usecases/create_system.usecases";
+import { DeleteSystemUsecase } from "features/systems/domain/usecases/delete_system.usecases";
+import { FindAllSystemsUseCase } from "features/systems/domain/usecases/system.usecases";
+import { UpdateSystemUsecase } from "features/systems/domain/usecases/update_system.usecases";
 
 @Module({
   imports: [PrismaModule],
   controllers: [SystemsController],
   providers: [
-    SystemsService,
-    PrismaService,
-    {
-      provide: "ISystemRepository",
-      useClass: SystemRepository,
-    },
+    SystemServiceFactory,
     FindAllSystemsUseCase,
     CreateSystemUsecase,
     UpdateSystemUsecase,
