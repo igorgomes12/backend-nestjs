@@ -10,19 +10,18 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
-  Param,
   Patch,
   Post,
   Query,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { LicensesService } from "features/licenses/data/service/prisma/licenses-prisma.service";
 import {
   licensesSchemaDto,
   TLicensesSchemaDto,
 } from "features/licenses/domain/dto/licenses.dto";
 import { CreateLicenseUsecase } from "features/licenses/domain/usecases/create.usecase";
+import { DeleteLicenseUsecase } from "features/licenses/domain/usecases/delete.usecase";
 import { FindAllLicensesUseCase } from "features/licenses/domain/usecases/find-all.usecase";
 import { UpdateLicenseUsecase } from "features/licenses/domain/usecases/update.usecase";
 
@@ -38,10 +37,10 @@ import { UpdateLicenseUsecase } from "features/licenses/domain/usecases/update.u
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class LicensesController {
   constructor(
-    private readonly licensesService: LicensesService,
     private readonly findAllLicensesUseCase: FindAllLicensesUseCase,
     private readonly createLicenseUsecase: CreateLicenseUsecase,
-    private readonly updateLicenseUsecase: UpdateLicenseUsecase
+    private readonly updateLicenseUsecase: UpdateLicenseUsecase,
+    private readonly deleteLicenseUsecase: DeleteLicenseUsecase
   ) {}
 
   @Post()
@@ -56,12 +55,6 @@ export class LicensesController {
   findAll() {
     return this.findAllLicensesUseCase.execute();
   }
-
-  @Get()
-  findOne(@Param("id") id: number) {
-    return this.licensesService.findOne(+id);
-  }
-
   @Patch()
   @HttpCode(HttpStatus.OK)
   async update(
@@ -75,8 +68,8 @@ export class LicensesController {
     return res;
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: number) {
-    return this.licensesService.remove(+id);
+  @Delete()
+  remove(@Query("id") id: number) {
+    return this.deleteLicenseUsecase.execute(id);
   }
 }

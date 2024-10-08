@@ -1,25 +1,12 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { TLicensesSchemaDto } from "features/licenses/domain/dto/licenses.dto";
-import {
-  LicenseEntity,
-  type Settings,
-} from "features/licenses/domain/entity/lincese.entity";
+import { LicenseEntity } from "features/licenses/domain/entity/lincese.entity";
 import { LicensesTypesService } from "features/licenses/domain/services/licenses-types.service";
 
 @Injectable()
 export class LicensesService implements LicensesTypesService {
   constructor(private readonly service: PrismaService) {}
-  findBySystemIdAndContractIdAndVersionAndName(
-    systemId: number,
-    contractId: string,
-    name: string
-  ): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findByName(name: string): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
 
   async findOne(id: number): Promise<LicenseEntity | null> {
     const license = await this.service.licenses.findUnique({
@@ -100,13 +87,6 @@ export class LicensesService implements LicensesTypesService {
     }
   }
 
-  // async findByName(name: string): Promise<LicenseEntity | null> {
-  //   const license = await this.service.licenses.findFirst({
-  //     where: { name },
-  //   });
-  //   return license ? this.toEntity(license) : null;
-  // }
-
   async findByContractId(contractId: string): Promise<LicenseEntity | null> {
     const license = await this.service.licenses.findFirst({
       where: { contract_id: contractId },
@@ -158,21 +138,4 @@ export class LicensesService implements LicensesTypesService {
     });
     return license ? this.toEntity(license) : null;
   }
-
-  // async findBySystemIdAndContractIdAndVersionAndName(
-  //   systemId: number,
-  //   contractId: string,
-
-  //   name: string
-  // ): Promise<LicenseEntity | null> {
-  //   const license = await this.service.licenses.findFirst({
-  //     where: {
-  //       system_id: systemId,
-  //       contract_id: contractId,
-
-  //       name,
-  //     },
-  //   });
-  //   return license ? this.toEntity(license) : null;
-  // }
 }

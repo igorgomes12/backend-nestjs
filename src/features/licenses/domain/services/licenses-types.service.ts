@@ -17,8 +17,6 @@ export abstract class LicensesTypesService {
 
   abstract remove(id: number): Promise<void>;
 
-  abstract findByName(name: string): Promise<LicenseEntity | null>;
-
   abstract findByContractId(contractId: string): Promise<LicenseEntity | null>;
 
   abstract findBySystemId(systemId: number): Promise<LicenseEntity | null>;
@@ -32,11 +30,5 @@ export abstract class LicensesTypesService {
   abstract findBySystemIdAndContractIdAndVersion(
     systemId: number,
     contractId: string
-  ): Promise<LicenseEntity | null>;
-
-  abstract findBySystemIdAndContractIdAndVersionAndName(
-    systemId: number,
-    contractId: string,
-    name: string
   ): Promise<LicenseEntity | null>;
 }

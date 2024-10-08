@@ -9,6 +9,7 @@ import {
 import { LicensesService } from "features/licenses/data/service/prisma/licenses-prisma.service";
 import { TLicensesSchemaDto } from "../dto/licenses.dto";
 import { LicenseEntity } from "../entity/lincese.entity";
+import { LicensesTypesService } from "../services/licenses-types.service";
 
 @Injectable()
 export class UpdateLicenseUsecase {
@@ -16,7 +17,7 @@ export class UpdateLicenseUsecase {
 
   constructor(
     @Inject(LicensesService)
-    private readonly licensesService: LicensesService
+    private readonly licensesService: LicensesTypesService
   ) {}
 
   async execute(

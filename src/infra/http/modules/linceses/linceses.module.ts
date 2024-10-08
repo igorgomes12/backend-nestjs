@@ -6,6 +6,7 @@ import { licenseServiceFactory } from "features/licenses/data/service";
 import { FindAllLicensesUseCase } from "features/licenses/domain/usecases/find-all.usecase";
 import { CreateLicenseUsecase } from "features/licenses/domain/usecases/create.usecase";
 import { UpdateLicenseUsecase } from "features/licenses/domain/usecases/update.usecase";
+import { DeleteLicenseUsecase } from "features/licenses/domain/usecases/delete.usecase";
 
 @Module({
   imports: [PrismaModule],
@@ -16,6 +17,7 @@ import { UpdateLicenseUsecase } from "features/licenses/domain/usecases/update.u
     FindAllLicensesUseCase,
     CreateLicenseUsecase,
     UpdateLicenseUsecase,
+    DeleteLicenseUsecase,
   ],
 })
 export class LincesesModule {}
