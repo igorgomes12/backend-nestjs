@@ -10,7 +10,7 @@ export class Settings {
 export class LicenseEntity {
   public id: number;
   public contract_id: string;
-  public system_id: string;
+  public system_id: number;
   public settings: Settings;
   public deleted_at: Date;
   public monthly_fee: number;

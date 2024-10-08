@@ -3,22 +3,28 @@ import { Roles } from "@infra/http/middleware/decorator.rolues";
 import { RolesGuard } from "@infra/http/middleware/roles_guard";
 import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  UsePipes,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
   UseGuards,
+  UsePipes,
 } from "@nestjs/common";
-import { LincesesService } from "features/licenses/data/service/prisma/licenses-prisma.service";
+import { LicensesService } from "features/licenses/data/service/prisma/licenses-prisma.service";
+import {
+  licensesSchemaDto,
+  TLicensesSchemaDto,
+} from "features/licenses/domain/dto/licenses.dto";
 import { CreateLicenseUsecase } from "features/licenses/domain/usecases/create.usecase";
 import { FindAllLicensesUseCase } from "features/licenses/domain/usecases/find-all.usecase";
-import { SystemVersionSchemaDto } from "features/system-version/domain/dto/system_version.dtos";
+import { UpdateLicenseUsecase } from "features/licenses/domain/usecases/update.usecase";
 
 @Controller("licenses")
 @Roles(
@@ -29,19 +35,20 @@ import { SystemVersionSchemaDto } from "features/system-version/domain/dto/syste
   "SUPPORT_SUPERVISOR",
   "PROGRAMMING_SUPERVISOR"
 )
-@UsePipes(new ZodValidationPipe(SystemVersionSchemaDto))
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class LincesesController {
+export class LicensesController {
   constructor(
-    private readonly lincesesService: LincesesService,
+    private readonly licensesService: LicensesService,
     private readonly findAllLicensesUseCase: FindAllLicensesUseCase,
-    private readonly createLicenseUsecase: CreateLicenseUsecase
+    private readonly createLicenseUsecase: CreateLicenseUsecase,
+    private readonly updateLicenseUsecase: UpdateLicenseUsecase
   ) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  create(@Body() createLinceseDto: any) {
-    return this.createLicenseUsecase.execute(createLinceseDto);
+  @UsePipes(new ZodValidationPipe(licensesSchemaDto))
+  create(@Body() createLicenseDto: TLicensesSchemaDto) {
+    return this.createLicenseUsecase.execute(createLicenseDto);
   }
 
   @Get()
@@ -51,17 +58,25 @@ export class LincesesController {
   }
 
   @Get()
-  findOne(@Param("id") id: string) {
-    return this.lincesesService.findOne(+id);
+  findOne(@Param("id") id: number) {
+    return this.licensesService.findOne(+id);
   }
 
   @Patch()
-  update(@Param("id") id: string, @Body() updateLinceseDto: any) {
-    return this.lincesesService.update(+id, updateLinceseDto);
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Query("id") id: number,
+    @Body() updateLicenseDto: TLicensesSchemaDto
+  ) {
+    const res = await this.updateLicenseUsecase.execute(id, updateLicenseDto);
+    if (!res) {
+      throw new NotFoundException("Licença não encontrada");
+    }
+    return res;
   }
 
-  @Delete()
-  remove(@Param("id") id: string) {
-    return this.lincesesService.remove(+id);
+  @Delete(":id")
+  remove(@Param("id") id: number) {
+    return this.licensesService.remove(+id);
   }
 }

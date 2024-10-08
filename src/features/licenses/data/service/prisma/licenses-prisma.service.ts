@@ -1,17 +1,38 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { TLicensesSchemaDto } from "features/licenses/domain/dto/licenses.dto";
-import { LicenseEntity } from "features/licenses/domain/entity/lincese.entity";
+import {
+  LicenseEntity,
+  type Settings,
+} from "features/licenses/domain/entity/lincese.entity";
 import { LicensesTypesService } from "features/licenses/domain/services/licenses-types.service";
 
 @Injectable()
-export class LincesesService implements LicensesTypesService {
+export class LicensesService implements LicensesTypesService {
   constructor(private readonly service: PrismaService) {}
-  findOne(id: number): Promise<LicenseEntity | null> {
+  findBySystemIdAndContractIdAndVersionAndName(
+    systemId: number,
+    contractId: string,
+    name: string
+  ): Promise<LicenseEntity | null> {
     throw new Error("Method not implemented.");
   }
+  findByName(name: string): Promise<LicenseEntity | null> {
+    throw new Error("Method not implemented.");
+  }
+
+  async findOne(id: number): Promise<LicenseEntity | null> {
+    const license = await this.service.licenses.findUnique({
+      where: { id },
+    });
+    return license ? this.toEntity(license) : null;
+  }
+
   async findAll(): Promise<LicenseEntity[]> {
-    const licenses = await this.service.licenses.findMany();
+    const licenses = await this.service.licenses.findMany({
+      orderBy: { id: "asc" },
+    });
+
     return licenses.map((license) => this.toEntity(license));
   }
 
@@ -25,83 +46,133 @@ export class LincesesService implements LicensesTypesService {
       monthly_fee: license.monthly_fee,
     };
   }
-  findById(id: number): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
+
+  async findById(id: number): Promise<LicenseEntity | null> {
+    const license = await this.service.licenses.findUnique({
+      where: { id },
+    });
+    return license ? this.toEntity(license) : null;
   }
-  async create(createLinceseDto: TLicensesSchemaDto): Promise<LicenseEntity> {
+
+  async create(createLicenseDto: TLicensesSchemaDto): Promise<LicenseEntity> {
     const res = await this.service.licenses.create({
       data: {
-        contract_id: createLinceseDto.contract_id,
-        system_id: createLinceseDto.system_id,
-        settings: JSON.parse(JSON.stringify(createLinceseDto.settings)),
-        monthly_fee: createLinceseDto.monthly_fee,
+        contract_id: createLicenseDto.contract_id,
+        system_id: createLicenseDto.system_id,
+        settings: JSON.parse(JSON.stringify(createLicenseDto.settings)),
+        monthly_fee: createLicenseDto.monthly_fee,
       },
     });
     return this.toEntity(res);
   }
+
   async update(
     id: number,
-    updateLicenseDto: Partial<LicenseEntity>
+    updateLicenseDto: Partial<TLicensesSchemaDto>
   ): Promise<LicenseEntity> {
-    const res = this.service.licenses.update({
+    try {
+      const res = await this.service.licenses.update({
+        where: { id },
+        data: {
+          contract_id: updateLicenseDto.contract_id,
+          system_id: updateLicenseDto.system_id,
+          settings: updateLicenseDto.settings
+            ? JSON.parse(JSON.stringify(updateLicenseDto.settings))
+            : undefined,
+          monthly_fee: updateLicenseDto.monthly_fee,
+        },
+      });
+
+      return this.toEntity(res);
+    } catch (error) {
+      if (error instanceof Error)
+        throw new Error(`Erro ao atualizar a licença: ${error.message}`);
+    }
+  }
+
+  async remove(id: number): Promise<void> {
+    try {
+      await this.service.licenses.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException("Licença não encontrada");
+    }
+  }
+
+  // async findByName(name: string): Promise<LicenseEntity | null> {
+  //   const license = await this.service.licenses.findFirst({
+  //     where: { name },
+  //   });
+  //   return license ? this.toEntity(license) : null;
+  // }
+
+  async findByContractId(contractId: string): Promise<LicenseEntity | null> {
+    const license = await this.service.licenses.findFirst({
+      where: { contract_id: contractId },
+    });
+    return license ? this.toEntity(license) : null;
+  }
+
+  async findBySystemId(systemId: number): Promise<LicenseEntity | null> {
+    const license = await this.service.licenses.findFirst({
+      where: { system_id: systemId },
+    });
+    return license ? this.toEntity(license) : null;
+  }
+
+  async findBySystemIdAndContractId(
+    systemId: number,
+    contractId: string
+  ): Promise<LicenseEntity | null> {
+    const result = await this.service.licenses.findFirst({
       where: {
-        id,
-      },
-      data: {
-        contract_id: updateLicenseDto.contract_id,
-        system_id: updateLicenseDto.system_id,
-        settings: JSON.parse(JSON.stringify(updateLicenseDto.settings)),
-        monthly_fee: updateLicenseDto.monthly_fee,
+        system_id: systemId,
+        contract_id: contractId,
       },
     });
 
-    return this.toEntity(res);
+    return result ? this.toEntity(result) : null;
   }
-  async remove(id: number): Promise<void> {
-    const res = await this.service.licenses.delete({
+
+  async findBySystemIdAndVersion(
+    systemId: number
+  ): Promise<LicenseEntity | null> {
+    const license = await this.service.licenses.findFirst({
       where: {
-        id,
+        system_id: systemId,
       },
     });
-    if (!res) {
-      throw new Error("Licença não encontrada");
-    }
-    return;
+    return license ? this.toEntity(license) : null;
   }
-  findByName(name: string): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findByContractId(contractId: string): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findBySystemId(systemId: string): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findBySystemIdAndContractId(
-    systemId: string,
+
+  async findBySystemIdAndContractIdAndVersion(
+    systemId: number,
     contractId: string
   ): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
+    const license = await this.service.licenses.findFirst({
+      where: {
+        system_id: systemId,
+        contract_id: contractId,
+      },
+    });
+    return license ? this.toEntity(license) : null;
   }
-  findBySystemIdAndVersion(
-    systemId: string,
-    version: string
-  ): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findBySystemIdAndContractIdAndVersion(
-    systemId: string,
-    contractId: string,
-    version: string
-  ): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findBySystemIdAndContractIdAndVersionAndName(
-    systemId: string,
-    contractId: string,
-    version: string,
-    name: string
-  ): Promise<LicenseEntity | null> {
-    throw new Error("Method not implemented.");
-  }
+
+  // async findBySystemIdAndContractIdAndVersionAndName(
+  //   systemId: number,
+  //   contractId: string,
+
+  //   name: string
+  // ): Promise<LicenseEntity | null> {
+  //   const license = await this.service.licenses.findFirst({
+  //     where: {
+  //       system_id: systemId,
+  //       contract_id: contractId,
+
+  //       name,
+  //     },
+  //   });
+  //   return license ? this.toEntity(license) : null;
+  // }
 }

@@ -1,9 +1,17 @@
-import type { LicenseEntity } from "../entity/lincese.entity";
+import { Injectable } from "@nestjs/common";
+import { LicenseEntity } from "../entity/lincese.entity";
 import { LicensesTypesService } from "../services/licenses-types.service";
 
+@Injectable()
 export class FindAllLicensesUseCase {
   constructor(private readonly service: LicensesTypesService) {}
+
   async execute(): Promise<LicenseEntity[]> {
-    return await this.service.findAll();
+    try {
+      return await this.service.findAll();
+    } catch (error) {
+      console.error("Error fetching licenses:", error);
+      throw new Error("Failed to fetch licenses");
+    }
   }
 }

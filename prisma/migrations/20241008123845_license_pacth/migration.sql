@@ -280,7 +280,7 @@ CREATE TABLE "Contracts" (
 CREATE TABLE "Licenses" (
     "id" SERIAL NOT NULL,
     "contract_id" TEXT NOT NULL,
-    "system_id" TEXT NOT NULL,
+    "system_id" INTEGER NOT NULL,
     "settings" JSONB NOT NULL,
     "deleted_at" TIMESTAMP(3),
     "monthly_fee" DOUBLE PRECISION NOT NULL,
@@ -353,9 +353,6 @@ ALTER TABLE "System_Version" ADD CONSTRAINT "System_Version_system_id_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "Customer_System_Version" ADD CONSTRAINT "Customer_System_Version_system_id_fkey" FOREIGN KEY ("system_id") REFERENCES "System"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Licenses" ADD CONSTRAINT "Licenses_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "Contracts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Payments" ADD CONSTRAINT "Payments_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "Contracts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,24 +1,48 @@
 import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from "@nestjs/common";
+import { LicensesService } from "features/licenses/data/service/prisma/licenses-prisma.service";
+import {
   licensesSchemaDto,
   type TLicensesSchemaDto,
 } from "../dto/licenses.dto";
 import { LicenseEntity } from "../entity/lincese.entity";
-import { LicensesTypesService } from "../services/licenses-types.service";
 
+@Injectable()
 export class CreateLicenseUsecase {
-  constructor(private readonly service: LicensesTypesService) {}
+  constructor(
+    @Inject(LicensesService) private readonly licensesService: LicensesService
+  ) {}
 
-  async execute(createLinceseDto: TLicensesSchemaDto): Promise<LicenseEntity> {
-    const res = licensesSchemaDto.safeParse(createLinceseDto);
-
+  async execute(createLicenseDto: TLicensesSchemaDto): Promise<LicenseEntity> {
+    const res = licensesSchemaDto.safeParse(createLicenseDto);
     if (!res.success) {
-      throw new Error(res.error.message);
+      throw new BadRequestException(`Validation Error: ${res.error.message}`);
     }
 
     try {
-      return await this.service.create(createLinceseDto);
+      const { contract_id, system_id } = createLicenseDto;
+
+      const existingLicense =
+        await this.licensesService.findBySystemIdAndContractId(
+          system_id,
+          contract_id
+        );
+      if (existingLicense) {
+        throw new BadRequestException(
+          "A license with the given system and contract ID already exists."
+        );
+      }
+
+      return await this.licensesService.create(createLicenseDto);
     } catch (error) {
-      throw error;
+      console.error("Error creating license:", error);
+      throw new InternalServerErrorException(
+        "Internal server error while creating the license."
+      );
     }
   }
 }

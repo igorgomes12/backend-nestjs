@@ -12,7 +12,7 @@ export abstract class LicensesTypesService {
 
   abstract update(
     id: number,
-    updateLicenseDto: Partial<LicenseEntity>
+    updateLicenseDto: Partial<TLicensesSchemaDto>
   ): Promise<LicenseEntity>;
 
   abstract remove(id: number): Promise<void>;
@@ -21,28 +21,22 @@ export abstract class LicensesTypesService {
 
   abstract findByContractId(contractId: string): Promise<LicenseEntity | null>;
 
-  abstract findBySystemId(systemId: string): Promise<LicenseEntity | null>;
+  abstract findBySystemId(systemId: number): Promise<LicenseEntity | null>;
 
-  abstract findBySystemIdAndContractId(
-    systemId: string,
-    contractId: string
-  ): Promise<LicenseEntity | null>;
+  abstract findBySystemIdAndContractId(systemId: number, contractId: string);
 
   abstract findBySystemIdAndVersion(
-    systemId: string,
-    version: string
+    systemId: number
   ): Promise<LicenseEntity | null>;
 
   abstract findBySystemIdAndContractIdAndVersion(
-    systemId: string,
-    contractId: string,
-    version: string
+    systemId: number,
+    contractId: string
   ): Promise<LicenseEntity | null>;
 
   abstract findBySystemIdAndContractIdAndVersionAndName(
-    systemId: string,
+    systemId: number,
     contractId: string,
-    version: string,
     name: string
   ): Promise<LicenseEntity | null>;
 }

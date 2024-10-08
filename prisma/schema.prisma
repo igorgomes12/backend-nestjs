@@ -198,7 +198,7 @@ model Contracts {
   seller_id      String
   fee_type       FeeType
 
-  Licenses        Licenses[]
+  // Licenses        Licenses[]
   Payments        Payments[]
   ContractHistory ContractHistory[]
 }
@@ -206,12 +206,12 @@ model Contracts {
 model Licenses {
   id          Int       @id @default(autoincrement())
   contract_id String
-  system_id   String
+  system_id   Int
   settings    Json
   deleted_at  DateTime?
   monthly_fee Float
 
-  Contracts Contracts @relation(fields: [contract_id], references: [id])
+  // Contracts Contracts @relation(fields: [contract_id], references: [id])
 }
 
 model Payments {

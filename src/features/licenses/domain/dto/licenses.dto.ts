@@ -9,9 +9,8 @@ export const SettingsSchemaDto = z.object({
 export type TSettingsSchemaDto = z.infer<typeof SettingsSchemaDto>;
 
 export const licensesSchemaDto = z.object({
-  id: z.number().int().nonnegative(),
   contract_id: z.string(),
-  system_id: z.string(),
+  system_id: z.number().int().nonnegative(),
   settings: SettingsSchemaDto,
   deleted_at: z.date().optional(),
   monthly_fee: z.number(),
