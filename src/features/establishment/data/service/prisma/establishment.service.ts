@@ -14,6 +14,9 @@ export class EstablishmentPrismaService implements EstablishmentTypeService {
         name: params.name,
         status: params.status,
       },
+      orderBy: {
+        id: "asc",
+      },
     });
 
     return establishments.map(

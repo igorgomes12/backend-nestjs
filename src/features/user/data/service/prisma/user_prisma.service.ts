@@ -64,16 +64,21 @@ export class UserPrismaService implements UserService {
     try {
       const parsedData = createBodySchemaDto.parse(user);
 
-      let profile = await this.service.profile.findUnique({
-        where: { name: parsedData.profile },
-      });
+      const profileMap = {
+        ADMIN: 1,
+        FINANCE: 2,
+        REPRESENTATIVE: 3,
+        REPRESENTATIVE_SUPERVISOR: 4,
+        PROGRAMMING: 5,
+        PROGRAMMING_SUPERVISOR: 6,
+        SUPPORT: 7,
+        SUPPORT_SUPERVISOR: 8,
+      };
 
-      if (!profile) {
-        profile = await this.service.profile.create({
-          data: {
-            name: parsedData.profile,
-          },
-        });
+      const profileId = profileMap[parsedData.profile];
+
+      if (!profileId) {
+        throw new Error(`Perfil inválido: ${parsedData.profile}`);
       }
 
       const createdUser = await this.service.user.create({
@@ -83,14 +88,19 @@ export class UserPrismaService implements UserService {
           email: parsedData.email,
           channel: parsedData.channel || 0,
           profile: {
-            connect: { id: profile.id },
+            connectOrCreate: {
+              where: { id: profileId },
+              create: { id: profileId, name: parsedData.profile },
+            },
           },
           status: parsedData.status,
           organization: parsedData.organization,
         },
       });
-      if (!createdUser)
+
+      if (!createdUser) {
         throw new Error("Falha ao criar usuário, não tem usuário cadastrado");
+      }
 
       return new CreateEntitiy(
         createdUser.name,
@@ -102,7 +112,7 @@ export class UserPrismaService implements UserService {
         createdUser.organization
       );
     } catch (error) {
-      throw new Error("Falha ao criar usuário");
+      throw new Error("Falha ao criar usuário: " + error);
     }
   }
   async update(
@@ -117,9 +127,7 @@ export class UserPrismaService implements UserService {
         name: updateData.name,
         email: updateData.email,
         password: updateData.password,
-        channel: updateData.channel,
         status: updateData.status,
-        organization: updateData.organization,
       },
     });
   }

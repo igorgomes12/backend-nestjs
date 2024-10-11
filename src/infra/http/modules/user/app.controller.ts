@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Patch,
   Post,
   Put,
   Query,
@@ -21,7 +22,6 @@ import {
 import { hash } from "bcryptjs";
 import { Response } from "express";
 import { TCreateUserBodyFormDto } from "../../../../features/user/domain/dto/user_body_dto";
-import { ZodValidationPipe } from "../../pipes/zod_validation_pipes";
 
 import { AllExceptionsFilter } from "core/filters/exception.filter";
 import {
@@ -33,6 +33,11 @@ import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.use
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 import { JwtAuthGuard } from "../../guards/decorators/jwt_auth.decorator";
+import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
+import {
+  updateUserSchemaDto,
+  type TUpdateUserSchemaDto,
+} from "features/user/domain/dto/update_body.dto";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
@@ -97,7 +102,7 @@ export class AppController {
     }
   }
 
-  @Put()
+  @Patch()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(
@@ -111,7 +116,7 @@ export class AppController {
   async updateUser(
     @Res() res: Response,
     @Query("id") id: string,
-    @Body() updateData: Partial<TCreateUserBodyFormDto>
+    @Body() updateData: Partial<TUpdateUserSchemaDto>
   ) {
     try {
       if (updateData.password) {
