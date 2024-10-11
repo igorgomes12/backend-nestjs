@@ -249,3 +249,14 @@ enum FeeType {
   FIXED
   VARIABLE
 }
+
+model Product {
+  id            String    @id @default(uuid())
+  name          String
+  price         Float
+  qtd_stock     Int
+  qtd_consigned Int
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
+}

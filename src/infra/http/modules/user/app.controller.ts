@@ -12,7 +12,6 @@ import {
   NotFoundException,
   Patch,
   Post,
-  Put,
   Query,
   Res,
   UseFilters,
@@ -28,16 +27,13 @@ import {
   createBodySchemaDto,
   TCreateBodySchemaDto,
 } from "features/user/domain/dto/create_body.dto";
+import { type TUpdateUserSchemaDto } from "features/user/domain/dto/update_body.dto";
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 import { JwtAuthGuard } from "../../guards/decorators/jwt_auth.decorator";
 import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
-import {
-  updateUserSchemaDto,
-  type TUpdateUserSchemaDto,
-} from "features/user/domain/dto/update_body.dto";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
@@ -87,6 +83,7 @@ export class AppController {
     try {
       await this.deleteUserUseCase.execute(id);
       return res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
         message: `O usuário com ID ${id} foi deletado com sucesso!`,
       });
     } catch (error) {
@@ -144,7 +141,7 @@ export class AppController {
   @HttpCode(HttpStatus.CREATED)
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles("ADMIN", "PROGRAMMING")
-  // @UsePipes(new ZodValidationPipe(createBodySchemaDto))
+  @UsePipes(new ZodValidationPipe(createBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     try {
       const { password } = body;
@@ -152,20 +149,27 @@ export class AppController {
       const saltRounds = 10;
       const hashedPassword = await hash(password, saltRounds);
 
-      const user = await this.createUserUseCase.execute({
+      await this.createUserUseCase.execute({
         ...body,
         password: hashedPassword,
       });
 
-      return res.status(HttpStatus.CREATED).json(user);
+      return res.status(HttpStatus.CREATED).json({
+        status: HttpStatus.CREATED,
+        message: "Usuário criado com sucesso",
+      });
     } catch (error) {
       if (error instanceof ConflictException) {
-        return res.status(HttpStatus.CONFLICT).json({ error: error.message });
+        return res.status(HttpStatus.CONFLICT).json({
+          status: HttpStatus.CONFLICT,
+          message: error.message,
+        });
       }
 
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: "Erro ao cadastrar usuário" });
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Erro ao cadastrar usuário",
+      });
     }
   }
 }

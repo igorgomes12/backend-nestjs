@@ -31,8 +31,6 @@ export const createUserBodySchemaDto = z.object({
       message: "A senha deve conter pelo menos um número ou caractere especial",
     }),
 
-  channel: z.number().optional(),
-
   profile: z.enum(
     [
       "ADMIN",
@@ -52,6 +50,6 @@ export const createUserBodySchemaDto = z.object({
 
   status: z.enum(["ativo", "inativo"]).default("ativo"),
 
-  organization: z.enum(["lider", "Quality"]).optional(),
+  organization: z.enum(["lider"]).optional(),
 });
 export type TCreateUserBodyFormDto = z.infer<typeof createUserBodySchemaDto>;

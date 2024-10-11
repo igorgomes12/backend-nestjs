@@ -15,6 +15,12 @@
   - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
 
 */
+-- CreateEnum
+CREATE TYPE "ContractStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "FeeType" AS ENUM ('FIXED', 'VARIABLE');
+
 -- DropForeignKey
 ALTER TABLE "public"."Address" DROP CONSTRAINT "Address_clientId_fkey";
 
@@ -251,6 +257,78 @@ CREATE TABLE "Municipio" (
     CONSTRAINT "Municipio_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Contracts" (
+    "id" TEXT NOT NULL,
+    "customer_id" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3) NOT NULL,
+    "status" "ContractStatus" NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "first_due_date" TIMESTAMP(3) NOT NULL,
+    "number" TEXT NOT NULL,
+    "observation" TEXT,
+    "monthly_fee" DOUBLE PRECISION NOT NULL,
+    "seller_id" TEXT NOT NULL,
+    "fee_type" "FeeType" NOT NULL,
+
+    CONSTRAINT "Contracts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Licenses" (
+    "id" SERIAL NOT NULL,
+    "contract_id" TEXT NOT NULL,
+    "system_id" INTEGER NOT NULL,
+    "settings" JSONB NOT NULL,
+    "deleted_at" TIMESTAMP(3),
+    "monthly_fee" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Licenses_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Payments" (
+    "id" TEXT NOT NULL,
+    "contract_id" TEXT NOT NULL,
+    "payment_type" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "payment_data" JSONB NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "Payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ContractHistory" (
+    "id" TEXT NOT NULL,
+    "contract_id" TEXT NOT NULL,
+    "old_value" DOUBLE PRECISION NOT NULL,
+    "new_value" DOUBLE PRECISION NOT NULL,
+    "changed_at" TIMESTAMP(3) NOT NULL,
+    "changed_by" TEXT NOT NULL,
+    "cancellation_date" TIMESTAMP(3),
+    "cancellation_reason" TEXT,
+
+    CONSTRAINT "ContractHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Product" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "qtd_stock" INTEGER NOT NULL,
+    "qtd_consigned" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
+
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -289,3 +367,9 @@ ALTER TABLE "System_Version" ADD CONSTRAINT "System_Version_system_id_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "Customer_System_Version" ADD CONSTRAINT "Customer_System_Version_system_id_fkey" FOREIGN KEY ("system_id") REFERENCES "System"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Payments" ADD CONSTRAINT "Payments_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "Contracts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ContractHistory" ADD CONSTRAINT "ContractHistory_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "Contracts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

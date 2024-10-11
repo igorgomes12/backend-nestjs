@@ -1,19 +1,18 @@
 import { PrismaService } from "@infra/auth/database/prisma/prisma.service";
-import { InternalServerErrorException } from "@nestjs/common";
+import { NotFoundException } from "@nestjs/common";
 
 import {
   createBodySchemaDto,
   TCreateBodySchemaDto,
 } from "features/user/domain/dto/create_body.dto";
-import { CreateEntitiy } from "features/user/domain/entity/create.entity";
-import { DeleteUserEntity } from "features/user/domain/entity/delete.entity";
 import { UpdateserEntity } from "features/user/domain/entity/update.entity";
-import { UserEntitiy } from "features/user/domain/entity/user.entity";
+import { UserEntity } from "features/user/domain/entity/user.entity";
+import { UserMapper } from "features/user/domain/mappers/user-mapper";
 import { UserService } from "features/user/domain/services/user.service";
 
 export class UserPrismaService implements UserService {
   constructor(private service: PrismaService) {}
-  async findAll(params: TCreateBodySchemaDto): Promise<UserEntitiy[]> {
+  async findAll(params: TCreateBodySchemaDto): Promise<UserEntity[]> {
     const data = await this.service.user.findMany({
       where: {
         name: params.name,
@@ -35,7 +34,7 @@ export class UserPrismaService implements UserService {
 
     return data.map(
       (user) =>
-        new UserEntitiy(
+        new UserEntity(
           user.name,
           user.email,
           user.profile.id,
@@ -44,7 +43,7 @@ export class UserPrismaService implements UserService {
         )
     );
   }
-  async findByEmail(email: string): Promise<UserEntitiy | null> {
+  async findByEmail(email: string): Promise<UserEntity | null> {
     const data = await this.service.user.findUnique({
       where: { email },
       include: {
@@ -52,7 +51,7 @@ export class UserPrismaService implements UserService {
       },
     });
     if (!data) return null;
-    return new UserEntitiy(
+    return new UserEntity(
       data.name,
       data.email,
       data.profile.id,
@@ -60,7 +59,7 @@ export class UserPrismaService implements UserService {
       data.id
     );
   }
-  async create(user: TCreateBodySchemaDto): Promise<CreateEntitiy> {
+  async create(user: TCreateBodySchemaDto): Promise<void> {
     try {
       const parsedData = createBodySchemaDto.parse(user);
 
@@ -101,16 +100,6 @@ export class UserPrismaService implements UserService {
       if (!createdUser) {
         throw new Error("Falha ao criar usuário, não tem usuário cadastrado");
       }
-
-      return new CreateEntitiy(
-        createdUser.name,
-        createdUser.email,
-        createdUser.password,
-        createdUser.channel,
-        createdUser.profileId.toString(),
-        createdUser.status,
-        createdUser.organization
-      );
     } catch (error) {
       throw new Error("Falha ao criar usuário: " + error);
     }
@@ -119,6 +108,7 @@ export class UserPrismaService implements UserService {
     userId: number,
     updateData: Partial<UpdateserEntity>
   ): Promise<UpdateserEntity> {
+    await this._get(userId);
     return this.service.user.update({
       where: {
         id: userId,
@@ -132,23 +122,39 @@ export class UserPrismaService implements UserService {
     });
   }
 
-  async findById(userId: number): Promise<DeleteUserEntity | null> {
-    return this.service.user.findUnique({
-      where: { id: userId },
-    });
+  async findById(id: number): Promise<UserEntity> {
+    return this._get(id);
   }
-  async delete(id: number) {
-    try {
-      await this.service.user.delete({
-        where: { id },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException("Erro ao deletar usuário");
-    }
+  async delete(id: number): Promise<void> {
+    await this._get(id);
+    await this.service.user.delete({
+      where: {
+        id,
+      },
+    });
   }
   async findByName(name: string): Promise<UpdateserEntity | null> {
     return await this.service.user.findFirst({
       where: { name },
     });
+  }
+
+  protected async _get(id: number): Promise<UserEntity> {
+    try {
+      const user = await this.service.user.findUnique({
+        where: { id },
+      });
+
+      if (!user) {
+        throw new NotFoundException("Usuário não encontrado");
+      }
+
+      return UserMapper.toEntity(user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(`Erro ao buscar usuário: ${error}`);
+    }
   }
 }

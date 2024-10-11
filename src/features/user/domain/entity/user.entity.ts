@@ -1,9 +1,9 @@
-export class UserEntitiy {
-  public id: number;
+export class UserEntity {
   public name: string;
   public email: string;
   public profile: number;
   public status: string;
+  public id: number;
 
   constructor(
     name: string,
