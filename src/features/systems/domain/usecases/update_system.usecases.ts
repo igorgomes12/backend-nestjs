@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { SystemPrismaRepository } from "features/systems/data/service/prisma/systems-prisma.service";
-
 import {
   type TSystemSchemaDto,
   systemSchemaDto,
@@ -18,32 +17,27 @@ export class UpdateSystemUsecase {
       );
     }
 
-    const { name, description, image_url, stable_version } =
+    const { name, description, image, stable_version } =
       systemSchemaDto.parse(data);
     if (!name) {
       throw new NotFoundException(
-        "Não foi possível criar um novo sistema, favor digitar um nome válido."
-      );
-    }
-    if (!image_url) {
-      throw new NotFoundException(
-        "Não foi possível criar um novo sistema, favor digitar uma URL válida para a imagem."
+        "Não foi possível atualizar o sistema, favor digitar um nome válido."
       );
     }
     if (!description || description.length === 0) {
       throw new NotFoundException(
-        "Não foi possível criar um novo sistema, favor digitar uma descrição válida."
+        "Não foi possível atualizar o sistema, favor digitar uma descrição válida."
       );
     }
 
     const existStableVersion =
       await this.systemsService.findByVersion(stable_version);
 
-    if (stable_version.length === 0 || undefined) {
+    if (stable_version && stable_version.length === 0) {
       throw new NotFoundException(
-        "Não foi possível criar um novo sistema, favor digitar uma versão estável válida."
+        "Não foi possível atualizar o sistema, favor digitar uma versão estável válida."
       );
-    } else if (existStableVersion) {
+    } else if (existStableVersion && existStableVersion.id !== id) {
       throw new NotFoundException(
         "Já existe um sistema com essa versão estável."
       );
@@ -58,7 +52,7 @@ export class UpdateSystemUsecase {
       return await this.systemsService.update(id, {
         name,
         description,
-        image_url,
+        image,
         stable_version,
       });
     } catch (error) {

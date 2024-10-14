@@ -8,6 +8,8 @@ import {
 import { TSystemSchemaDto } from "../../../../../features/systems/domain/dto/system.dto";
 import { Prisma } from "@prisma/client";
 import { SystemRepository } from "features/systems/domain/services/system.repositories";
+import * as fs from "fs/promises";
+import * as path from "path";
 
 @Injectable()
 export class SystemPrismaRepository implements SystemRepository {
@@ -97,11 +99,16 @@ export class SystemPrismaRepository implements SystemRepository {
 
   async create(data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     try {
+      let image_url = data.image;
+      if (typeof data.image === "string" && data.image.startsWith("uploads/")) {
+        image_url = data.image;
+      }
+
       return await this.prisma.system.create({
         data: {
           name: data.name,
           description: data.description,
-          image_url: data.image_url,
+          image_url: image_url as string,
           stable_version: data.stable_version,
         },
       });
@@ -119,12 +126,17 @@ export class SystemPrismaRepository implements SystemRepository {
 
   async update(id: number, data: TSystemSchemaDto): Promise<TSystemSchemaDto> {
     try {
-      return this.prisma.system.update({
+      let image_url = data.image;
+      if (typeof data.image === "string" && data.image.startsWith("uploads/")) {
+        image_url = data.image;
+      }
+
+      return await this.prisma.system.update({
         where: { id },
         data: {
           name: data.name,
           description: data.description,
-          image_url: data.image_url,
+          image_url: image_url as string,
           stable_version: data.stable_version,
         },
       });

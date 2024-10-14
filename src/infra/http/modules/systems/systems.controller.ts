@@ -11,7 +11,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   UsePipes,
 } from "@nestjs/common";
 
@@ -24,6 +26,8 @@ import { CreateSystemUsecase } from "features/systems/domain/usecases/create_sys
 import { DeleteSystemUsecase } from "features/systems/domain/usecases/delete_system.usecases";
 import { FindAllSystemsUseCase } from "features/systems/domain/usecases/system.usecases";
 import { UpdateSystemUsecase } from "features/systems/domain/usecases/update_system.usecases";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { multerConfig } from "@common/utils/multer/multer-config";
 
 @Controller("systems")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,16 +48,25 @@ export class SystemsController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  @UsePipes(new ZodValidationPipe(systemSchemaDto))
+  @UseInterceptors(FileInterceptor("image", multerConfig))
   @HttpCode(HttpStatus.OK)
-  create(@Body() createSystemDto: TSystemSchemaDto) {
-    return this.createSystemsUseCase.execute(createSystemDto);
+  create(
+    @Body() createSystemDto: TSystemSchemaDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const data = {
+      ...createSystemDto,
+      image: file ? file.filename : undefined,
+    };
+    return this.createSystemsUseCase.execute(data);
   }
+
   @Get()
   @HttpCode(HttpStatus.OK)
   findAll() {
     return this.findAllSystemsUseCase.execute();
   }
+
   @Patch()
   @Roles(
     "ADMIN",
@@ -63,9 +76,18 @@ export class SystemsController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
+  @UseInterceptors(FileInterceptor("image", multerConfig))
   @HttpCode(HttpStatus.OK)
-  update(@Query("id") id: number, @Body() updateSystemDto: TSystemSchemaDto) {
-    return this.updateSystemsUseCase.execute(id, updateSystemDto);
+  update(
+    @Query("id") id: number,
+    @Body() updateSystemDto: TSystemSchemaDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const data = {
+      ...updateSystemDto,
+      image: file ? file.filename : undefined,
+    };
+    return this.updateSystemsUseCase.execute(id, data);
   }
 
   @Delete()

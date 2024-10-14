@@ -28,7 +28,6 @@ import { EstablishmentServiceFactory } from "features/establishment/data/service
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
 import { AppController } from "../infra/http/modules/user/app.controller";
-import { ProductsModule } from "@infra/http/modules/products/products.module";
 
 @Module({
   imports: [
@@ -46,7 +45,6 @@ import { ProductsModule } from "@infra/http/modules/products/products.module";
     SystemVersionModule,
     CustomerVersionModule,
     LincesesModule,
-    ProductsModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
