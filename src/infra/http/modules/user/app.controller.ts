@@ -79,7 +79,7 @@ export class AppController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  async deleteUser(@Res() res: Response, @Query("id") id: string) {
+  async deleteUser(@Res() res: Response, @Query("id") id: number) {
     try {
       await this.deleteUserUseCase.execute(id);
       return res.status(HttpStatus.OK).json({
@@ -112,7 +112,7 @@ export class AppController {
   )
   async updateUser(
     @Res() res: Response,
-    @Query("id") id: string,
+    @Query("id") id: number,
     @Body() updateData: Partial<TUpdateUserSchemaDto>
   ) {
     try {

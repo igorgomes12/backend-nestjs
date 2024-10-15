@@ -9,7 +9,7 @@ import { UserService } from "../services/user.service";
 export class DeleteUserUsecase {
   constructor(private readonly service: UserService) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: number): Promise<void> {
     if (!id) {
       throw new BadRequestException("ID é necessário");
     }

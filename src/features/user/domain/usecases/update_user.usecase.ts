@@ -11,7 +11,7 @@ export class UpdateUserUsecase {
   constructor(private readonly service: UserService) {}
 
   async execute(
-    userId: string,
+    userId: number,
     updateData: Partial<UpdateserEntity>
   ): Promise<UpdateserEntity> {
     if (!userId) {
