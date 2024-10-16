@@ -19,13 +19,7 @@ export const ClientSchema = z.object({
     })
     .optional(),
 
-  createdAt: z
-    .string()
-    .datetime({
-      message:
-        "O campo 'createdAt' deve ser uma data válida no formato ISO 8601.",
-    })
-    .optional(),
+  createdAt: z.string().optional(),
 
   updatedAt: z
     .string()
@@ -44,7 +38,8 @@ export const ClientSchema = z.object({
   contacts: z
     .array(ContactSchema)
     .min(1, { message: "É necessário fornecer pelo menos um contato." })
-    .max(5, { message: "O número máximo de contatos permitidos é 5." }),
+    .max(5, { message: "O número máximo de contatos permitidos é 5." })
+    .optional(),
 
   cpf_cnpj: z
     .string()
@@ -66,21 +61,27 @@ export const ClientSchema = z.object({
   address: z
     .array(AddressSchema)
     .min(1, { message: "É necessário fornecer pelo menos um endereço." })
-    .max(10, { message: "O número máximo de endereços permitidos é 10." }),
+    .max(10, { message: "O número máximo de endereços permitidos é 10." })
+    .optional(),
 
-  name_account: z.string(),
-  id_account: z.number().int().positive({
-    message: "O campo 'id_account' deve ser um número inteiro positivo.",
-  }),
+  name_account: z.string().optional(),
+  id_account: z
+    .number()
+    .int()
+    .positive({
+      message: "O campo 'id_account' deve ser um número inteiro positivo.",
+    })
+    .optional(),
   establishment_typeId: z.number().int().positive({
     message:
       "O campo 'establishment_typeId' deve ser um número inteiro positivo.",
   }),
-  systemsId: z.number().int().positive(),
+  systemsId: z.number().int().positive().optional(),
   owner: z
     .array(OwnerSchema)
     .min(1, { message: "É necessário fornecer pelo menos um proprietário." })
-    .max(1, { message: "O número máximo de proprietários permitidos é 1." }),
+    .max(1, { message: "O número máximo de proprietários permitidos é 1." })
+    .optional(),
 });
 
 export type TClient = z.infer<typeof ClientSchema>;
