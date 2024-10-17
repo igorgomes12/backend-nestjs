@@ -5,6 +5,7 @@ import { representativeServiceFactory } from "features/representative/data/servi
 import { FindAllRepresentativesUseCase } from "features/representative/domain/usecases/find-all.usecase";
 import { CreateRepresentativeUseCase } from "features/representative/domain/usecases/create.usecase";
 import { DeleteRepresentativeUsecase } from "features/representative/domain/usecases/delete.usecase";
+import { UpdateRepresentativeUsecase } from "features/representative/domain/usecases/update.usecase";
 
 @Module({
   imports: [PrismaModule],
@@ -14,6 +15,7 @@ import { DeleteRepresentativeUsecase } from "features/representative/domain/usec
     FindAllRepresentativesUseCase,
     CreateRepresentativeUseCase,
     DeleteRepresentativeUsecase,
+    UpdateRepresentativeUsecase,
   ],
 })
 export class RepresentativeModule {}

@@ -20,12 +20,13 @@ import {
   UsePipes,
 } from "@nestjs/common";
 import { AllExceptionsFilter } from "core/filters/exception.filter";
+import { Response } from "express";
 import { createRepresentativeSchemaDto } from "features/representative/domain/dto/create-representative.dto";
 import { TRepresentativeSchemaDto } from "features/representative/domain/dto/representative.dto";
 import { CreateRepresentativeUseCase } from "features/representative/domain/usecases/create.usecase";
 import { DeleteRepresentativeUsecase } from "features/representative/domain/usecases/delete.usecase";
 import { FindAllRepresentativesUseCase } from "features/representative/domain/usecases/find-all.usecase";
-import { Response } from "express";
+import { UpdateRepresentativeUsecase } from "features/representative/domain/usecases/update.usecase";
 
 @Controller("representative")
 @UseFilters(AllExceptionsFilter)
@@ -34,7 +35,8 @@ export class RepresentativeController {
   constructor(
     private readonly findAllRepresentativesUseCase: FindAllRepresentativesUseCase,
     private readonly createRepresentativeUseCase: CreateRepresentativeUseCase,
-    private readonly deleteRepresentativeUsecase: DeleteRepresentativeUsecase
+    private readonly deleteRepresentativeUsecase: DeleteRepresentativeUsecase,
+    private readonly updateRepresentativeUsecase: UpdateRepresentativeUsecase
   ) {}
 
   @Get()
@@ -54,7 +56,7 @@ export class RepresentativeController {
   @HttpCode(HttpStatus.OK)
   @Roles("ADMIN", "REPRESENTATIVE", "REPRESENTATIVE_SUPERVISOR")
   update(@Query("id") id: number, @Body() body: TRepresentativeSchemaDto) {
-    return;
+    return this.updateRepresentativeUsecase.execute(id, body);
   }
   @Delete()
   @HttpCode(HttpStatus.OK)

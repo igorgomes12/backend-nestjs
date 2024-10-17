@@ -92,11 +92,75 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
       created_at: res.created_at,
     });
   }
-  update(
+  async update(
     id: number,
-    data: RepresentativeEntity
+    data: Partial<CreateRepresentativeSchemaDto>
   ): Promise<RepresentativeEntity> {
-    throw new Error("Method not implemented.");
+    try {
+      const existingRepresentative =
+        await this.prisma.representative.findUnique({
+          where: { id },
+        });
+
+      if (!existingRepresentative) {
+        throw new Error("Representative not found");
+      }
+
+      const updatedRepresentative = await this.prisma.representative.update({
+        where: { id },
+        data: {
+          name: data.name,
+          region: data.region,
+          supervisor: data.supervisor,
+          status: data.status,
+          type: data.type,
+          cellphone: data.contact?.cellphone,
+          phone: data.contact?.phone,
+          commission: data.commission
+            ? {
+                updateMany: {
+                  where: { representativeId: id },
+                  data: {
+                    implantation: data.commission.implantation,
+                    mensality: data.commission.mensality,
+                  },
+                },
+              }
+            : undefined,
+          contact: data.contact
+            ? {
+                updateMany: {
+                  where: { representativeId: id },
+                  data: {
+                    cellphone: data.contact.cellphone,
+                    phone: data.contact.phone,
+                    email: data.contact.email,
+                  },
+                },
+              }
+            : undefined,
+          address: data.address
+            ? {
+                updateMany: {
+                  where: { representativeId: id },
+                  data: {
+                    postal_code: data.address.postal_code,
+                    street: data.address.street,
+                    number: data.address.number,
+                    neighborhood: data.address.neighborhood,
+                    municipality_name: data.address.municipality_name,
+                    state: data.address.state,
+                  },
+                },
+              }
+            : undefined,
+        },
+      });
+
+      return updatedRepresentative;
+    } catch (error) {
+      throw new InternalServerErrorException("Error updating representative");
+    }
   }
   async remove(id: number): Promise<void> {
     try {
@@ -117,7 +181,6 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
         where: { representativeId: id },
       });
 
-      // Agora, exclua o representante
       await this.prisma.representative.delete({
         where: { id },
       });
@@ -126,7 +189,15 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
     }
   }
 
-  findByType(type: RepresentativeType): Promise<RepresentativeEntity[]> {
-    throw new Error("Method not implemented.");
+  async findByType(type: RepresentativeType): Promise<RepresentativeEntity[]> {
+    try {
+      return await this.prisma.representative.findMany({
+        where: { type },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        "Error finding representatives by type"
+      );
+    }
   }
 }
