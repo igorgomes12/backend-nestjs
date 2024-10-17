@@ -28,6 +28,8 @@ import { EstablishmentServiceFactory } from "features/establishment/data/service
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
 import { AppController } from "../infra/http/modules/user/app.controller";
+import { RepresentativeModule } from "@infra/http/modules/representative/representative.module";
+import { representativeServiceFactory } from "features/representative/data/service";
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { AppController } from "../infra/http/modules/user/app.controller";
     SystemVersionModule,
     CustomerVersionModule,
     LincesesModule,
+    RepresentativeModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -58,6 +61,7 @@ import { AppController } from "../infra/http/modules/user/app.controller";
     AccoutingModule,
     EstablishmentServiceFactory,
     accountingServiceFactory,
+    representativeServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>

@@ -33,7 +33,7 @@ export class ClientsPrismaService implements ClientEntityService {
             description: contact.description,
             contact: contact.contact,
             type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-            main_account: contact.main_account,
+            main_account: contact.favorite,
           })),
           addresses: client.address.map((addr) => ({
             street: addr.street,
@@ -78,7 +78,7 @@ export class ClientsPrismaService implements ClientEntityService {
         description: contact.description,
         contact: contact.contact,
         type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-        main_account: contact.main_account,
+        main_account: contact.favorite,
       })),
       addresses: client.address.map((addr) => ({
         street: addr.street,
@@ -168,7 +168,7 @@ export class ClientsPrismaService implements ClientEntityService {
           description: contact.description,
           contact: contact.contact,
           type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-          main_account: contact.main_account,
+          main_account: contact.favorite,
         })),
         addresses: createdClient.address.map((addr) => ({
           street: addr.street,
@@ -183,7 +183,7 @@ export class ClientsPrismaService implements ClientEntityService {
           countryId: addr.country_id,
           regionId: addr.region_id,
           description: addr.description,
-          main: addr.main,
+          main: addr.favorite,
         })),
         owners: createdClient.owner.map((owner) => ({
           name: owner.name,
@@ -382,7 +382,7 @@ export class ClientsPrismaService implements ClientEntityService {
           description: contact.description,
           contact: contact.contact,
           type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-          main_account: contact.main_account,
+          main_account: contact.favorite,
         })),
         addresses: updatedClient.address.map((addr) => ({
           street: addr.street,
@@ -397,7 +397,7 @@ export class ClientsPrismaService implements ClientEntityService {
           countryId: addr.country_id,
           regionId: addr.region_id,
           description: addr.description,
-          main: addr.main,
+          main: addr.favorite,
         })),
         owners: updatedClient.owner.map((owner) => ({
           name: owner.name,

@@ -1,0 +1,21 @@
+import type { AddressRepresentativeSchemaDto } from "../dto/address-representative.dto";
+import type { CommissionRepresentativeDto } from "../dto/commission-representative.dto";
+import type { ContactRepresentativeDto } from "../dto/contact-representative.dto";
+
+export type RepresentativeStatus = "ativo" | "inativo";
+type RepresentativeType = "REPRESENTATIVE" | "CONSULTANT" | "PARTHER";
+export class CreateRepresentativeEntity {
+  public readonly id?: number;
+  public name: string;
+  public region: string;
+  public supervisor: string;
+  public status: RepresentativeStatus;
+  public type: RepresentativeType;
+  public commission: CommissionRepresentativeDto;
+  public contact: ContactRepresentativeDto;
+  public address: AddressRepresentativeSchemaDto;
+  public created_at?: Date;
+  constructor(props: Omit<CreateRepresentativeEntity, "id"> & { id?: number }) {
+    Object.assign(this, props);
+  }
+}

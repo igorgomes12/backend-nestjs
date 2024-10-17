@@ -10,7 +10,6 @@ export class FindAllLicensesUseCase {
     try {
       return await this.service.findAll();
     } catch (error) {
-      console.error("Error fetching licenses:", error);
       throw new Error("Failed to fetch licenses");
     }
   }

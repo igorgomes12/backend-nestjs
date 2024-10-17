@@ -21,6 +21,9 @@ CREATE TYPE "ContractStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED');
 -- CreateEnum
 CREATE TYPE "FeeType" AS ENUM ('FIXED', 'VARIABLE');
 
+-- CreateEnum
+CREATE TYPE "TypeRepresentative" AS ENUM ('REPRESENTATIVE', 'CONSULTANT', 'PARTHER');
+
 -- DropForeignKey
 ALTER TABLE "public"."Address" DROP CONSTRAINT "Address_clientId_fkey";
 
@@ -123,6 +126,7 @@ CREATE TABLE "Client" (
     "id_account" INTEGER NOT NULL,
     "establishment_typeId" INTEGER NOT NULL,
     "systemsId" INTEGER NOT NULL,
+    "representative_id" INTEGER,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
@@ -130,24 +134,24 @@ CREATE TABLE "Client" (
 -- CreateTable
 CREATE TABLE "Address" (
     "id" SERIAL NOT NULL,
-    "identifier" TEXT NOT NULL,
     "street" TEXT NOT NULL,
     "complement" TEXT,
     "postal_code" TEXT NOT NULL,
     "number" TEXT NOT NULL,
     "neighborhood" TEXT NOT NULL,
-    "municipality_id" INTEGER NOT NULL,
+    "municipality_id" INTEGER,
     "municipality_name" TEXT NOT NULL,
-    "state_id" INTEGER NOT NULL,
+    "state_id" INTEGER,
     "state" TEXT NOT NULL,
-    "country_id" INTEGER NOT NULL,
-    "region_id" INTEGER NOT NULL,
+    "country_id" INTEGER,
+    "region_id" INTEGER,
     "description" TEXT,
-    "main" BOOLEAN NOT NULL,
+    "favorite" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "clientId" INTEGER NOT NULL,
+    "clientId" INTEGER,
+    "representativeId" INTEGER,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
@@ -155,14 +159,18 @@ CREATE TABLE "Address" (
 -- CreateTable
 CREATE TABLE "Contact" (
     "id" SERIAL NOT NULL,
-    "description" TEXT NOT NULL,
-    "contact" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "main_account" BOOLEAN NOT NULL,
+    "description" TEXT,
+    "contact" TEXT,
+    "cellphone" TEXT,
+    "phone" TEXT,
+    "type" TEXT,
+    "email" TEXT,
+    "favorite" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "clientId" INTEGER NOT NULL,
+    "clientId" INTEGER,
+    "representativeId" INTEGER,
 
     CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
 );
@@ -316,17 +324,31 @@ CREATE TABLE "ContractHistory" (
 );
 
 -- CreateTable
-CREATE TABLE "Product" (
-    "id" TEXT NOT NULL,
+CREATE TABLE "Representative" (
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL,
-    "qtd_stock" INTEGER NOT NULL,
-    "qtd_consigned" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "cellphone" TEXT,
+    "phone" TEXT,
+    "supervisor" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "type" "TypeRepresentative" NOT NULL,
+    "region" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
     "deleted_at" TIMESTAMP(3),
+    "deleted_by" TEXT,
 
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Representative_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Commission" (
+    "id" SERIAL NOT NULL,
+    "implantation" INTEGER NOT NULL,
+    "mensality" INTEGER NOT NULL,
+    "representativeId" INTEGER NOT NULL,
+
+    CONSTRAINT "Commission_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -345,6 +367,9 @@ CREATE UNIQUE INDEX "System_name_key" ON "System"("name");
 ALTER TABLE "users" ADD CONSTRAINT "users_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Client" ADD CONSTRAINT "Client_representative_id_fkey" FOREIGN KEY ("representative_id") REFERENCES "Representative"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_establishment_typeId_fkey" FOREIGN KEY ("establishment_typeId") REFERENCES "Establishment_type"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -357,7 +382,13 @@ ALTER TABLE "Client" ADD CONSTRAINT "Client_systemsId_fkey" FOREIGN KEY ("system
 ALTER TABLE "Address" ADD CONSTRAINT "Address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_representativeId_fkey" FOREIGN KEY ("representativeId") REFERENCES "Representative"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Contact" ADD CONSTRAINT "Contact_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Contact" ADD CONSTRAINT "Contact_representativeId_fkey" FOREIGN KEY ("representativeId") REFERENCES "Representative"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Owner" ADD CONSTRAINT "Owner_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
@@ -373,3 +404,6 @@ ALTER TABLE "Payments" ADD CONSTRAINT "Payments_contract_id_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "ContractHistory" ADD CONSTRAINT "ContractHistory_contract_id_fkey" FOREIGN KEY ("contract_id") REFERENCES "Contracts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Commission" ADD CONSTRAINT "Commission_representativeId_fkey" FOREIGN KEY ("representativeId") REFERENCES "Representative"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

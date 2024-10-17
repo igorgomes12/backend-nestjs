@@ -49,9 +49,11 @@ model Client {
   id_account             Int
   establishment_typeId   Int
   systemsId              Int
+  representative_id      Int?
 
   address            Address[]          @relation("ClientToAddress")
   owner              Owner[]            @relation("ClientToOwner")
+  representative     Representative?    @relation("ClientToRepresentative", fields: [representative_id], references: [id])
   establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
   accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
   systems            System             @relation(fields: [systemsId], references: [id], onDelete: NoAction)
@@ -59,42 +61,48 @@ model Client {
 
 model Address {
   id                Int     @id @default(autoincrement())
-  identifier        String  @default(uuid())
   street            String
   complement        String?
   postal_code       String
   number            String
   neighborhood      String
-  municipality_id   Int
+  municipality_id   Int?
   municipality_name String
-  state_id          Int
+  state_id          Int?
   state             String
-  country_id        Int
-  region_id         Int
+  country_id        Int?
+  region_id         Int?
   description       String?
-  main              Boolean
+  favorite          Boolean @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  client   Client @relation("ClientToAddress", fields: [clientId], references: [id], onDelete: NoAction)
-  clientId Int
+  client           Client?         @relation("ClientToAddress", fields: [clientId], references: [id], onDelete: NoAction)
+  clientId         Int?
+  Representative   Representative? @relation("AddressToRepresentative", fields: [representativeId], references: [id])
+  representativeId Int?
 }
 
 model Contact {
-  id           Int     @id @default(autoincrement())
-  description  String
-  contact      String
-  type         String
-  main_account Boolean
+  id          Int     @id @default(autoincrement())
+  description String?
+  contact     String?
+  cellphone   String?
+  phone       String?
+  type        String?
+  email       String?
+  favorite    Boolean @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  client   Client @relation("ClientToContacts", fields: [clientId], references: [id], onDelete: NoAction)
-  clientId Int
+  client           Client?         @relation("ClientToContacts", fields: [clientId], references: [id], onDelete: NoAction)
+  clientId         Int? // Tornar opcional
+  Representative   Representative? @relation("ContactToRepresentative", fields: [representativeId], references: [id])
+  representativeId Int?
 }
 
 model Owner {
@@ -248,4 +256,38 @@ enum ContractStatus {
 enum FeeType {
   FIXED
   VARIABLE
+}
+
+model Representative {
+  id         Int                @id @default(autoincrement())
+  name       String
+  cellphone  String?
+  phone      String?
+  supervisor String
+  status     String
+  type       TypeRepresentative
+  region     String
+  created_at DateTime?          @default(now())
+  updated_at DateTime?          @updatedAt
+  deleted_at DateTime?
+  deleted_by String?
+
+  clients    Client[]     @relation("ClientToRepresentative")
+  contact    Contact[]    @relation("ContactToRepresentative")
+  address    Address[]    @relation("AddressToRepresentative")
+  commission Commission[] @relation("CommissionToRepresentative")
+}
+
+model Commission {
+  id               Int            @id @default(autoincrement())
+  implantation     Int
+  mensality        Int
+  representative   Representative @relation("CommissionToRepresentative", fields: [representativeId], references: [id])
+  representativeId Int
+}
+
+enum TypeRepresentative {
+  REPRESENTATIVE
+  CONSULTANT
+  PARTHER
 }
