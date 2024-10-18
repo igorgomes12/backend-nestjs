@@ -14,13 +14,89 @@ import { RepresentativeServiceTypes } from "features/representative/domain/servi
 @Injectable()
 export class RepresentativePrismaService implements RepresentativeServiceTypes {
   constructor(private prisma: PrismaService) {}
-  findById(id: number): Promise<RepresentativeEntity | null> {
-    return this.prisma.representative.findUnique({
+  async findById(id: number): Promise<RepresentativeEntity | null> {
+    const result = await this.prisma.representative.findUnique({
       where: { id },
+      include: {
+        commission: true,
+        address: true,
+        clients: true,
+      },
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return new RepresentativeEntity({
+      id: result.id,
+      name: result.name,
+      region: result.region,
+      supervisor: result.supervisor,
+      status: result.status as RepresentativeStatus,
+      type: result.type as RepresentativeType,
+      commission:
+        result.commission.length > 0
+          ? {
+              implantation: result.commission[0].implantation,
+              mensality: result.commission[0].mensality,
+            }
+          : undefined,
+      address:
+        result.address.length > 0
+          ? {
+              municipality_name: result.address[0].municipality_name,
+              neighborhood: result.address[0].neighborhood,
+              number: result.address[0].number,
+              street: result.address[0].street,
+              state: result.address[0].state,
+              postal_code: result.address[0].postal_code,
+            }
+          : undefined,
+      cellphone: result.cellphone,
+      phone: result.phone,
     });
   }
-  findall(): Promise<RepresentativeEntity[]> {
-    return this.prisma.representative.findMany();
+  async findall(): Promise<RepresentativeEntity[]> {
+    const results = await this.prisma.representative.findMany({
+      include: {
+        commission: true,
+        address: true,
+        clients: true,
+      },
+    });
+
+    return results.map(
+      (result) =>
+        new RepresentativeEntity({
+          id: result.id,
+          name: result.name,
+          region: result.region,
+          supervisor: result.supervisor,
+          status: result.status as RepresentativeStatus,
+          type: result.type as RepresentativeType,
+          commission:
+            result.commission.length > 0
+              ? {
+                  implantation: result.commission[0].implantation,
+                  mensality: result.commission[0].mensality,
+                }
+              : undefined,
+          address:
+            result.address.length > 0
+              ? {
+                  municipality_name: result.address[0].municipality_name,
+                  neighborhood: result.address[0].neighborhood,
+                  number: result.address[0].number,
+                  street: result.address[0].street,
+                  state: result.address[0].state,
+                  postal_code: result.address[0].postal_code,
+                }
+              : undefined,
+          cellphone: result.cellphone,
+          phone: result.phone,
+        })
+    );
   }
   findByName(name: string): Promise<RepresentativeEntity | null> {
     return this.prisma.representative.findFirst({
@@ -94,7 +170,7 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
   }
   async update(
     id: number,
-    data: Partial<CreateRepresentativeSchemaDto>
+    data: RepresentativeEntity
   ): Promise<RepresentativeEntity> {
     try {
       const existingRepresentative =
@@ -112,10 +188,10 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
           name: data.name,
           region: data.region,
           supervisor: data.supervisor,
-          status: data.status,
-          type: data.type,
-          cellphone: data.contact?.cellphone,
-          phone: data.contact?.phone,
+          status: data.status as RepresentativeStatus,
+          type: data.type as RepresentativeType,
+          cellphone: data.cellphone,
+          phone: data.phone,
           commission: data.commission
             ? {
                 updateMany: {
