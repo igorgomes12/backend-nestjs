@@ -20,6 +20,9 @@ export const AccountingSchema = z.object({
   cnpj: z
     .string()
     .nonempty({ message: "CNPJ é obrigatório" })
+    .refine((val) => val.replace(/[^\d]+/g, "").length === 14, {
+      message: "CNPJ inválido. Deve conter 14 dígitos. Ex: 00.000.000/0000-00",
+    })
     .transform((val) => formatCNPJ(val)),
 });
 

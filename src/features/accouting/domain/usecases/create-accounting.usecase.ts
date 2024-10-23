@@ -1,11 +1,11 @@
+import { formatCNPJ } from "@common/utils/regex/cpnj";
 import {
+  BadRequestException,
   Inject,
   InternalServerErrorException,
-  BadRequestException,
 } from "@nestjs/common";
-import { AccoutingServiceMethods } from "../services/accouting.service";
 import { TAccountingSchema } from "../dto/accounting_zod";
-import { formatCNPJ } from "@common/utils/regex/cpnj";
+import { AccoutingServiceMethods } from "../services/accouting.service";
 
 export class CreateAccountingUseCase {
   constructor(
@@ -16,7 +16,6 @@ export class CreateAccountingUseCase {
   async execute(data: TAccountingSchema) {
     const { email, name, cnpj, contact, crc, phone } = data;
 
-    // Verifica se o nome já existe
     const existingNameAccount = await this.service.findByName(name);
     if (existingNameAccount) {
       throw new BadRequestException("Nome já existente");
@@ -27,9 +26,9 @@ export class CreateAccountingUseCase {
       throw new BadRequestException("E-mail já existente");
     }
 
-    if (cnpj.length !== 14) {
+    if (cnpj.replace(/[^\d]+/g, "").length !== 14) {
       throw new BadRequestException(
-        "CNPJ inválido. Deve conter 14 dígitos. Ex:000.000.000-00"
+        "CNPJ inválido. Deve conter 14 dígitos. Ex: 00.000.000/0000-00"
       );
     }
 
