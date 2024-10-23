@@ -4,9 +4,9 @@ import {
   InternalServerErrorException,
   Logger,
 } from "@nestjs/common";
-import { RepresentativeServiceTypes } from "../services/representative.repositories";
 import { CreateRepresentativeSchemaDto } from "../dto/create-representative.dto";
 import { CreateRepresentativeEntity } from "../entity/create-representative.entity";
+import { RepresentativeServiceTypes } from "../services/representative.repositories";
 
 @Injectable()
 export class CreateRepresentativeUseCase {
@@ -43,7 +43,6 @@ export class CreateRepresentativeUseCase {
     const requiredFields = [
       { field: "name", message: "Nome inválido" },
       { field: "region", message: "Região inválida" },
-      { field: "supervisor", message: "Supervisor inválido" },
       { field: "status", message: "Status inválido" },
       { field: "type", message: "Tipo inválido" },
       { field: "commission", message: "Comissão inválida" },
@@ -52,12 +51,17 @@ export class CreateRepresentativeUseCase {
     ];
 
     for (const { field, message } of requiredFields) {
-      if (
-        !data[field] ||
-        (typeof data[field] === "string" && data[field].length < 1)
-      ) {
+      if (!data[field]) {
         throw new BadRequestException(message);
       }
+    }
+
+    if (!data.contact.cellphone || !data.contact.phone) {
+      throw new BadRequestException("Dados de contato inválidos");
+    }
+
+    if (!data.address.street || !data.address.postal_code) {
+      throw new BadRequestException("Dados de endereço inválidos");
     }
   }
 }

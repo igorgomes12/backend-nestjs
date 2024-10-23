@@ -9,7 +9,7 @@ export class RepresentativeEntity {
   public name: string;
   public cellphone: string;
   public phone: string;
-  public supervisor: string;
+  public supervisor?: string;
   public status: string;
   public type: RepresentativeType;
   public region: string;

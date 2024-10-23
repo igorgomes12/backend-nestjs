@@ -16,24 +16,19 @@ import {
   Res,
   UseFilters,
   UseGuards,
-  UsePipes,
 } from "@nestjs/common";
 import { hash } from "bcryptjs";
 import { Response } from "express";
 import { TCreateUserBodyFormDto } from "../../../../features/user/domain/dto/user_body_dto";
 
 import { AllExceptionsFilter } from "core/filters/exception.filter";
-import {
-  createBodySchemaDto,
-  TCreateBodySchemaDto,
-} from "features/user/domain/dto/create_body.dto";
+import { TCreateBodySchemaDto } from "features/user/domain/dto/create_body.dto";
 import { type TUpdateUserSchemaDto } from "features/user/domain/dto/update_body.dto";
 import { CreateUserUseCase } from "features/user/domain/usecases/create_user.usecase";
 import { DeleteUserUsecase } from "features/user/domain/usecases/delete_user.usecase";
 import { FindAllUserUseCase } from "features/user/domain/usecases/find_all_user.usecase";
 import { UpdateUserUsecase } from "features/user/domain/usecases/update_user.usecase";
 import { JwtAuthGuard } from "../../guards/decorators/jwt_auth.decorator";
-import { ZodValidationPipe } from "@infra/http/pipes/zod_validation_pipes";
 
 @Controller("/user")
 @UseFilters(AllExceptionsFilter)
@@ -141,7 +136,7 @@ export class AppController {
   @HttpCode(HttpStatus.CREATED)
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles("ADMIN", "PROGRAMMING")
-  @UsePipes(new ZodValidationPipe(createBodySchemaDto))
+  // @UsePipes(new ZodValidationPipe(createBodySchemaDto))
   async postUser(@Res() res: Response, @Body() body: TCreateUserBodyFormDto) {
     try {
       const { password } = body;

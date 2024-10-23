@@ -109,7 +109,6 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
     if (
       !data.name ||
       !data.region ||
-      !data.supervisor ||
       !data.status ||
       !data.type ||
       !data.commission ||
@@ -123,7 +122,7 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
       data: {
         name: data.name,
         region: data.region,
-        supervisor: data.supervisor,
+        supervisor: data.supervisor || null,
         status: data.status,
         type: data.type,
         cellphone: data.contact.cellphone,

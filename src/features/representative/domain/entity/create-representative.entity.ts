@@ -8,7 +8,7 @@ export class CreateRepresentativeEntity {
   public readonly id?: number;
   public name: string;
   public region: string;
-  public supervisor: string;
+  public supervisor?: string;
   public status: RepresentativeStatus;
   public type: RepresentativeType;
   public commission: CommissionRepresentativeDto;
