@@ -291,3 +291,11 @@ enum TypeRepresentative {
   CONSULTANT
   PARTHER
 }
+
+model PaymentsType {
+  id         Int       @id @default(autoincrement())
+  name       String
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  deleteDate DateTime?
+}

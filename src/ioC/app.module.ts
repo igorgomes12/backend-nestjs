@@ -20,16 +20,18 @@ import { AccoutingModule } from "@infra/http/modules/accouting/accouting.module"
 import { ClientModule } from "@infra/http/modules/client/client.module";
 import { CustomerVersionModule } from "@infra/http/modules/customer_version/customer_version.module";
 import { EstablishmentModule } from "@infra/http/modules/establishment/establishment.module";
+import { FormsPaymentModule } from "@infra/http/modules/forms-payment/forms-payment.module";
 import { LincesesModule } from "@infra/http/modules/linceses/linceses.module";
+import { RepresentativeModule } from "@infra/http/modules/representative/representative.module";
 import { SystemVersionModule } from "@infra/http/modules/system_version/system_version.module";
 import { SystemsModule } from "@infra/http/modules/systems/systems.module";
 import { accountingServiceFactory } from "features/accouting/data/service";
 import { EstablishmentServiceFactory } from "features/establishment/data/service";
+import { paymentServiceFactory } from "features/forms-payment/data";
+import { representativeServiceFactory } from "features/representative/data/service";
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
 import { AppController } from "../infra/http/modules/user/app.controller";
-import { RepresentativeModule } from "@infra/http/modules/representative/representative.module";
-import { representativeServiceFactory } from "features/representative/data/service";
 
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { representativeServiceFactory } from "features/representative/data/servi
     CustomerVersionModule,
     LincesesModule,
     RepresentativeModule,
+    FormsPaymentModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -62,6 +65,7 @@ import { representativeServiceFactory } from "features/representative/data/servi
     EstablishmentServiceFactory,
     accountingServiceFactory,
     representativeServiceFactory,
+    paymentServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>
