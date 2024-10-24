@@ -356,8 +356,6 @@ export class ClientsPrismaService implements ClientEntityService {
         };
       }
 
-      console.log("Dados finais preparados para atualização:", clientData);
-
       const updatedClient = await this.prisma.client.update({
         where: { id },
         data: clientData,
@@ -367,8 +365,6 @@ export class ClientsPrismaService implements ClientEntityService {
           contacts: true,
         },
       });
-
-      console.log("Cliente atualizado com sucesso:", updatedClient);
 
       return new ClientEntity({
         id: updatedClient.id,

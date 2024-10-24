@@ -34,9 +34,8 @@ model Profile {
 
 model Client {
   id                     Int       @id @default(autoincrement())
-  identifier             String    @default(uuid())
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime? @default(now())
+  updatedAt              DateTime? @updatedAt
   deletedAt              DateTime?
   corporate_name         String
   fantasy_name           String
