@@ -6,7 +6,7 @@ export const ContactSchema = z.object({
   description: z.string().min(1),
   contact: z.string().min(1),
   type: TypeEnum.default("CELULAR"),
-  main_account: z.boolean(),
+  favorite: z.boolean(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   deletedAt: z.date().nullable().optional(),

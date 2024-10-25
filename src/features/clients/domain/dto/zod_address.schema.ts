@@ -14,7 +14,7 @@ export const AddressSchema = z.object({
   country_id: z.number().int().positive(),
   region_id: z.number().int().positive(),
   description: z.string().nullable().optional(),
-  main: z.boolean(),
+  favorite: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   deletedAt: z.date().nullable().optional(),

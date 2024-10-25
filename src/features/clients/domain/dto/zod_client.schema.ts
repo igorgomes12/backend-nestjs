@@ -12,13 +12,6 @@ export const ClientSchema = z.object({
     })
     .optional(),
 
-  identifier: z
-    .string()
-    .uuid({
-      message: "O campo 'identifier' deve ser um UUID válido.",
-    })
-    .optional(),
-
   createdAt: z.string().optional(),
 
   updatedAt: z
@@ -51,12 +44,15 @@ export const ClientSchema = z.object({
     })
     .transform((val) => formatCpfOrCnpj(val)),
 
-  state_registration: z.string().min(1, {
-    message: "O campo 'state_registration' é obrigatório.",
-  }),
+  state_registration: z
+    .string()
+    .min(1, {
+      message: "O campo 'state_registration' é obrigatório.",
+    })
+    .optional(),
 
-  municipal_registration: z.string().nullable(),
-  rural_registration: z.string().nullable(),
+  municipal_registration: z.string().nullable().optional(),
+  rural_registration: z.string().nullable().optional(),
 
   address: z
     .array(AddressSchema)

@@ -9,6 +9,7 @@ export abstract class ClientEntityService {
 
   abstract checkAccountExists(id_account: number): Promise<boolean>;
   abstract findById(user_id: number): Promise<ClientEntity | null>;
+  abstract findByCorporateName(corporate_name: string);
 
   abstract remove(id: number): Promise<{
     message: string;

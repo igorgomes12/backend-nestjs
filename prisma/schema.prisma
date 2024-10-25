@@ -41,7 +41,7 @@ model Client {
   fantasy_name           String
   contacts               Contact[] @relation("ClientToContacts")
   cpf_cnpj               String
-  state_registration     String
+  state_registration     String?
   municipal_registration String?
   rural_registration     String?
   name_account           String?

@@ -4,9 +4,9 @@ import {
   Logger,
   NotAcceptableException,
 } from "@nestjs/common";
-import { ClientEntityService } from "../services/clients.service";
 import { ClientSchema, TClient } from "../dto/zod_client.schema";
 import { ClientEntity } from "../entity/client.entity";
+import { ClientEntityService } from "../services/clients.service";
 
 @Injectable()
 export class CreateClientUseCase {
@@ -24,6 +24,35 @@ export class CreateClientUseCase {
     if (!res.success) {
       this.logger.error("Validation failed:", res.error.format());
       throw new NotAcceptableException(res.error.format());
+    }
+
+    // Verificação de unicidade para CPF/CNPJ
+    const existingClient = await this.service.findByCpfCnpj(data.cpf_cnpj);
+    if (existingClient) {
+      throw new BadRequestException("O CPF/CNPJ já está em uso.");
+    }
+
+    // Verificação de unicidade para nome corporativo
+    const existingCorporateName = await this.service.findByCorporateName(
+      data.corporate_name
+    );
+    if (existingCorporateName) {
+      throw new BadRequestException("O nome corporativo já está em uso.");
+    }
+
+    // Verificação de campos obrigatórios
+    if (!data.systemsId) {
+      throw new BadRequestException("O campo 'systemsId' é obrigatório.");
+    }
+
+    if (!data.id_account) {
+      throw new BadRequestException("O campo 'id_account' é obrigatório.");
+    }
+
+    if (!data.owner || data.owner.length === 0) {
+      throw new BadRequestException(
+        "É necessário fornecer pelo menos um proprietário."
+      );
     }
 
     try {

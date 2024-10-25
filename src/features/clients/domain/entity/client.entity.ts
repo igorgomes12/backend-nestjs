@@ -1,13 +1,12 @@
-import { TOwner } from "../dto/zod_owner.schema";
+import { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto";
+import { TSystemSchemaDto } from "features/systems/domain/dto/system.dto";
+import { TAccounting } from "../dto/zod_accounting.schema";
 import { TAddress } from "../dto/zod_address.schema";
 import { TContact } from "../dto/zod_contact.schema";
-import { TAccounting } from "../dto/zod_accounting.schema";
-import { TSystemSchemaDto } from "features/systems/domain/dto/system.dto";
-import type { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto";
+import { TOwner } from "../dto/zod_owner.schema";
 
 export class ClientEntity {
   id?: number;
-  identifier?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;

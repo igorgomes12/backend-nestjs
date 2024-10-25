@@ -11,6 +11,12 @@ import { ClientEntityService } from "features/clients/domain/services/clients.se
 
 export class ClientsPrismaService implements ClientEntityService {
   constructor(private readonly prisma: PrismaService) {}
+  async findByCorporateName(corporate_name: string) {
+    const res = await this.prisma.client.findFirst({
+      where: { corporate_name },
+    });
+    return res;
+  }
   async findAll(): Promise<ClientEntity[]> {
     const clients = await this.prisma.client.findMany({
       include: {
@@ -111,7 +117,7 @@ export class ClientsPrismaService implements ClientEntityService {
           description: contact.description,
           contact: contact.contact,
           type: contact.type,
-          main_account: contact.main_account,
+          favorite: contact.favorite,
         })),
       },
       address: {
@@ -128,7 +134,7 @@ export class ClientsPrismaService implements ClientEntityService {
           country_id: addr.country_id,
           region_id: addr.region_id,
           description: addr.description || null,
-          main: addr.main,
+          favorite: addr.favorite,
         })),
       },
       owner: {
@@ -286,13 +292,13 @@ export class ClientsPrismaService implements ClientEntityService {
               description: contact.description,
               contact: contact.contact,
               type: contact.type,
-              main_account: contact.main_account,
+              favorite: contact.favorite,
             },
             update: {
               description: contact.description,
               contact: contact.contact,
               type: contact.type,
-              main_account: contact.main_account,
+              favorite: contact.favorite,
             },
           })),
         };
@@ -316,7 +322,7 @@ export class ClientsPrismaService implements ClientEntityService {
               country_id: addr.country_id,
               region_id: addr.region_id,
               description: addr.description || null,
-              main: addr.main,
+              favorite: addr.favorite,
             },
             update: {
               street: addr.street,
@@ -331,7 +337,7 @@ export class ClientsPrismaService implements ClientEntityService {
               country_id: addr.country_id,
               region_id: addr.region_id,
               description: addr.description || null,
-              main: addr.main,
+              favorite: addr.favorite,
             },
           })),
         };
