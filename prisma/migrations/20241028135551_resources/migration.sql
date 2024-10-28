@@ -112,14 +112,13 @@ CREATE TABLE "profiles" (
 -- CreateTable
 CREATE TABLE "Client" (
     "id" SERIAL NOT NULL,
-    "identifier" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
     "deletedAt" TIMESTAMP(3),
     "corporate_name" TEXT NOT NULL,
     "fantasy_name" TEXT NOT NULL,
     "cpf_cnpj" TEXT NOT NULL,
-    "state_registration" TEXT NOT NULL,
+    "state_registration" TEXT,
     "municipal_registration" TEXT,
     "rural_registration" TEXT,
     "name_account" TEXT,
