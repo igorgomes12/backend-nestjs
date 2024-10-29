@@ -64,6 +64,9 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
         address: true,
         clients: true,
       },
+      orderBy: {
+        id: "asc",
+      },
     });
 
     return results.map(

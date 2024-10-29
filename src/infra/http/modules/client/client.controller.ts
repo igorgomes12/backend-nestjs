@@ -8,6 +8,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
   Patch,
   Post,
   Query,
@@ -28,6 +30,7 @@ import {
 } from "features/clients/domain/dto/zod_client.schema";
 import { DeleteClientUsecase } from "features/clients/domain/usecases/delete-client.usecase";
 import { UpdateClientUsecase } from "features/clients/domain/usecases/update-client.usecase";
+import { FindByIdClient } from "features/clients/domain/usecases/find-by-id-client.usecase";
 
 @Controller("client")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -37,7 +40,8 @@ export class ClientController {
     private readonly findAllClientUseCase: FindAllClientUseCase,
     private readonly createClientUseCase: CreateClientUseCase,
     private readonly deleteClientUseCase: DeleteClientUsecase,
-    private readonly updateClientUseCase: UpdateClientUsecase
+    private readonly updateClientUseCase: UpdateClientUsecase,
+    private readonly findByIdClient: FindByIdClient
   ) {}
 
   @Post()
@@ -72,6 +76,17 @@ export class ClientController {
   @HttpCode(HttpStatus.OK)
   async getAllClients() {
     return await this.findAllClientUseCase.execute();
+  }
+
+  @Get(":id")
+  @HttpCode(HttpStatus.OK)
+  @Roles("ADMIN", "REPRESENTATIVE", "REPRESENTATIVE_SUPERVISOR")
+  async findById(@Param("id") id: number) {
+    const representative = await this.findByIdClient.execute(id);
+    if (!representative) {
+      throw new NotFoundException(`Representante com ID ${id} não encontrado`);
+    }
+    return representative;
   }
 
   @Patch()

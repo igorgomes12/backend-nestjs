@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Param,
   Patch,
   Post,
   Query,
@@ -26,6 +27,7 @@ import { TRepresentativeSchemaDto } from "features/representative/domain/dto/rep
 import { CreateRepresentativeUseCase } from "features/representative/domain/usecases/create.usecase";
 import { DeleteRepresentativeUsecase } from "features/representative/domain/usecases/delete.usecase";
 import { FindAllRepresentativesUseCase } from "features/representative/domain/usecases/find-all.usecase";
+import { FindRepresentativeByIdUseCase } from "features/representative/domain/usecases/find-by-id.usecase";
 import { UpdateRepresentativeUsecase } from "features/representative/domain/usecases/update.usecase";
 
 @Controller("representative")
@@ -36,7 +38,8 @@ export class RepresentativeController {
     private readonly findAllRepresentativesUseCase: FindAllRepresentativesUseCase,
     private readonly createRepresentativeUseCase: CreateRepresentativeUseCase,
     private readonly deleteRepresentativeUsecase: DeleteRepresentativeUsecase,
-    private readonly updateRepresentativeUsecase: UpdateRepresentativeUsecase
+    private readonly updateRepresentativeUsecase: UpdateRepresentativeUsecase,
+    private readonly findRepresentativeByIdUseCase: FindRepresentativeByIdUseCase
   ) {}
 
   @Get()
@@ -44,6 +47,17 @@ export class RepresentativeController {
   @Roles("ADMIN", "REPRESENTATIVE", "REPRESENTATIVE_SUPERVISOR")
   findAll() {
     return this.findAllRepresentativesUseCase.execute();
+  }
+
+  @Get(":id")
+  @HttpCode(HttpStatus.OK)
+  @Roles("ADMIN", "REPRESENTATIVE", "REPRESENTATIVE_SUPERVISOR")
+  async findById(@Param("id") id: number) {
+    const representative = await this.findRepresentativeByIdUseCase.execute(id);
+    if (!representative) {
+      throw new NotFoundException(`Representante com ID ${id} não encontrado`);
+    }
+    return representative;
   }
   @Post()
   @HttpCode(HttpStatus.OK)

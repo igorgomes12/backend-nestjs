@@ -7,6 +7,7 @@ import { FindAllClientUseCase } from "features/clients/domain/usecases/find-all-
 import { CreateClientUseCase } from "features/clients/domain/usecases/create-client.usecase";
 import { DeleteClientUsecase } from "features/clients/domain/usecases/delete-client.usecase";
 import { UpdateClientUsecase } from "features/clients/domain/usecases/update-client.usecase";
+import { FindByIdClient } from "features/clients/domain/usecases/find-by-id-client.usecase";
 
 @Module({
   controllers: [ClientController],
@@ -16,6 +17,7 @@ import { UpdateClientUsecase } from "features/clients/domain/usecases/update-cli
     CreateClientUseCase,
     DeleteClientUsecase,
     UpdateClientUsecase,
+    FindByIdClient,
     clientServiceFactory,
     {
       provide: APP_PIPE,
