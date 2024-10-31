@@ -1,13 +1,18 @@
-import { NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from "@nestjs/common";
 import { ClientEntity } from "../entity/client.entity";
 import { ClientEntityService } from "../services/clients.service";
 
+@Injectable()
 export class FindByIdClient {
   constructor(private readonly service: ClientEntityService) {}
 
   async execute(user_id: number): Promise<ClientEntity | null> {
     if (!user_id || typeof user_id !== "number" || user_id <= 0) {
-      throw new Error("Invalid user ID provided.");
+      throw new NotAcceptableException("Invalid user ID provided.");
     }
 
     try {
