@@ -29,12 +29,12 @@ export class ClientsPrismaService implements ClientEntityService {
       (client) =>
         new ClientEntity({
           id: client.id,
-          corporateName: client.corporate_name,
-          fantasyName: client.fantasy_name,
-          cpfCnpj: client.cpf_cnpj,
-          stateRegistration: client.state_registration,
-          municipalRegistration: client.municipal_registration || null,
-          ruralRegistration: client.rural_registration || null,
+          corporate_name: client.corporate_name,
+          fantasy_name: client.fantasy_name,
+          cpf_cnpj: client.cpf_cnpj,
+          state_registration: client.state_registration,
+          municipal_registration: client.municipal_registration || null,
+          rural_registration: client.rural_registration || null,
           contacts: client.contacts.map((contact) => ({
             description: contact.description,
             contact: contact.contact,
@@ -74,12 +74,12 @@ export class ClientsPrismaService implements ClientEntityService {
 
     return new ClientEntity({
       id: client.id,
-      corporateName: client.corporate_name,
-      fantasyName: client.fantasy_name,
-      cpfCnpj: client.cpf_cnpj,
-      stateRegistration: client.state_registration,
-      municipalRegistration: client.municipal_registration || null,
-      ruralRegistration: client.rural_registration || null,
+      corporate_name: client.corporate_name,
+      fantasy_name: client.fantasy_name,
+      cpf_cnpj: client.cpf_cnpj,
+      state_registration: client.state_registration,
+      municipal_registration: client.municipal_registration || null,
+      rural_registration: client.rural_registration || null,
       contacts: client.contacts.map((contact) => ({
         description: contact.description,
         contact: contact.contact,
@@ -164,12 +164,12 @@ export class ClientsPrismaService implements ClientEntityService {
 
       return new ClientEntity({
         id: createdClient.id,
-        corporateName: createdClient.corporate_name,
-        fantasyName: createdClient.fantasy_name,
-        cpfCnpj: createdClient.cpf_cnpj,
-        stateRegistration: createdClient.state_registration,
-        municipalRegistration: createdClient.municipal_registration,
-        ruralRegistration: createdClient.rural_registration,
+        corporate_name: createdClient.corporate_name,
+        fantasy_name: createdClient.fantasy_name,
+        cpf_cnpj: createdClient.cpf_cnpj,
+        state_registration: createdClient.state_registration,
+        municipal_registration: createdClient.municipal_registration,
+        rural_registration: createdClient.rural_registration,
         contacts: createdClient.contacts.map((contact) => ({
           description: contact.description,
           contact: contact.contact,
@@ -196,7 +196,7 @@ export class ClientsPrismaService implements ClientEntityService {
           cpfCnpj: owner.cpf_cnpj,
           birthDate: owner.birth_date,
         })),
-        nameAccount: createdClient.name_account,
+        name_account: createdClient.name_account,
         idAccount: createdClient.id_account,
         establishmentTypeId: createdClient.establishment_typeId,
         systemsId: createdClient.systemsId,
@@ -374,12 +374,12 @@ export class ClientsPrismaService implements ClientEntityService {
 
       return new ClientEntity({
         id: updatedClient.id,
-        corporateName: updatedClient.corporate_name,
-        fantasyName: updatedClient.fantasy_name,
-        cpfCnpj: updatedClient.cpf_cnpj,
-        stateRegistration: updatedClient.state_registration,
-        municipalRegistration: updatedClient.municipal_registration,
-        ruralRegistration: updatedClient.rural_registration,
+        corporate_name: updatedClient.corporate_name,
+        fantasy_name: updatedClient.fantasy_name,
+        cpf_cnpj: updatedClient.cpf_cnpj,
+        state_registration: updatedClient.state_registration,
+        municipal_registration: updatedClient.municipal_registration,
+        rural_registration: updatedClient.rural_registration,
         contacts: updatedClient.contacts.map((contact) => ({
           description: contact.description,
           contact: contact.contact,
@@ -406,7 +406,7 @@ export class ClientsPrismaService implements ClientEntityService {
           cpfCnpj: owner.cpf_cnpj,
           birthDate: owner.birth_date,
         })),
-        nameAccount: updatedClient.name_account,
+        name_account: updatedClient.name_account,
         idAccount: updatedClient.id_account,
         establishmentTypeId: updatedClient.establishment_typeId,
         systemsId: updatedClient.systemsId,

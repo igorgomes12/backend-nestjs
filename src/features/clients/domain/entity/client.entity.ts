@@ -1,22 +1,22 @@
-import { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto";
-import { TSystemSchemaDto } from "features/systems/domain/dto/system.dto";
-import { TAccounting } from "../dto/zod_accounting.schema";
-import { TAddress } from "../dto/zod_address.schema";
-import { TContact } from "../dto/zod_contact.schema";
-import { TOwner } from "../dto/zod_owner.schema";
+import type { TSchemaEstablished } from "features/establishment/domain/dto/create-establishment.dto.js";
+import type { TSystemSchemaDto } from "features/systems/domain/dto/system.dto.js";
+import type { TAccounting } from "../dto/zod_accounting.schema.js";
+import type { TAddress } from "../dto/zod_address.schema.js";
+import type { TContact } from "../dto/zod_contact.schema.js";
+import type { TOwner } from "../dto/zod_owner.schema.js";
 
 export class ClientEntity {
   id?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;
-  corporateName: string;
-  fantasyName?: string;
-  cpfCnpj: string;
-  stateRegistration: string;
-  municipalRegistration?: string | null;
-  ruralRegistration?: string | null;
-  nameAccount: string;
+  corporate_name: string;
+  fantasy_name?: string;
+  cpf_cnpj: string;
+  state_registration: string;
+  municipal_registration?: string | null;
+  rural_registration?: string | null;
+  name_account: string;
   idAccount: number;
   establishmentTypeId: number;
   systemsId: number;
