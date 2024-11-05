@@ -11,6 +11,7 @@ export const addressRepresentativeSchemaDto = z.object({
     .string()
     .min(1, { message: "Favor digitar o nome do estado" }),
   state: z.string(),
+  complement: z.string().optional(),
 });
 
 export type AddressRepresentativeSchemaDto = z.infer<

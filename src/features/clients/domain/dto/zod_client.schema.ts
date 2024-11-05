@@ -44,15 +44,10 @@ export const ClientSchema = z.object({
     })
     .transform((val) => formatCpfOrCnpj(val)),
 
-  state_registration: z
-    .string()
-    .min(1, {
-      message: "O campo 'state_registration' é obrigatório.",
-    })
-    .optional(),
+  state_registration: z.string().optional(),
 
-  municipal_registration: z.string().nullable().optional(),
-  rural_registration: z.string().nullable().optional(),
+  municipal_registration: z.string().optional(),
+  rural_registration: z.string().optional(),
 
   address: z
     .array(AddressSchema)
@@ -68,12 +63,10 @@ export const ClientSchema = z.object({
       message: "O campo 'id_account' deve ser um número inteiro positivo.",
     })
     .optional(),
-  establishment_typeId: z.number().int().positive({
-    message:
-      "O campo 'establishment_typeId' deve ser um número inteiro positivo.",
-  }),
+  establishment_typeId: z.number().optional(),
   systemsId: z.number().int().positive().optional(),
   owner: OwnerSchema.optional(),
+  representativeName: z.string().optional(),
 });
 
 export type TClient = z.infer<typeof ClientSchema>;

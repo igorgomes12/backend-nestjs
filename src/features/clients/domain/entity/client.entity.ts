@@ -13,7 +13,7 @@ export class ClientEntity {
   corporate_name: string;
   fantasy_name?: string;
   cpf_cnpj: string;
-  state_registration: string;
+  state_registration: string | null;
   municipal_registration?: string | null;
   rural_registration?: string | null;
   name_account: string;
@@ -26,6 +26,7 @@ export class ClientEntity {
   establishmentType?: TSchemaEstablished;
   accounting?: TAccounting;
   systems?: TSystemSchemaDto;
+  representativeName?: string;
 
   constructor(data: Partial<ClientEntity>) {
     Object.assign(this, data);

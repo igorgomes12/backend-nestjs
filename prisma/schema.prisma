@@ -46,16 +46,17 @@ model Client {
   rural_registration     String?
   name_account           String?
   id_account             Int
-  establishment_typeId   Int
   systemsId              Int
   representative_id      Int?
 
-  address            Address[]          @relation("ClientToAddress")
-  owner              Owner?             @relation("ClientToOwner")
-  representative     Representative?    @relation("ClientToRepresentative", fields: [representative_id], references: [id])
-  establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
-  accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
-  systems            System             @relation(fields: [systemsId], references: [id], onDelete: NoAction)
+  address              Address[]           @relation("ClientToAddress")
+  owner                Owner?              @relation("ClientToOwner")
+  representative       Representative?     @relation("ClientToRepresentative", fields: [representative_id], references: [id])
+  // establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
+  accounting           Accounting          @relation(fields: [id_account], references: [id], onDelete: NoAction)
+  systems              System              @relation(fields: [systemsId], references: [id], onDelete: NoAction)
+  Establishment_type   Establishment_type? @relation(fields: [establishment_typeId], references: [id])
+  establishment_typeId Int?
 }
 
 model Address {
@@ -97,7 +98,7 @@ model Contact {
   contact     String?
   cellphone   String?
   phone       String?
-  type        ContactType // Usa o enum em vez de String
+  type        ContactType
   email       String?
   favorite    Boolean     @default(false)
 
@@ -269,6 +270,7 @@ model Representative {
   name       String
   cellphone  String?
   phone      String?
+  email      String?
   supervisor String
   status     String
   type       TypeRepresentative

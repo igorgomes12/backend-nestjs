@@ -38,14 +38,6 @@ export class CreateClientUseCase {
       throw new BadRequestException("O nome corporativo já está em uso.");
     }
 
-    if (!data.systemsId) {
-      throw new BadRequestException("O campo 'systemsId' é obrigatório.");
-    }
-
-    if (!data.id_account) {
-      throw new BadRequestException("O campo 'id_account' é obrigatório.");
-    }
-
     if (!data.owner) {
       throw new BadRequestException(
         "É necessário fornecer pelo menos um proprietário."
@@ -53,7 +45,30 @@ export class CreateClientUseCase {
     }
 
     try {
-      return await this.service.create(data);
+      const client = {
+        ...data,
+        owner: {
+          id: data.owner.id,
+          createdAt: data.owner.createdAt,
+          updatedAt: data.owner.updatedAt,
+          deletedAt: data.owner.deletedAt,
+          clientId: data.owner.clientId,
+          cpf_cnpj: data.owner.cpf_cnpj,
+          name: data.owner.name,
+          birth_date: data.owner.birth_date,
+        },
+        accounting: {
+          name: data.name_account,
+          phone: data.contacts[0].contact,
+          email: data.contacts[0].contact,
+          crc: data.contacts[0].contact,
+          cnpj: data.cpf_cnpj,
+        },
+        representative: {
+          name: data.representativeName,
+        },
+      };
+      return await this.service.create(client);
     } catch (error) {
       this.logger.error("Erro ao criar cliente:", error);
 

@@ -5,13 +5,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { TAddress } from "features/clients/domain/dto/zod_address.schema";
 import { TClient } from "features/clients/domain/dto/zod_client.schema";
-import { TContact } from "features/clients/domain/dto/zod_contact.schema";
-import { TOwner } from "features/clients/domain/dto/zod_owner.schema";
 import { ClientEntity } from "features/clients/domain/entity/client.entity";
 import { ClientEntityService } from "features/clients/domain/services/clients.service";
-import { createBodySchemaDto } from "features/user/domain/dto/create_body.dto";
 
 export class ClientsPrismaService implements ClientEntityService {
   constructor(private readonly prisma: PrismaService) {}
@@ -27,38 +23,46 @@ export class ClientsPrismaService implements ClientEntityService {
         contacts: true,
         address: true,
         owner: true,
+        representative: true,
       },
     });
-    return clients.map(
-      (client) =>
-        new ClientEntity({
-          id: client.id,
-          corporate_name: client.corporate_name,
-          fantasy_name: client.fantasy_name,
-          cpf_cnpj: client.cpf_cnpj,
-          state_registration: client.state_registration,
-          municipal_registration: client.municipal_registration || null,
-          rural_registration: client.rural_registration || null,
-          contacts: client.contacts.map((contact) => ({
-            description: contact.description,
-            contact: contact.contact,
-            type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-            main_account: contact.favorite,
-          })),
-          addresses: client.address.map((addr) => ({
-            street: addr.street,
-            complement: addr.complement || null,
-            postal_code: addr.postal_code,
-            number: addr.number,
-            neighborhood: addr.neighborhood,
-            municipality_id: addr.municipality_id,
-          })),
-          owners: {
-            ...client.owner,
-            birth_date: client.owner.birth_date.toISOString().split("T")[0],
-          },
-        })
-    );
+
+    console.log("Dados dos clientes:", clients);
+
+    return clients.map((client) => {
+      console.log(
+        `Cliente ID: ${client.id}, Nome do Representante: ${client.representative?.name || "Nenhum"}`
+      );
+
+      return new ClientEntity({
+        id: client.id,
+        corporate_name: client.corporate_name,
+        fantasy_name: client.fantasy_name,
+        cpf_cnpj: client.cpf_cnpj,
+        state_registration: client.state_registration,
+        municipal_registration: client.municipal_registration || null,
+        rural_registration: client.rural_registration || null,
+        contacts: client.contacts.map((contact) => ({
+          description: contact.description,
+          contact: contact.contact,
+          type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
+          main_account: contact.favorite,
+        })),
+        addresses: client.address.map((addr) => ({
+          street: addr.street,
+          complement: addr.complement || null,
+          postal_code: addr.postal_code,
+          number: addr.number,
+          neighborhood: addr.neighborhood,
+          municipality_id: addr.municipality_id,
+        })),
+        owners: {
+          ...client.owner,
+          birth_date: client.owner.birth_date.toISOString().split("T")[0],
+        },
+        representativeName: client.representative?.name || null,
+      });
+    });
   }
 
   async findById(user_id: number): Promise<ClientEntity | null> {
@@ -137,61 +141,19 @@ export class ClientsPrismaService implements ClientEntityService {
       },
       owner: {
         create: {
-          ...createClientDto.owner,
-          birth_date: new Date(createClientDto.owner.birth_date),
+          name: createClientDto.owner.name,
+          cpf_cnpj: createClientDto.owner.cpf_cnpj,
+          birth_date: new Date(createClientDto.owner.birth_date).toISOString(),
         },
       },
       name_account: createClientDto.name_account,
       id_account: createClientDto.id_account,
-      establishment_typeId: createClientDto.establishment_typeId,
       systemsId: createClientDto.systemsId,
     };
 
-    console.log("Dados para criação do cliente:", clientData);
-
     try {
       const createdClient = await this.prisma.client.create({
-        data: {
-          corporate_name: createClientDto.corporate_name,
-          fantasy_name: createClientDto.fantasy_name,
-          cpf_cnpj: createClientDto.cpf_cnpj,
-          state_registration: createClientDto.state_registration,
-          municipal_registration:
-            createClientDto.municipal_registration || null,
-          rural_registration: createClientDto.rural_registration || null,
-          contacts: {
-            create: createClientDto.contacts.map((contact) => ({
-              description: contact.description,
-              contact: contact.contact,
-              type: contact.type,
-              favorite: contact.favorite,
-            })),
-          },
-          address: {
-            create: createClientDto.address.map((addr) => ({
-              street: addr.street,
-              complement: addr.complement || null,
-              postal_code: addr.postal_code,
-              number: addr.number,
-              neighborhood: addr.neighborhood,
-              municipality_name: addr.municipality_name,
-              state: addr.state,
-              description: addr.description || null,
-              favorite: addr.favorite,
-            })),
-          },
-          owner: {
-            create: {
-              name: createClientDto.owner.name,
-              cpf_cnpj: createClientDto.owner.cpf_cnpj,
-              birth_date: createClientDto.owner.birth_date,
-            },
-          },
-          name_account: createClientDto.name_account,
-          id_account: createClientDto.id_account,
-          establishment_typeId: createClientDto.establishment_typeId,
-          systemsId: createClientDto.systemsId,
-        },
+        data: clientData,
         include: {
           address: true,
           owner: true,
@@ -204,18 +166,19 @@ export class ClientsPrismaService implements ClientEntityService {
         corporate_name: createdClient.corporate_name,
         fantasy_name: createdClient.fantasy_name,
         cpf_cnpj: createdClient.cpf_cnpj,
-        state_registration: createdClient.state_registration,
-        municipal_registration: createdClient.municipal_registration,
-        rural_registration: createdClient.rural_registration,
+        state_registration: createClientDto.state_registration || null,
+        municipal_registration: createClientDto.municipal_registration || null,
+        rural_registration: createClientDto.rural_registration || null,
         contacts: createdClient.contacts,
         addresses: createdClient.address,
         owners: {
           ...createdClient.owner,
-          birth_date: createdClient.owner.birth_date.toString(),
+          birth_date: createdClient.owner.birth_date
+            .toISOString()
+            .split("T")[0],
         },
         name_account: createdClient.name_account,
         idAccount: createdClient.id_account,
-        establishmentTypeId: createdClient.establishment_typeId,
         systemsId: createdClient.systemsId,
       });
     } catch (error) {
@@ -223,7 +186,6 @@ export class ClientsPrismaService implements ClientEntityService {
       throw new BadRequestException("Erro ao criar cliente.");
     }
   }
-
   async checkAccountExists(id_account: number): Promise<boolean> {
     const account = await this.prisma.client.findUnique({
       where: { id: id_account },
@@ -265,23 +227,23 @@ export class ClientsPrismaService implements ClientEntityService {
         clientData.cpf_cnpj = updateClientDto.cpf_cnpj;
       }
       if (updateClientDto.state_registration !== undefined) {
-        clientData.state_registration = updateClientDto.state_registration;
+        clientData.state_registration =
+          updateClientDto.state_registration || null;
       }
       if (updateClientDto.municipal_registration !== undefined) {
         clientData.municipal_registration =
-          updateClientDto.municipal_registration;
+          updateClientDto.municipal_registration || null;
       }
       if (updateClientDto.rural_registration !== undefined) {
-        clientData.rural_registration = updateClientDto.rural_registration;
+        clientData.rural_registration =
+          updateClientDto.rural_registration || null;
       }
+
       if (updateClientDto.name_account !== undefined) {
         clientData.name_account = updateClientDto.name_account;
       }
       if (updateClientDto.id_account !== undefined) {
         clientData.id_account = updateClientDto.id_account;
-      }
-      if (updateClientDto.establishment_typeId !== undefined) {
-        clientData.establishment_typeId = updateClientDto.establishment_typeId;
       }
 
       // Atualização de contatos
@@ -316,7 +278,6 @@ export class ClientsPrismaService implements ClientEntityService {
         };
       }
 
-      // Atualização de endereços
       if (updateClientDto.address) {
         clientData.address = {
           upsert: updateClientDto.address.map((addr) => ({
@@ -422,7 +383,6 @@ export class ClientsPrismaService implements ClientEntityService {
         },
         name_account: updatedClient.name_account,
         idAccount: updatedClient.id_account,
-        establishmentTypeId: updatedClient.establishment_typeId,
         systemsId: updatedClient.systemsId,
       });
     } catch (error) {
@@ -543,51 +503,6 @@ export class ClientsPrismaService implements ClientEntityService {
     if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
       throw new BadRequestException(
         "O CPF deve ter 11 dígitos e o CNPJ deve ter 14 dígitos."
-      );
-    }
-
-    const onlyNumbersRegex = /^\d+$/;
-
-    if (
-      !clientDto.state_registration ||
-      clientDto.state_registration.length > 20 ||
-      !onlyNumbersRegex.test(clientDto.state_registration)
-    ) {
-      throw new BadRequestException(
-        "Inscrição Estadual é obrigatória, deve ter máximo 20 dígitos e conter apenas números."
-      );
-    }
-
-    const existingStateRegistration = await this.prisma.client.findFirst({
-      where: {
-        state_registration: clientDto.state_registration,
-        ...(id && { id: { not: id } }),
-      },
-    });
-
-    if (existingStateRegistration) {
-      throw new BadRequestException(
-        `A Inscrição Estadual ${clientDto.state_registration} já está em uso.`
-      );
-    }
-
-    if (
-      clientDto.rural_registration &&
-      (clientDto.rural_registration.length > 20 ||
-        !onlyNumbersRegex.test(clientDto.rural_registration))
-    ) {
-      throw new BadRequestException(
-        "Inscrição Rural deve ter no máximo 20 dígitos e conter apenas números."
-      );
-    }
-
-    if (
-      clientDto.municipal_registration &&
-      (clientDto.municipal_registration.length > 20 ||
-        !onlyNumbersRegex.test(clientDto.municipal_registration))
-    ) {
-      throw new BadRequestException(
-        "Inscrição Municipal deve ter máximo 20 dígitos e conter apenas números."
       );
     }
 

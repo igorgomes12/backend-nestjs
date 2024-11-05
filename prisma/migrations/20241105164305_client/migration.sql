@@ -16,6 +16,9 @@
 
 */
 -- CreateEnum
+CREATE TYPE "ContactType" AS ENUM ('TELEFONE', 'CELULAR', 'EMAIL', 'WHATSAPP');
+
+-- CreateEnum
 CREATE TYPE "ContractStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED');
 
 -- CreateEnum
@@ -123,9 +126,9 @@ CREATE TABLE "Client" (
     "rural_registration" TEXT,
     "name_account" TEXT,
     "id_account" INTEGER NOT NULL,
-    "establishment_typeId" INTEGER NOT NULL,
     "systemsId" INTEGER NOT NULL,
     "representative_id" INTEGER,
+    "establishment_typeId" INTEGER,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
@@ -138,12 +141,12 @@ CREATE TABLE "Address" (
     "postal_code" TEXT NOT NULL,
     "number" TEXT NOT NULL,
     "neighborhood" TEXT NOT NULL,
-    "municipality_id" INTEGER,
+    "municipality_id" INTEGER DEFAULT 0,
     "municipality_name" TEXT NOT NULL,
-    "state_id" INTEGER,
+    "state_id" INTEGER DEFAULT 0,
     "state" TEXT NOT NULL,
-    "country_id" INTEGER,
-    "region_id" INTEGER,
+    "country_id" INTEGER DEFAULT 0,
+    "region_id" INTEGER DEFAULT 0,
     "description" TEXT,
     "favorite" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -162,7 +165,7 @@ CREATE TABLE "Contact" (
     "contact" TEXT,
     "cellphone" TEXT,
     "phone" TEXT,
-    "type" TEXT,
+    "type" "ContactType" NOT NULL,
     "email" TEXT,
     "favorite" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -328,6 +331,7 @@ CREATE TABLE "Representative" (
     "name" TEXT NOT NULL,
     "cellphone" TEXT,
     "phone" TEXT,
+    "email" TEXT,
     "supervisor" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "type" "TypeRepresentative" NOT NULL,
@@ -368,6 +372,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "profiles_name_key" ON "profiles"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Owner_clientId_key" ON "Owner"("clientId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Establishment_type_name_key" ON "Establishment_type"("name");
 
 -- CreateIndex
@@ -380,13 +387,13 @@ ALTER TABLE "users" ADD CONSTRAINT "users_profileId_fkey" FOREIGN KEY ("profileI
 ALTER TABLE "Client" ADD CONSTRAINT "Client_representative_id_fkey" FOREIGN KEY ("representative_id") REFERENCES "Representative"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Client" ADD CONSTRAINT "Client_establishment_typeId_fkey" FOREIGN KEY ("establishment_typeId") REFERENCES "Establishment_type"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_id_account_fkey" FOREIGN KEY ("id_account") REFERENCES "Accounting"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_systemsId_fkey" FOREIGN KEY ("systemsId") REFERENCES "System"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Client" ADD CONSTRAINT "Client_establishment_typeId_fkey" FOREIGN KEY ("establishment_typeId") REFERENCES "Establishment_type"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE NO ACTION ON UPDATE CASCADE;

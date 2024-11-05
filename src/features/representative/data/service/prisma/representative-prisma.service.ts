@@ -51,10 +51,17 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
               street: result.address[0].street,
               state: result.address[0].state,
               postal_code: result.address[0].postal_code,
+              complement: result.address[0].complement,
             }
           : undefined,
       cellphone: result.cellphone,
       phone: result.phone,
+      email: result.email,
+      contact: {
+        cellphone: result.cellphone,
+        phone: result.phone,
+        email: result.email,
+      },
     });
   }
   async findall(): Promise<RepresentativeEntity[]> {
@@ -94,10 +101,17 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
                   street: result.address[0].street,
                   state: result.address[0].state,
                   postal_code: result.address[0].postal_code,
+                  complement: result.address[0].complement,
                 }
               : undefined,
           cellphone: result.cellphone,
           phone: result.phone,
+          email: result.email,
+          contact: {
+            cellphone: result.cellphone,
+            phone: result.phone,
+            email: result.email,
+          },
         })
     );
   }
@@ -152,6 +166,7 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
             neighborhood: data.address.neighborhood,
             municipality_name: data.address.municipality_name,
             state: data.address.state,
+            complement: data.address.complement,
           },
         },
         created_at: data.created_at || new Date(),
@@ -229,6 +244,7 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
                     neighborhood: data.address.neighborhood,
                     municipality_name: data.address.municipality_name,
                     state: data.address.state,
+                    complement: data.address.complement,
                   },
                 },
               }
