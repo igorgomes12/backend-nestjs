@@ -22,7 +22,7 @@ export class ClientEntity {
   systemsId: number;
   contacts: TContact[];
   addresses: TAddress[];
-  owners: TOwner[];
+  owners: TOwner;
   establishmentType?: TSchemaEstablished;
   accounting?: TAccounting;
   systems?: TSystemSchemaDto;

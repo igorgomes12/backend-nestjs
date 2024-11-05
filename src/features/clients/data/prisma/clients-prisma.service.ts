@@ -5,9 +5,13 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { TAddress } from "features/clients/domain/dto/zod_address.schema";
 import { TClient } from "features/clients/domain/dto/zod_client.schema";
+import { TContact } from "features/clients/domain/dto/zod_contact.schema";
+import { TOwner } from "features/clients/domain/dto/zod_owner.schema";
 import { ClientEntity } from "features/clients/domain/entity/client.entity";
 import { ClientEntityService } from "features/clients/domain/services/clients.service";
+import { createBodySchemaDto } from "features/user/domain/dto/create_body.dto";
 
 export class ClientsPrismaService implements ClientEntityService {
   constructor(private readonly prisma: PrismaService) {}
@@ -49,11 +53,10 @@ export class ClientsPrismaService implements ClientEntityService {
             neighborhood: addr.neighborhood,
             municipality_id: addr.municipality_id,
           })),
-          owners: client.owner.map((owner) => ({
-            name: owner.name,
-            cpf_cnpj: owner.cpf_cnpj,
-            birthDate: owner.birth_date.toISOString().split("T")[0],
-          })),
+          owners: {
+            ...client.owner,
+            birth_date: client.owner.birth_date.toISOString().split("T")[0],
+          },
         })
     );
   }
@@ -94,11 +97,10 @@ export class ClientsPrismaService implements ClientEntityService {
         neighborhood: addr.neighborhood,
         municipalityId: addr.municipality_id,
       })),
-      owners: client.owner.map((owner) => ({
-        name: owner.name,
-        cpfCnpj: owner.cpf_cnpj,
-        birthDate: owner.birth_date.toISOString().split("T")[0],
-      })),
+      owners: {
+        ...client.owner,
+        birth_date: client.owner.birth_date.toISOString().split("T")[0],
+      },
     });
   }
 
@@ -127,22 +129,17 @@ export class ClientsPrismaService implements ClientEntityService {
           postal_code: addr.postal_code,
           number: addr.number,
           neighborhood: addr.neighborhood,
-          municipality_id: addr.municipality_id,
           municipality_name: addr.municipality_name,
-          state_id: addr.state_id,
           state: addr.state,
-          country_id: addr.country_id,
-          region_id: addr.region_id,
           description: addr.description || null,
           favorite: addr.favorite,
         })),
       },
       owner: {
-        create: createClientDto.owner.map((owner) => ({
-          name: owner.name,
-          cpf_cnpj: owner.cpf_cnpj,
-          birth_date: new Date(owner.birth_date),
-        })),
+        create: {
+          ...createClientDto.owner,
+          birth_date: new Date(createClientDto.owner.birth_date),
+        },
       },
       name_account: createClientDto.name_account,
       id_account: createClientDto.id_account,
@@ -154,10 +151,50 @@ export class ClientsPrismaService implements ClientEntityService {
 
     try {
       const createdClient = await this.prisma.client.create({
-        data: clientData,
+        data: {
+          corporate_name: createClientDto.corporate_name,
+          fantasy_name: createClientDto.fantasy_name,
+          cpf_cnpj: createClientDto.cpf_cnpj,
+          state_registration: createClientDto.state_registration,
+          municipal_registration:
+            createClientDto.municipal_registration || null,
+          rural_registration: createClientDto.rural_registration || null,
+          contacts: {
+            create: createClientDto.contacts.map((contact) => ({
+              description: contact.description,
+              contact: contact.contact,
+              type: contact.type,
+              favorite: contact.favorite,
+            })),
+          },
+          address: {
+            create: createClientDto.address.map((addr) => ({
+              street: addr.street,
+              complement: addr.complement || null,
+              postal_code: addr.postal_code,
+              number: addr.number,
+              neighborhood: addr.neighborhood,
+              municipality_name: addr.municipality_name,
+              state: addr.state,
+              description: addr.description || null,
+              favorite: addr.favorite,
+            })),
+          },
+          owner: {
+            create: {
+              name: createClientDto.owner.name,
+              cpf_cnpj: createClientDto.owner.cpf_cnpj,
+              birth_date: createClientDto.owner.birth_date,
+            },
+          },
+          name_account: createClientDto.name_account,
+          id_account: createClientDto.id_account,
+          establishment_typeId: createClientDto.establishment_typeId,
+          systemsId: createClientDto.systemsId,
+        },
         include: {
-          owner: true,
           address: true,
+          owner: true,
           contacts: true,
         },
       });
@@ -170,32 +207,12 @@ export class ClientsPrismaService implements ClientEntityService {
         state_registration: createdClient.state_registration,
         municipal_registration: createdClient.municipal_registration,
         rural_registration: createdClient.rural_registration,
-        contacts: createdClient.contacts.map((contact) => ({
-          description: contact.description,
-          contact: contact.contact,
-          type: contact.type as "TELEFONE" | "CELULAR" | "EMAIL" | "WHATSAPP",
-          main_account: contact.favorite,
-        })),
-        addresses: createdClient.address.map((addr) => ({
-          street: addr.street,
-          complement: addr.complement,
-          postalCode: addr.postal_code,
-          number: addr.number,
-          neighborhood: addr.neighborhood,
-          municipalityId: addr.municipality_id,
-          municipalityName: addr.municipality_name,
-          stateId: addr.state_id,
-          state: addr.state,
-          countryId: addr.country_id,
-          regionId: addr.region_id,
-          description: addr.description,
-          main: addr.favorite,
-        })),
-        owners: createdClient.owner.map((owner) => ({
-          name: owner.name,
-          cpfCnpj: owner.cpf_cnpj,
-          birthDate: owner.birth_date,
-        })),
+        contacts: createdClient.contacts,
+        addresses: createdClient.address,
+        owners: {
+          ...createdClient.owner,
+          birth_date: createdClient.owner.birth_date.toString(),
+        },
         name_account: createdClient.name_account,
         idAccount: createdClient.id_account,
         establishmentTypeId: createdClient.establishment_typeId,
@@ -221,7 +238,6 @@ export class ClientsPrismaService implements ClientEntityService {
       console.log("Iniciando atualização do cliente:", id);
       console.log("Dados recebidos para atualização:", updateClientDto);
 
-      // Obtenha o cliente atual para comparação
       const currentClient = await this.prisma.client.findUnique({
         where: { id },
         include: { contacts: true, address: true, owner: true },
@@ -231,12 +247,8 @@ export class ClientsPrismaService implements ClientEntityService {
         throw new NotFoundException(`Cliente com ID ${id} não foi encontrado.`);
       }
 
-      // Validação dos dados do cliente
       await this.validateClientData(updateClientDto, id);
-
       const clientData: any = {};
-
-      // Atualize somente os campos que foram modificados
       if (updateClientDto.corporate_name !== undefined) {
         clientData.corporate_name = updateClientDto.corporate_name;
       }
@@ -346,19 +358,19 @@ export class ClientsPrismaService implements ClientEntityService {
       // Atualização de proprietários
       if (updateClientDto.owner) {
         clientData.owner = {
-          upsert: updateClientDto.owner.map((owner) => ({
-            where: { id: owner.id || 0 },
+          upsert: {
+            where: { id: updateClientDto.owner.id || 0 },
             create: {
-              name: owner.name,
-              cpf_cnpj: owner.cpf_cnpj,
-              birth_date: new Date(owner.birth_date),
+              name: updateClientDto.owner.name,
+              cpf_cnpj: updateClientDto.owner.cpf_cnpj,
+              birth_date: new Date(updateClientDto.owner.birth_date),
             },
             update: {
-              name: owner.name,
-              cpf_cnpj: owner.cpf_cnpj,
-              birth_date: new Date(owner.birth_date),
+              name: updateClientDto.owner.name,
+              cpf_cnpj: updateClientDto.owner.cpf_cnpj,
+              birth_date: new Date(updateClientDto.owner.birth_date),
             },
-          })),
+          },
         };
       }
 
@@ -401,11 +413,13 @@ export class ClientsPrismaService implements ClientEntityService {
           description: addr.description,
           main: addr.favorite,
         })),
-        owners: updatedClient.owner.map((owner) => ({
-          name: owner.name,
-          cpfCnpj: owner.cpf_cnpj,
-          birthDate: owner.birth_date,
-        })),
+        owners: {
+          name: updatedClient.owner.name,
+          cpf_cnpj: updatedClient.owner.cpf_cnpj,
+          birth_date: updatedClient.owner.birth_date
+            .toISOString()
+            .split("T")[0],
+        },
         name_account: updatedClient.name_account,
         idAccount: updatedClient.id_account,
         establishmentTypeId: updatedClient.establishment_typeId,

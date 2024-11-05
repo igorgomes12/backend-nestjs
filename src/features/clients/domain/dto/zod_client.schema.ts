@@ -73,11 +73,7 @@ export const ClientSchema = z.object({
       "O campo 'establishment_typeId' deve ser um número inteiro positivo.",
   }),
   systemsId: z.number().int().positive().optional(),
-  owner: z
-    .array(OwnerSchema)
-    .min(1, { message: "É necessário fornecer pelo menos um proprietário." })
-    .max(1, { message: "O número máximo de proprietários permitidos é 1." })
-    .optional(),
+  owner: OwnerSchema.optional(),
 });
 
 export type TClient = z.infer<typeof ClientSchema>;

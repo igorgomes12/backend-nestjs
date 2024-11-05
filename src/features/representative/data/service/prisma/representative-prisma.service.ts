@@ -141,6 +141,7 @@ export class RepresentativePrismaService implements RepresentativeServiceTypes {
             cellphone: data.contact.cellphone,
             phone: data.contact.phone,
             email: data.contact.email,
+            type: "CELULAR", //ARRUMAR
           },
         },
         address: {

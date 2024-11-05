@@ -26,13 +26,11 @@ export class CreateClientUseCase {
       throw new NotAcceptableException(res.error.format());
     }
 
-    // Verificação de unicidade para CPF/CNPJ
     const existingClient = await this.service.findByCpfCnpj(data.cpf_cnpj);
     if (existingClient) {
       throw new BadRequestException("O CPF/CNPJ já está em uso.");
     }
 
-    // Verificação de unicidade para nome corporativo
     const existingCorporateName = await this.service.findByCorporateName(
       data.corporate_name
     );
@@ -40,7 +38,6 @@ export class CreateClientUseCase {
       throw new BadRequestException("O nome corporativo já está em uso.");
     }
 
-    // Verificação de campos obrigatórios
     if (!data.systemsId) {
       throw new BadRequestException("O campo 'systemsId' é obrigatório.");
     }
@@ -49,7 +46,7 @@ export class CreateClientUseCase {
       throw new BadRequestException("O campo 'id_account' é obrigatório.");
     }
 
-    if (!data.owner || data.owner.length === 0) {
+    if (!data.owner) {
       throw new BadRequestException(
         "É necessário fornecer pelo menos um proprietário."
       );

@@ -51,7 +51,7 @@ model Client {
   representative_id      Int?
 
   address            Address[]          @relation("ClientToAddress")
-  owner              Owner[]            @relation("ClientToOwner")
+  owner              Owner?             @relation("ClientToOwner")
   representative     Representative?    @relation("ClientToRepresentative", fields: [representative_id], references: [id])
   establishment_type Establishment_type @relation(fields: [establishment_typeId], references: [id], onDelete: NoAction)
   accounting         Accounting         @relation(fields: [id_account], references: [id], onDelete: NoAction)
@@ -65,12 +65,12 @@ model Address {
   postal_code       String
   number            String
   neighborhood      String
-  municipality_id   Int?
+  municipality_id   Int?    @default(0)
   municipality_name String
-  state_id          Int?
+  state_id          Int?    @default(0)
   state             String
-  country_id        Int?
-  region_id         Int?
+  country_id        Int?    @default(0)
+  region_id         Int?    @default(0)
   description       String?
   favorite          Boolean @default(false)
 
@@ -84,15 +84,22 @@ model Address {
   representativeId Int?
 }
 
+enum ContactType {
+  TELEFONE
+  CELULAR
+  EMAIL
+  WHATSAPP
+}
+
 model Contact {
-  id          Int     @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   description String?
   contact     String?
   cellphone   String?
   phone       String?
-  type        String?
+  type        ContactType // Usa o enum em vez de String
   email       String?
-  favorite    Boolean @default(false)
+  favorite    Boolean     @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -115,7 +122,7 @@ model Owner {
   deletedAt DateTime?
 
   Client   Client? @relation("ClientToOwner", fields: [clientId], references: [id], onDelete: NoAction)
-  clientId Int
+  clientId Int     @unique
 }
 
 model Establishment_type {
