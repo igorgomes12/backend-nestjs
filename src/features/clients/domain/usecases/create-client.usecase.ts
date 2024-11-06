@@ -30,16 +30,14 @@ export class CreateClientUseCase {
 
     await this.checkExistingClient(data);
 
-    if (!data.owners) {
+    if (!data.owner) {
       throw new BadRequestException(
         "É necessário fornecer pelo menos um proprietário."
       );
     }
 
-    const client = this.constructClientEntity(data);
-
     try {
-      return await this.service.create(client);
+      return await this.service.create(validation.data);
     } catch (error) {
       this.handleCreationError(error);
     }
@@ -57,44 +55,6 @@ export class CreateClientUseCase {
     if (existingCorporateName) {
       throw new BadRequestException("O nome corporativo já está em uso.");
     }
-  }
-
-  private parseDate(date: Date | string | undefined): Date | undefined {
-    return typeof date === "string" ? new Date(date) : date;
-  }
-
-  private ensureDate(value: Date | string | undefined): Date | undefined {
-    if (!value) return undefined;
-    return value instanceof Date ? value : new Date(value);
-  }
-
-  private constructClientEntity(data: TClient): ClientEntity {
-    return new ClientEntity({
-      ...data,
-      createdAt: this.ensureDate(data.createdAt),
-      updatedAt: this.ensureDate(data.updatedAt),
-      deletedAt: this.ensureDate(data.deletedAt),
-      owners: {
-        ...data.owners,
-        createdAt: this.ensureDate(data.owners?.createdAt),
-        updatedAt: this.ensureDate(data.owners?.updatedAt),
-        deletedAt: this.ensureDate(data.owners?.deletedAt),
-      },
-      contacts: data.contacts.map((contact) => ({
-        ...contact,
-        createdAt: this.ensureDate(contact.createdAt),
-        updatedAt: this.ensureDate(contact.updatedAt),
-        deletedAt: this.ensureDate(contact.deletedAt),
-      })),
-      addresses: data.addresses.map((addr) => ({
-        ...addr,
-        createdAt: this.ensureDate(addr.createdAt),
-        updatedAt: this.ensureDate(addr.updatedAt),
-        deletedAt: this.ensureDate(addr.deletedAt),
-      })),
-      idAccount: data.id_account || 0,
-      establishmentTypeId: data.establishment_typeId || 0,
-    });
   }
 
   private handleCreationError(error: any) {

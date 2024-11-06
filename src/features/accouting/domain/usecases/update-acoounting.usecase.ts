@@ -8,7 +8,7 @@ import {
 import { AccoutingServiceMethods } from "../services/accouting.service";
 import { TAccountingSchema, AccountingSchema } from "../dto/accounting_zod";
 import { AccountingFindAllEntity } from "../entity/accouting-findAll.entity";
-import { formatCNPJ } from "@common/utils/regex/cpnj";
+import { formatCpfCnpj } from "@common/utils/regex/cnpj-cpf";
 
 export class UpdateAccountingUseCase {
   private readonly logger = new Logger(UpdateAccountingUseCase.name);
@@ -55,21 +55,7 @@ export class UpdateAccountingUseCase {
       }
     }
 
-    if (cnpj) {
-      if (cnpj.length !== 14) {
-        this.logger.warn(`CNPJ ${cnpj} inválido`);
-        throw new BadRequestException(
-          "CNPJ inválido. Deve conter 14 dígitos. Ex:000.000.000-00"
-        );
-      }
-      const existingCNPJAccount = await this.service.findByCNPJ(cnpj);
-      if (existingCNPJAccount && existingCNPJAccount.id !== id) {
-        this.logger.warn(`CNPJ ${cnpj} já existente`);
-        throw new BadRequestException("CNPJ já existente");
-      }
-    }
-
-    const formattedCNPJ = cnpj ? formatCNPJ(cnpj) : existingAccount.cnpj;
+    const formattedCNPJ = cnpj ? formatCpfCnpj(cnpj) : existingAccount.cnpj;
 
     try {
       const updatedAccount = await this.service.update(id, {

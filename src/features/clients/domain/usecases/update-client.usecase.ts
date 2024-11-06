@@ -20,7 +20,7 @@ export class UpdateClientUsecase {
       throw new NotFoundException("cliente não encontrado");
     }
 
-    const updateData = {
+    const updateData: any = {
       ...existingUser,
       ...updateClientData,
       createdAt:
@@ -37,6 +37,6 @@ export class UpdateClientUsecase {
           : updateClientData.deletedAt,
     };
 
-    // return await this.service.update(id, updateData);
+    return await this.service.update(id, updateData);
   }
 }

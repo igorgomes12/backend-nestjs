@@ -23,7 +23,7 @@ export class ClientEntity {
   systemsId: number;
   contacts: TContact[];
   addresses: TAddress[];
-  owners: TOwner;
+  owner: TOwner;
   establishmentType?: TSchemaEstablished;
   accounting?: TAccounting;
   systems?: TSystemSchemaDto;
@@ -56,7 +56,7 @@ export class ClientEntity {
     this.systemsId = data.systemsId;
     this.contacts = data.contacts!;
     this.addresses = data.addresses!;
-    this.owners = data.owners!;
+    this.owner = data.owner!;
     this.establishmentType = data.establishmentType;
     this.accounting = data.accounting;
     this.systems = data.systems;

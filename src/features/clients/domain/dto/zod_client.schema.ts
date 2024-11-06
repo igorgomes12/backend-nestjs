@@ -74,7 +74,7 @@ export const ClientSchema = z.object({
 
   establishment_typeId: z.number().optional(),
   systemsId: z.number().int().positive().optional(),
-  owners: OwnerSchema.optional(),
+  owner: OwnerSchema.optional(),
   representativeId: z.number().optional(),
 });
 
