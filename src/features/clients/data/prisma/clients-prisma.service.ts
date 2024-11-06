@@ -60,7 +60,7 @@ export class ClientsPrismaService implements ClientEntityService {
           ...client.owner,
           birth_date: client.owner.birth_date.toISOString().split("T")[0],
         },
-        representativeName: client.representative?.name || null,
+        representative: client.representative,
       });
     });
   }
@@ -72,6 +72,7 @@ export class ClientsPrismaService implements ClientEntityService {
         contacts: true,
         address: true,
         owner: true,
+        representative: true,
       },
     });
 
@@ -105,6 +106,19 @@ export class ClientsPrismaService implements ClientEntityService {
         ...client.owner,
         birth_date: client.owner.birth_date.toISOString().split("T")[0],
       },
+      representative: client.representative
+        ? {
+            id: client.representative.id,
+            name: client.representative.name,
+            cellphone: client.representative.cellphone,
+            phone: client.representative.phone,
+            email: client.representative.email,
+            region: client.representative.region,
+            status: client.representative.status,
+            supervisor: client.representative.supervisor,
+            type: client.representative.type,
+          }
+        : undefined,
     });
   }
 
@@ -127,7 +141,7 @@ export class ClientsPrismaService implements ClientEntityService {
         })),
       },
       address: {
-        create: createClientDto.address.map((addr) => ({
+        create: createClientDto.addresses.map((addr) => ({
           street: addr.street,
           complement: addr.complement || null,
           postal_code: addr.postal_code,
@@ -141,14 +155,15 @@ export class ClientsPrismaService implements ClientEntityService {
       },
       owner: {
         create: {
-          name: createClientDto.owner.name,
-          cpf_cnpj: createClientDto.owner.cpf_cnpj,
-          birth_date: new Date(createClientDto.owner.birth_date).toISOString(),
+          name: createClientDto.owners.name,
+          cpf_cnpj: createClientDto.owners.cpf_cnpj,
+          birth_date: new Date(createClientDto.owners.birth_date).toISOString(),
         },
       },
       name_account: createClientDto.name_account,
       id_account: createClientDto.id_account,
       systemsId: createClientDto.systemsId,
+      representativeId: createClientDto.representativeId,
     };
 
     try {
@@ -158,8 +173,11 @@ export class ClientsPrismaService implements ClientEntityService {
           address: true,
           owner: true,
           contacts: true,
+          representative: true,
         },
       });
+
+      console.log("==>>", createdClient.representative);
 
       return new ClientEntity({
         id: createdClient.id,
@@ -171,6 +189,7 @@ export class ClientsPrismaService implements ClientEntityService {
         rural_registration: createClientDto.rural_registration || null,
         contacts: createdClient.contacts,
         addresses: createdClient.address,
+        representative: createdClient.representative,
         owners: {
           ...createdClient.owner,
           birth_date: createdClient.owner.birth_date
@@ -178,7 +197,7 @@ export class ClientsPrismaService implements ClientEntityService {
             .split("T")[0],
         },
         name_account: createdClient.name_account,
-        idAccount: createdClient.id_account,
+
         systemsId: createdClient.systemsId,
       });
     } catch (error) {
@@ -197,12 +216,13 @@ export class ClientsPrismaService implements ClientEntityService {
     updateClientDto: Partial<TClient>
   ): Promise<ClientEntity> {
     try {
-      console.log("Iniciando atualização do cliente:", id);
-      console.log("Dados recebidos para atualização:", updateClientDto);
-
       const currentClient = await this.prisma.client.findUnique({
         where: { id },
-        include: { contacts: true, address: true, owner: true },
+        include: {
+          contacts: true,
+          address: true,
+          owner: true,
+        },
       });
 
       if (!currentClient) {
@@ -278,9 +298,9 @@ export class ClientsPrismaService implements ClientEntityService {
         };
       }
 
-      if (updateClientDto.address) {
+      if (updateClientDto.addresses) {
         clientData.address = {
-          upsert: updateClientDto.address.map((addr) => ({
+          upsert: updateClientDto.addresses.map((addr) => ({
             where: { id: addr.id || 0 },
             create: {
               street: addr.street,
@@ -317,19 +337,19 @@ export class ClientsPrismaService implements ClientEntityService {
       }
 
       // Atualização de proprietários
-      if (updateClientDto.owner) {
+      if (updateClientDto.owners) {
         clientData.owner = {
           upsert: {
-            where: { id: updateClientDto.owner.id || 0 },
+            where: { id: updateClientDto.owners.id || 0 },
             create: {
-              name: updateClientDto.owner.name,
-              cpf_cnpj: updateClientDto.owner.cpf_cnpj,
-              birth_date: new Date(updateClientDto.owner.birth_date),
+              name: updateClientDto.owners.name,
+              cpf_cnpj: updateClientDto.owners.cpf_cnpj,
+              birth_date: new Date(updateClientDto.owners.birth_date),
             },
             update: {
-              name: updateClientDto.owner.name,
-              cpf_cnpj: updateClientDto.owner.cpf_cnpj,
-              birth_date: new Date(updateClientDto.owner.birth_date),
+              name: updateClientDto.owners.name,
+              cpf_cnpj: updateClientDto.owners.cpf_cnpj,
+              birth_date: new Date(updateClientDto.owners.birth_date),
             },
           },
         };
@@ -353,6 +373,7 @@ export class ClientsPrismaService implements ClientEntityService {
         state_registration: updatedClient.state_registration,
         municipal_registration: updatedClient.municipal_registration,
         rural_registration: updatedClient.rural_registration,
+
         contacts: updatedClient.contacts.map((contact) => ({
           description: contact.description,
           contact: contact.contact,
@@ -382,7 +403,6 @@ export class ClientsPrismaService implements ClientEntityService {
             .split("T")[0],
         },
         name_account: updatedClient.name_account,
-        idAccount: updatedClient.id_account,
         systemsId: updatedClient.systemsId,
       });
     } catch (error) {

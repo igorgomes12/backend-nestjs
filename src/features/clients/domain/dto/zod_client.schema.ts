@@ -12,7 +12,10 @@ export const ClientSchema = z.object({
     })
     .optional(),
 
-  createdAt: z.string().optional(),
+  createdAt: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
 
   updatedAt: z
     .string()
@@ -20,9 +23,15 @@ export const ClientSchema = z.object({
       message:
         "O campo 'updatedAt' deve ser uma data válida no formato ISO 8601.",
     })
-    .optional(),
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
 
-  deletedAt: z.string().datetime().nullable().optional(),
+  deletedAt: z
+    .string()
+    .datetime()
+    .nullable()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
 
   corporate_name: z.string().nonempty("Corporate name is required"),
 
@@ -45,11 +54,10 @@ export const ClientSchema = z.object({
     .transform((val) => formatCpfOrCnpj(val)),
 
   state_registration: z.string().optional(),
-
   municipal_registration: z.string().optional(),
   rural_registration: z.string().optional(),
 
-  address: z
+  addresses: z
     .array(AddressSchema)
     .min(1, { message: "É necessário fornecer pelo menos um endereço." })
     .max(10, { message: "O número máximo de endereços permitidos é 10." })
@@ -63,10 +71,11 @@ export const ClientSchema = z.object({
       message: "O campo 'id_account' deve ser um número inteiro positivo.",
     })
     .optional(),
+
   establishment_typeId: z.number().optional(),
   systemsId: z.number().int().positive().optional(),
-  owner: OwnerSchema.optional(),
-  representativeName: z.string().optional(),
+  owners: OwnerSchema.optional(),
+  representativeId: z.number().optional(),
 });
 
 export type TClient = z.infer<typeof ClientSchema>;

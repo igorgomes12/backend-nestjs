@@ -37,6 +37,6 @@ export class UpdateClientUsecase {
           : updateClientData.deletedAt,
     };
 
-    return await this.service.update(id, updateData);
+    // return await this.service.update(id, updateData);
   }
 }

@@ -89,7 +89,7 @@ export class ClientController {
     return representative;
   }
 
-  @Patch(":id")
+  @Patch()
   @HttpCode(HttpStatus.OK)
   @Roles(
     "ADMIN",
@@ -99,7 +99,7 @@ export class ClientController {
     "SUPPORT_SUPERVISOR",
     "PROGRAMMING_SUPERVISOR"
   )
-  async update(@Param("id") id: number, @Body() updateClientDto: TClient) {
+  async update(@Query("id") id: number, @Body() updateClientDto: TClient) {
     const clientId = id;
     if (isNaN(clientId)) {
       throw new BadRequestException("ID inválido fornecido.");
