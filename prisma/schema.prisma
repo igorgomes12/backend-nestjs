@@ -4,8 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema", "relationJoins"]
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -26,7 +25,6 @@ model User {
 model Profile {
   id   Int    @id @default(autoincrement())
   name String @unique
-
   user User[] @relation("user-to-profiles")
 
   @@map("profiles")
@@ -98,7 +96,7 @@ model Contact {
   contact     String?
   cellphone   String?
   phone       String?
-  type        ContactType
+  type        ContactType @default(TELEFONE)
   email       String?
   favorite    Boolean     @default(false)
 
@@ -203,7 +201,7 @@ model Contracts {
   customer_id    String
   start_date     DateTime
   end_date       DateTime
-  status         ContractStatus
+  status         ContractStatus @default(ACTIVE)
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
   first_due_date DateTime
@@ -211,7 +209,7 @@ model Contracts {
   observation    String?
   monthly_fee    Float
   seller_id      String
-  fee_type       FeeType
+  fee_type       FeeType        @default(FIXED)
 
   // Licenses        Licenses[]
   Payments        Payments[]
@@ -273,7 +271,7 @@ model Representative {
   email      String?
   supervisor String
   status     String
-  type       TypeRepresentative
+  type       TypeRepresentative @default(REPRESENTATIVE)
   region     String
   created_at DateTime?          @default(now())
   updated_at DateTime?          @updatedAt
@@ -306,4 +304,16 @@ model PaymentsType {
   createdAt  DateTime?
   updatedAt  DateTime?
   deleteDate DateTime?
+}
+
+model Account {
+  id          Int       @id @default(autoincrement())
+  value       String
+  description String
+  observation String?
+  status      Boolean
+  bank        Boolean
+  createdAt   DateTime?
+  updatedAt   DateTime?
+  deleteDate  DateTime?
 }

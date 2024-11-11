@@ -32,6 +32,8 @@ import { representativeServiceFactory } from "features/representative/data/servi
 import { LoginUseCase } from "features/sing-in/domain/usecases/signup.usecase";
 import { AuthenticateController } from "../infra/http/modules/sign-up/authenticate_controller";
 import { AppController } from "../infra/http/modules/user/app.controller";
+import { AccountModule } from "@infra/http/modules/account/account.module";
+import { accountServiceFactory } from "features/account/data/service";
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { AppController } from "../infra/http/modules/user/app.controller";
     LincesesModule,
     RepresentativeModule,
     FormsPaymentModule,
+    AccountModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -66,6 +69,7 @@ import { AppController } from "../infra/http/modules/user/app.controller";
     accountingServiceFactory,
     representativeServiceFactory,
     paymentServiceFactory,
+    accountServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>
