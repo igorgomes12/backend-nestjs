@@ -317,3 +317,51 @@ model Account {
   updatedAt   DateTime?
   deleteDate  DateTime?
 }
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TypeCalled {
+  BUG
+  ASSISTANCE
+}
+
+enum TypeContact {
+  PHONE
+  EMAIL
+  WHATSAPP
+  MOBILE
+}
+
+enum TypeSolutions {
+  PHONE
+  IN_PERSON
+  REMOTE
+}
+
+model Called {
+  id               Int           @id @default(autoincrement())
+  priority         Priority
+  caller           String
+  name             String
+  description      String
+  status           Boolean
+  type             TypeCalled
+  contact          TypeContact
+  system           String?
+  module           String
+  requested        String
+  note             String?
+  response         String?
+  solutionType     TypeSolutions
+  duration         DateTime?
+  completedAt      DateTime?
+  timestampFinally DateTime?
+  createdAt        DateTime?     @default(now())
+  timestamp        DateTime?
+  updatedAt        DateTime?
+  deletedAt        DateTime?
+}
