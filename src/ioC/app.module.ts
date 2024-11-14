@@ -34,6 +34,8 @@ import { AuthenticateController } from "../infra/http/modules/sign-up/authentica
 import { AppController } from "../infra/http/modules/user/app.controller";
 import { AccountModule } from "@infra/http/modules/account/account.module";
 import { accountServiceFactory } from "features/account/data/service";
+import { CalledModule } from "@infra/http/modules/called/called.module";
+import { calledServiceFactory } from "features/called/data";
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { accountServiceFactory } from "features/account/data/service";
     RepresentativeModule,
     FormsPaymentModule,
     AccountModule,
+    CalledModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -70,6 +73,7 @@ import { accountServiceFactory } from "features/account/data/service";
     representativeServiceFactory,
     paymentServiceFactory,
     accountServiceFactory,
+    calledServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>
