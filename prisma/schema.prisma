@@ -365,3 +365,22 @@ model Called {
   updatedAt        DateTime?
   deletedAt        DateTime?
 }
+
+model Module {
+  id        Int               @id @default(autoincrement())
+  system    ModuleSystemTypes
+  module    String
+  status    Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  deletedAt DateTime?
+}
+
+enum ModuleSystemTypes {
+  FRENTE
+  RETAGUARDA
+  LIDERPDV
+  LIDERODONTO
+  WEBLIDER
+  OUTROS
+}
