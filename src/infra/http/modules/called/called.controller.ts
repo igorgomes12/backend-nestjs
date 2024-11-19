@@ -66,9 +66,9 @@ export class CalledController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(@Res() res: Response, @Query() query: CalledDto) {
+  async findAll(@Res() res: Response) {
     try {
-      const called = await this.findAllCalledUseCase.execute(query);
+      const called = await this.findAllCalledUseCase.execute();
       return res.status(HttpStatus.OK).json(called);
     } catch (error) {
       return this.handleException(res, error, "Erro ao buscar contas");
@@ -92,7 +92,7 @@ export class CalledController {
   async update(
     @Res() res: Response,
     @Param("id", ParseIntPipe) id: number,
-    @Body() updateData: CalledDto
+    @Body() updateData: any
   ) {
     try {
       await this.updateCalledUseCase.execute(id, updateData);

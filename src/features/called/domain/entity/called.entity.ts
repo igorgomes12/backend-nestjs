@@ -1,29 +1,47 @@
-import { $Enums } from "@prisma/client";
-
 export class CalledEntity {
-  id?: number;
-  priority: $Enums.Priority;
-  caller: string;
-  name: string;
-  description: string;
-  status: boolean;
-  type: $Enums.TypeCalled;
-  contact: $Enums.TypeContact;
-  system?: string | null;
-  module?: string | null;
-  requested: string;
-  note?: string | null;
-  response?: string | null;
-  solutionType: $Enums.TypeSolutions;
-  duration?: Date | null;
-  completedAt?: Date | null;
-  timestampFinally?: Date | null;
-  createdAt?: Date | null;
-  timestamp?: Date | null;
-  updatedAt?: Date | null;
-  deletedAt?: Date | null;
+  id: number;
+  dadosGerais: {
+    caller: string;
+    contact: string;
+    createdAt: string;
+    name: string;
+    timestamp: string;
+  };
+  centralAtendimento: {
+    description: string;
+    module: string;
+    system: string;
+    type: string;
+  };
+  descricao: {
+    note: string;
+    priority: string;
+    requested: string;
+    response: string;
+    solutionType: string;
+  };
 
-  constructor(data: Partial<Omit<CalledEntity, "constructor">>) {
-    Object.assign(this, data);
+  constructor(data: Partial<CalledEntity>) {
+    this.id = data.id || 0;
+    this.dadosGerais = {
+      caller: data.dadosGerais?.caller || "",
+      contact: data.dadosGerais?.contact || "",
+      createdAt: data.dadosGerais?.createdAt || new Date().toISOString(),
+      name: data.dadosGerais?.name || "",
+      timestamp: data.dadosGerais?.timestamp || new Date().toISOString(),
+    };
+    this.centralAtendimento = {
+      description: data.centralAtendimento?.description || "",
+      module: data.centralAtendimento?.module || "",
+      system: data.centralAtendimento?.system || "",
+      type: data.centralAtendimento?.type || "BUG",
+    };
+    this.descricao = {
+      note: data.descricao?.note || "",
+      priority: data.descricao?.priority || "LOW",
+      requested: data.descricao?.requested || "",
+      response: data.descricao?.response || "",
+      solutionType: data.descricao?.solutionType || "PHONE",
+    };
   }
 }

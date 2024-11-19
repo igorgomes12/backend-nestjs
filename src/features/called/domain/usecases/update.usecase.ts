@@ -24,26 +24,8 @@ export class UpdateCalledUseCase {
 
     const updatedAccount = {
       ...existingAccount,
-      priority: user.priority,
-      caller: user.caller,
-      name: user.name,
-      description: user.description,
-      status: user.status,
-      type: user.type,
-      contact: user.contact,
-      system: user.system,
-      module: user.module,
-      requested: user.requested,
-      note: user.note,
-      response: user.response,
-      solutionType: user.solutionType,
-      duration: user.duration,
-      completedAt: user.completedAt,
-      timestampFinally: user.timestampFinally,
-      createdAt: user.createdAt,
-      timestamp: user.timestamp,
-      updatedAt: user.updatedAt,
-      deletedAt: user.deletedAt,
+      ...user,
+      updatedAt: new Date(),
     };
 
     return this.calledService.update(id, updatedAccount);

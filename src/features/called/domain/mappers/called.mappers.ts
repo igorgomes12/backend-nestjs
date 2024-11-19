@@ -1,35 +1,28 @@
-import { NotAcceptableException } from "@nestjs/common";
-import type { Called } from "@prisma/client";
 import { CalledEntity } from "../entity/called.entity";
 
 export class CalledMapper {
-  static toEntity(model: Called): CalledEntity {
-    try {
-      return new CalledEntity({
-        id: model.id,
-        priority: model.priority,
+  static toEntity(model: any): CalledEntity {
+    return new CalledEntity({
+      dadosGerais: {
         caller: model.caller,
-        name: model.name,
-        description: model.description,
-        status: model.status,
-        type: model.type,
         contact: model.contact,
-        system: model.system,
+        createdAt: model.createdAt.toISOString(),
+        name: model.name,
+        timestamp: model.timestamp.toISOString(),
+      },
+      centralAtendimento: {
+        description: model.description,
         module: model.module,
+        system: model.system,
+        type: model.type,
+      },
+      descricao: {
+        note: model.note || "",
+        priority: model.priority,
         requested: model.requested,
-        note: model.note,
-        response: model.response,
+        response: model.response || "",
         solutionType: model.solutionType,
-        duration: model.duration,
-        completedAt: model.completedAt,
-        timestampFinally: model.timestampFinally,
-        createdAt: model.createdAt,
-        timestamp: model.timestamp,
-        updatedAt: model.updatedAt,
-        deletedAt: model.deletedAt,
-      });
-    } catch {
-      throw new NotAcceptableException(`Erro ao converter para Entidade`);
-    }
+      },
+    });
   }
 }

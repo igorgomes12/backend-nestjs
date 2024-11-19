@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
 } from "@nestjs/common";
 import { CalledTypeService } from "../services/called-type.service";
-import { CalledDto } from "../dto/called.dto";
 import { CalledEntity } from "../entity/called.entity";
 
 @Injectable()
@@ -13,9 +12,9 @@ export class FindAllCalledUseCase {
     @Inject("CalledTypeService")
     private readonly calledService: CalledTypeService
   ) {}
-  async execute(params: CalledDto): Promise<CalledEntity[]> {
+  async execute(): Promise<CalledEntity[]> {
     try {
-      const calledFind = await this.calledService.findAll(params);
+      const calledFind = await this.calledService.findAll();
       if (calledFind.length > 0) {
         return calledFind;
       } else {

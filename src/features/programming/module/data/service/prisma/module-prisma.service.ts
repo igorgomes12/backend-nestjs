@@ -5,7 +5,6 @@ import {
 } from "features/programming/module/domain/dto/module.dto";
 import { CreateModuleEntity } from "features/programming/module/domain/entity/create.entity";
 import { ModuleServiceTypes } from "features/programming/module/domain/services/module.service";
-import { Logger } from "@nestjs/common";
 
 export class ModulePrismaService extends ModuleServiceTypes {
   constructor(private readonly prisma: PrismaService) {

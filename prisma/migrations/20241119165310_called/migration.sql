@@ -5,9 +5,6 @@ CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 CREATE TYPE "TypeCalled" AS ENUM ('BUG', 'ASSISTANCE');
 
 -- CreateEnum
-CREATE TYPE "TypeContact" AS ENUM ('PHONE', 'EMAIL', 'WHATSAPP', 'MOBILE');
-
--- CreateEnum
 CREATE TYPE "TypeSolutions" AS ENUM ('PHONE', 'IN_PERSON', 'REMOTE');
 
 -- CreateTable
@@ -19,7 +16,7 @@ CREATE TABLE "Called" (
     "description" TEXT NOT NULL,
     "status" BOOLEAN NOT NULL,
     "type" "TypeCalled" NOT NULL,
-    "contact" "TypeContact" NOT NULL,
+    "contact" TEXT NOT NULL,
     "system" TEXT,
     "module" TEXT NOT NULL,
     "requested" TEXT NOT NULL,

@@ -329,13 +329,6 @@ enum TypeCalled {
   ASSISTANCE
 }
 
-enum TypeContact {
-  PHONE
-  EMAIL
-  WHATSAPP
-  MOBILE
-}
-
 enum TypeSolutions {
   PHONE
   IN_PERSON
@@ -350,7 +343,7 @@ model Called {
   description      String
   status           Boolean
   type             TypeCalled
-  contact          TypeContact
+  contact          String
   system           String?
   module           String
   requested        String

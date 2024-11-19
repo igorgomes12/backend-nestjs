@@ -1,174 +1,223 @@
 import type { PrismaService } from "@infra/auth/database/prisma/prisma.service";
 import { NotFoundException } from "@nestjs/common";
-import {
-  calledSchema,
-  type CalledDto,
-} from "features/called/domain/dto/called.dto";
+import type { Priority, TypeCalled, TypeSolutions } from "@prisma/client";
+import { type CalledDto } from "features/called/domain/dto/called.dto";
 import { CalledEntity } from "features/called/domain/entity/called.entity";
 import { CalledMapper } from "features/called/domain/mappers/called.mappers";
-import type { CalledTypeService } from "features/called/domain/services/called-type.service";
+import { CalledTypeService } from "features/called/domain/services/called-type.service";
 
 export class CalledPrismaService implements CalledTypeService {
   constructor(private readonly service: PrismaService) {}
+  async findAll(): Promise<CalledEntity[]> {
+    try {
+      const res = await this.service.called.findMany({
+        orderBy: {
+          id: "asc",
+        },
+      });
 
-  async findAll(params: Partial<CalledDto>): Promise<CalledEntity[]> {
-    const where = Object.fromEntries(
-      Object.entries(params).filter(([, value]) => value !== undefined)
-    );
-
-    const data = await this.service.called.findMany({
-      where,
-      orderBy: {
-        id: "asc",
-      },
-
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        status: true,
-        priority: true,
-        type: true,
-        contact: true,
-        caller: true,
-        system: true,
-        module: true,
-        requested: true,
-        note: true,
-        response: true,
-        solutionType: true,
-        duration: true,
-        completedAt: true,
-        timestampFinally: true,
-        createdAt: true,
-        timestamp: true,
-        updatedAt: true,
-        deletedAt: true,
-      },
-    });
-
-    return data.map(
-      (account) =>
-        new CalledEntity({
-          id: account.id,
-          name: account.name,
-          description: account.description,
-          status: account.status,
-          type: account.type,
-          contact: account.contact,
-          caller: account.caller,
-          system: account.system,
-          module: account.module,
-          requested: account.requested,
-          note: account.note,
-          priority: account.priority,
-          response: account.response,
-          solutionType: account.solutionType,
-          duration: account.duration,
-          completedAt: account.completedAt,
-          timestampFinally: account.timestampFinally,
-          createdAt: account.createdAt,
-          timestamp: account.timestamp,
-          updatedAt: account.updatedAt,
-          deletedAt: account.deletedAt,
-        })
-    );
+      return res.map(
+        (called) =>
+          new CalledEntity({
+            id: called.id,
+            dadosGerais: {
+              caller: called.caller,
+              contact: called.contact,
+              createdAt: called.createdAt?.toISOString() || "",
+              name: called.name,
+              timestamp: called.timestamp?.toISOString() || "",
+            },
+            centralAtendimento: {
+              description: called.description,
+              module: called.module,
+              system: called.system,
+              type: called.type,
+            },
+            descricao: {
+              note: called.note,
+              priority: called.priority,
+              requested: called.requested,
+              response: called.response,
+              solutionType: called.solutionType,
+            },
+          })
+      );
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+      throw new Error("Não foi possível recuperar os dados de chamados.");
+    }
   }
-
-  // Outros métodos não implementados
-  findById(id: number): Promise<CalledEntity | null> {
+  async findById(id: number): Promise<CalledEntity | null> {
     return this._get(id);
   }
   async create(user: CalledDto): Promise<CalledEntity> {
-    const parsedData = calledSchema.parse(user);
-    const createdAccount = this.service.called.create({
-      data: {
-        priority: parsedData.priority,
-        caller: parsedData.caller,
-        name: parsedData.name,
-        description: parsedData.description,
-        status: parsedData.status,
-        type: parsedData.type,
-        contact: parsedData.contact,
-        system: parsedData.system,
-        module: parsedData.module,
-        requested: parsedData.requested,
-        note: parsedData.note,
-        response: parsedData.response,
-        solutionType: parsedData.solutionType,
-        duration: parsedData.duration,
-        completedAt: parsedData.completedAt,
-        timestampFinally: parsedData.timestampFinally,
-        createdAt: parsedData.createdAt,
-        timestamp: parsedData.timestamp,
-        updatedAt: parsedData.updatedAt,
-        deletedAt: parsedData.deletedAt,
-      },
-    });
+    try {
+      const contact = user.dadosGerais.contact;
 
-    if (!createdAccount) {
-      throw new Error("Falha ao criar conta, não tem conta cadastrada");
+      const typeCalled =
+        user.centralAtendimento.type.toUpperCase() as TypeCalled;
+      const priority = user.descricao.priority.toUpperCase() as Priority;
+      const solutionType =
+        user.descricao.solutionType.toUpperCase() as TypeSolutions;
+
+      const createdAt = new Date(
+        `${user.dadosGerais.createdAt}T${user.dadosGerais.timestamp}`
+      );
+
+      const res = await this.service.called.create({
+        data: {
+          caller: user.dadosGerais.caller,
+          contact: contact,
+          createdAt: createdAt,
+          name: user.dadosGerais.name,
+          timestamp: createdAt,
+          description: user.centralAtendimento.description,
+          module: user.centralAtendimento.module,
+          system: user.centralAtendimento.system,
+          type: typeCalled,
+          note: user.descricao.note,
+          priority: priority,
+          requested: user.descricao.requested,
+          response: user.descricao.response,
+          solutionType: solutionType,
+          status: true,
+        },
+      });
+
+      return new CalledEntity({
+        id: res.id,
+        dadosGerais: {
+          caller: res.caller,
+          contact: res.contact,
+          createdAt: res.createdAt.toISOString(),
+          name: res.name,
+          timestamp: res.timestamp.toISOString(),
+        },
+        centralAtendimento: {
+          description: res.description,
+          module: res.module,
+          system: res.system,
+          type: res.type,
+        },
+        descricao: {
+          note: res.note,
+          priority: res.priority,
+          requested: res.requested,
+          response: res.response,
+          solutionType: res.solutionType,
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao criar chamado:", error);
+      throw new Error("Não foi possível criar o chamado.");
     }
-    return CalledMapper.toEntity(await createdAccount);
   }
+
   async update(id: number, user: Partial<CalledEntity>): Promise<CalledEntity> {
-    await this._get(id);
+    try {
+      const existingCalled = await this._get(id);
 
-    const updateData: Partial<CalledEntity> = {};
-    if (typeof user.priority !== "undefined")
-      updateData.priority = user.priority;
-    if (typeof user.caller !== "undefined") updateData.caller = user.caller;
-    if (typeof user.name !== "undefined") updateData.name = user.name;
-    if (typeof user.description !== "undefined")
-      updateData.description = user.description;
-    if (typeof user.status !== "undefined") updateData.status = user.status;
-    if (typeof user.type !== "undefined") updateData.type = user.type;
-    if (typeof user.contact !== "undefined") updateData.contact = user.contact;
-    if (typeof user.system !== "undefined") updateData.system = user.system;
-    if (typeof user.module !== "undefined") updateData.module = user.module;
-    if (typeof user.requested !== "undefined")
-      updateData.requested = user.requested;
-    if (typeof user.note !== "undefined") updateData.note = user.note;
-    if (typeof user.response !== "undefined")
-      updateData.response = user.response;
-    if (typeof user.solutionType !== "undefined")
-      updateData.solutionType = user.solutionType;
-    if (typeof user.duration !== "undefined")
-      updateData.duration = user.duration;
-    if (typeof user.completedAt !== "undefined")
-      updateData.completedAt = user.completedAt;
-    if (typeof user.timestampFinally !== "undefined")
-      updateData.timestampFinally = user.timestampFinally;
-    if (typeof user.createdAt !== "undefined")
-      updateData.createdAt = user.createdAt;
-    if (typeof user.timestamp !== "undefined")
-      updateData.timestamp = user.timestamp;
-    if (typeof user.updatedAt !== "undefined")
-      updateData.updatedAt = user.updatedAt;
-    if (typeof user.deletedAt !== "undefined")
-      updateData.deletedAt = user.deletedAt;
+      const updatedData = {
+        dadosGerais: {
+          caller: user.dadosGerais?.caller || existingCalled.dadosGerais.caller,
+          contact:
+            user.dadosGerais?.contact || existingCalled.dadosGerais.contact,
+          createdAt:
+            user.dadosGerais?.createdAt || existingCalled.dadosGerais.createdAt,
+          name: user.dadosGerais?.name || existingCalled.dadosGerais.name,
+          timestamp:
+            user.dadosGerais?.timestamp || existingCalled.dadosGerais.timestamp,
+        },
+        centralAtendimento: {
+          description:
+            user.centralAtendimento?.description ||
+            existingCalled.centralAtendimento.description,
+          module:
+            user.centralAtendimento?.module ||
+            existingCalled.centralAtendimento.module,
+          system:
+            user.centralAtendimento?.system ||
+            existingCalled.centralAtendimento.system,
+          type:
+            user.centralAtendimento?.type ||
+            existingCalled.centralAtendimento.type,
+        },
+        descricao: {
+          note:
+            user.descricao?.note !== undefined
+              ? user.descricao.note
+              : existingCalled.descricao.note,
+          priority:
+            user.descricao?.priority || existingCalled.descricao.priority,
+          requested:
+            user.descricao?.requested || existingCalled.descricao.requested,
+          response:
+            user.descricao?.response !== undefined
+              ? user.descricao.response
+              : existingCalled.descricao.response,
+          solutionType:
+            user.descricao?.solutionType ||
+            existingCalled.descricao.solutionType,
+        },
+      };
 
-    return this.service.called.update({
-      where: { id },
-      data: updateData,
-    });
+      const updatedCalled = await this.service.called.update({
+        where: { id },
+        data: updatedData,
+      });
+
+      return new CalledEntity({
+        id: updatedCalled.id,
+        dadosGerais: {
+          caller: updatedCalled.caller,
+          contact: updatedCalled.contact,
+          createdAt: updatedCalled.createdAt?.toISOString() || "",
+          name: updatedCalled.name,
+          timestamp: updatedCalled.timestamp?.toISOString() || "",
+        },
+        centralAtendimento: {
+          description: updatedCalled.description,
+          module: updatedCalled.module,
+          system: updatedCalled.system,
+          type: updatedCalled.type,
+        },
+        descricao: {
+          note: updatedCalled.note,
+          priority: updatedCalled.priority,
+          requested: updatedCalled.requested,
+          response: updatedCalled.response,
+          solutionType: updatedCalled.solutionType,
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar chamado:", error);
+      throw new Error("Não foi possível atualizar o chamado.");
+    }
   }
   async delete(id: number): Promise<void> {
-    await this._get(id);
-    await this.service.called.delete({
-      where: {
-        id,
-      },
-    });
-  }
-  findByName(name: string): Promise<CalledEntity | null> {
-    return this.service.called.findFirst({
-      where: {
-        name,
-      },
-    });
+    try {
+      await this._get(id);
+      await this.service.called.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      throw new Error("Erro ao buscar chamado: " + error);
+    }
   }
 
+  async findByName(name: string): Promise<CalledEntity | null> {
+    const called = await this.service.called.findFirst({
+      where: { name },
+    });
+
+    if (!called) {
+      return null;
+    }
+
+    return CalledMapper.toEntity(called);
+  }
   protected async _get(id: number): Promise<CalledEntity> {
     try {
       const account = await this.service.called.findUnique({
