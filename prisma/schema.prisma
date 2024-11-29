@@ -377,3 +377,12 @@ enum ModuleSystemTypes {
   WEBLIDER
   OUTROS
 }
+
+model DescriptionCalled {
+  id          Int       @id @default(autoincrement())
+  public_id   String    @default(uuid())
+  description String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}

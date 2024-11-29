@@ -38,6 +38,8 @@ import { CalledModule } from "@infra/http/modules/called/called.module";
 import { calledServiceFactory } from "features/called/data";
 import { ModulesModule } from "@infra/http/modules/programming/modules/modules.module";
 import { moduleServiceFactory } from "features/programming/module/data/service";
+import { DescriptionCalledModule } from "@infra/http/modules/description_called/description_called.module";
+import { DescriptionCalledServiceFactory } from "features/description-called/data/service";
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { moduleServiceFactory } from "features/programming/module/data/service";
     AccountModule,
     CalledModule,
     ModulesModule,
+    DescriptionCalledModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -78,6 +81,7 @@ import { moduleServiceFactory } from "features/programming/module/data/service";
     accountServiceFactory,
     calledServiceFactory,
     moduleServiceFactory,
+    DescriptionCalledServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>
