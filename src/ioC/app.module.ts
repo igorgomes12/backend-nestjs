@@ -40,6 +40,8 @@ import { ModulesModule } from "@infra/http/modules/programming/modules/modules.m
 import { moduleServiceFactory } from "features/programming/module/data/service";
 import { DescriptionCalledModule } from "@infra/http/modules/description_called/description_called.module";
 import { DescriptionCalledServiceFactory } from "features/description-called/data/service";
+import { AgreementModule } from "@infra/http/modules/agreement/agreement.module";
+import { agreementServiceFactory } from "features/agreement/data";
 
 @Module({
   imports: [
@@ -63,6 +65,7 @@ import { DescriptionCalledServiceFactory } from "features/description-called/dat
     CalledModule,
     ModulesModule,
     DescriptionCalledModule,
+    AgreementModule,
   ],
   controllers: [AppController, AuthenticateController],
   providers: [
@@ -82,6 +85,7 @@ import { DescriptionCalledServiceFactory } from "features/description-called/dat
     calledServiceFactory,
     moduleServiceFactory,
     DescriptionCalledServiceFactory,
+    agreementServiceFactory,
     {
       provide: LoginUseCase,
       useFactory: (prisma: PrismaService, jwt: JwtService) =>

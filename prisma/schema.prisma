@@ -55,6 +55,8 @@ model Client {
   systems              System              @relation(fields: [systemsId], references: [id], onDelete: NoAction)
   Establishment_type   Establishment_type? @relation(fields: [establishment_typeId], references: [id])
   establishment_typeId Int?
+
+  Agreement Agreement[]
 }
 
 model Address {
@@ -237,6 +239,8 @@ model Payments {
   user_id      String
 
   Contracts Contracts @relation(fields: [contract_id], references: [id])
+
+  Agreement Agreement[]
 }
 
 model ContractHistory {
@@ -282,6 +286,8 @@ model Representative {
   contact    Contact[]    @relation("ContactToRepresentative")
   address    Address[]    @relation("AddressToRepresentative")
   commission Commission[] @relation("CommissionToRepresentative")
+
+  Agreement Agreement[] @relation("AgreementToRepresentative")
 }
 
 model Commission {
@@ -385,4 +391,34 @@ model DescriptionCalled {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+}
+
+model Agreement {
+  id               Int                           @id @default(autoincrement())
+  timestamp        DateTime                      @default(now())
+  channel          Representative                @relation("AgreementToRepresentative", fields: [representativeId], references: [id], onDelete: Cascade)
+  representativeId Int
+  description      String
+  value            String
+  client           Client                        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId         Int
+  paymment         DateTime                      @default(now())
+  formpayment      Payments                      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId        String
+  observation      String?
+  situation        TypeSituationAgreement
+  situatonpayment  TypeSituationPaymentAgreement
+}
+
+enum TypeSituationAgreement {
+  ACORDADO
+  NAO_ACORDADO
+  FINALIZADO
+}
+
+enum TypeSituationPaymentAgreement {
+  RECEBER_DO_CLIENTE
+  REBECER_AQUI
+  DEPOSITO
+  BOLETO
 }
